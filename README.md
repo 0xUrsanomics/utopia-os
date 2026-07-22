@@ -54,7 +54,15 @@ identity. If you're adopting it, you bring your own content.
 1. Read `docs/ARCHITECTURE.md` for the whole-system picture, then the subsystem docs.
 2. Copy `CLAUDE.md` and the `memory/templates/` scaffolds, and fill them with your own voice + user model.
 3. Wire the security gates as hooks (see `docs/security-gates.md`).
-4. Adopt skills incrementally — each is self-contained.
+4. Adopt skills incrementally — each lives in `skills/<name>/SKILL.md` (the standard Agent Skills
+   format). To use one in Claude Code, copy its folder into your `.claude/skills/`. Shared helper
+   scripts live under `scripts/` and are referenced by repo-root-relative path.
+
+## Acknowledgments
+
+Utopia OS adapts patterns, skills, and reference packs from a lot of open-source work and public
+research, and leans on token-efficiency tooling (TOON, RTK, caveman) to run affordably. See
+[CREDITS.md](CREDITS.md) for the full list. If your work is used here and isn't credited, open an issue.
 
 ## License
 

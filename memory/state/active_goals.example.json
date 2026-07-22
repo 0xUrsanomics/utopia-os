@@ -1,6 +1,6 @@
 {
   "_schema": "active-goals-v2",
-  "_description": "Tier-1 active-goal registry. Surfaced in MEMORY.md and any wake-up briefing. Drift-audited on a schedule. See skills/goal.md for the CRUD flow. v2 adds milestones[] and requirements[] per goal so a goal carries its own decomposition and blockers.",
+  "_description": "Tier-1 active-goal registry. Surfaced in MEMORY.md and any wake-up briefing. Drift-audited on a schedule. See skills/goals/SKILL.md for the CRUD flow. v2 adds milestones[] and requirements[] per goal so a goal carries its own decomposition and blockers.",
   "_caps": {
     "max_active": 10,
     "review_after_default_days": 30,

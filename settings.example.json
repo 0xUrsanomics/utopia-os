@@ -6,6 +6,7 @@
     "The hooks below wire the security gates described in CLAUDE.md and docs/security-gates.md:",
     "  SessionStart     -> load the session-bootstrap parachute + run idempotent boot tasks",
     "  UserPromptSubmit -> reset the auto-compound counter on each new operator message",
+    "  UserPromptSubmit -> surface new fleet-bus messages addressed to the hub (bus_turn_poll.py)",
     "  PreToolUse       -> stand-down registry check before installs / MCP adds / settings edits",
     "  PreToolUse       -> lint skill files for injection patterns before they are trusted",
     "  PostToolUse      -> verify-after-write on file edits (re-read the written value)",
@@ -60,6 +61,11 @@
           {
             "type": "command",
             "command": "python3 ${WORKSPACE}/scripts/security/auto_compound_counter.py --reset",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python3 ${WORKSPACE}/scripts/agents/bus_turn_poll.py",
             "timeout": 10
           }
         ]

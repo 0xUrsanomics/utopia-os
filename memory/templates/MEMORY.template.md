@@ -47,7 +47,7 @@ The tiers are split by *how often a thing is needed*, not by topic:
 
 > Not files. A local vector index (e.g. LanceDB/SQLite-VSS) at `<VECTOR_DB_PATH>`, containing
 > embeddings of everything above plus any reviewed outputs and graph pages. Query via the `recall`
-> skill. Rebuild after big work sessions with `<your index command, e.g. scripts/memory/vector.py index>`.
+> skill. Rebuild after big work sessions with `<your index command, e.g. scripts/memory/vector_brain.py index>`.
 
 ## Sidecars
 

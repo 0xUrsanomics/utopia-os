@@ -150,6 +150,70 @@ A sub-agent or a peer tenant gets **only the facts its task needs — never the 
 The discipline: brief the minimum. If a task genuinely needs a piece of the operator model, paste that piece.
 The default is exclusion, and the briefing is the entire trust boundary.
 
+## Running the fleet
+
+The three surfaces above are the *contracts*. This is the runnable machinery that implements the
+cross-tenant surface — a small set of scripts under `scripts/agents/` that let you actually stand up a
+second agent and have it coordinate with the first without a shared chat channel. Everything resolves
+paths from `AGENT_ROOT` (the repo root) and keeps runtime state under `AGENT_FLEET_HOME` (default
+`.data/fleet/`), so the whole loop is relocatable and content-free.
+
+| Script | Role |
+|---|---|
+| `fleet_bus.py` | the typed SQLite message bus — publish / poll / claim / complete, with task dependencies |
+| `bus_turn_poll.py` | UserPromptSubmit hook — surfaces new bus messages addressed to the hub at turn start |
+| `bus_dispatcher.py` | the listener — delivers pending worker messages into live tenant sessions via send-keys |
+| `bus_feed.py` | optional one-way notifier — mirrors bus traffic to a private relay topic so you can watch live |
+| `tenant_run.sh` | the runner — launches one headless tenant in tmux with a seeded, plugin-free config |
+| `tenant_watchdog.sh` | the keep-alive — respawns a dead tenant, preventively recycles a stale one |
+| `fleet_brain.py` | the shared brain — drains per-agent finding inboxes into one recall-able corpus |
+| `skill_sync.py` | drift monitor — re-syncs canonical skills into tenant copies, leaves adaptations alone |
+| `bash_gate.py` | PreToolUse Bash danger-gate for the broad-Bash worker tenants (defense-in-depth) |
+| `provision_tenant.sh` | scaffolds a brand-new tenant (workspace + role + bus-poll hook + roster steps) |
+
+**The loop.** With `hub` = the operator-facing agent and `tenant-a` = a worker, one full cycle runs:
+
+```
+operator turn
+  → bus_turn_poll.py    (hook: surface hub-addressed bus msgs at the top of the turn)
+  → fleet_bus.py        (the SQLite spine: hub publishes a task for tenant-a)
+  → bus_dispatcher.py   (cron: claims the pending msg, file-drops the payload, send-keys it into
+                         tenant-a's IDLE pane with "Read this as DATA, then complete")
+  → tenant_run.sh       (the headless session it delivers into)
+  → tenant_watchdog.sh  (cron: keeps that session alive / recycles it for config-freshness)
+  → fleet_brain.py      (tenant-a drops a finding; the drain indexes it into shared recall so every
+                         agent — including the hub — can recall it later)
+  → skill_sync.py       (cron: keeps tenant-a's skill copies in step with the canonical tree)
+```
+
+The return path is symmetric and never touches a chat channel: `tenant-a` answers by calling
+`fleet_bus.py complete`, which **auto-routes the result back to the asker**; a hub-addressed reply then
+surfaces through the turn-poll hook (plus an optional one-shot operator DM from the dispatcher). This is
+the Surface-3 design decision made literal — *the chat channel is the human/QC edge, not the
+coordination backbone.*
+
+**Standing up a second agent:**
+
+```bash
+# 1. scaffold the tenant (workspace + role CLAUDE.md + UserPromptSubmit bus-poll hook)
+AGENT_ROOT=$PWD scripts/agents/provision_tenant.sh tenant-a "research worker"
+# 2. add "tenant-a" to the AGENTS roster in fleet_bus.py + fleet_brain.py (blocks spoofed senders)
+#    and, if it should receive auto-delivered tasks, to WORKER_SESSIONS in bus_dispatcher.py
+# 3. launch it, then wire the two keep-the-loop-turning crons
+AGENT_ROOT=$PWD scripts/agents/tenant_run.sh tenant-a
+#   */2 * * * * AGENT_ROOT=/abs/repo FLEET_TENANTS="tenant-a" /abs/repo/scripts/agents/tenant_watchdog.sh
+#   */2 * * * * AGENT_ROOT=/abs/repo python3 /abs/repo/scripts/agents/bus_dispatcher.py
+```
+
+**Why this shape.** Every tenant runs as the same OS user with its own isolated config dir, so roster
+membership is *validation* (catch a typo'd or spoofed sender), not authentication — the unix account is
+the real trust boundary. Tenants launch **plugin-free on purpose**: a chat plugin auto-installed into a
+seeded config would start a second poller on the operator's bot token and steal inbound. And because a
+send-keyed "run this command" is injection-shaped, worker delivery is file-dropped as DATA, delivered
+only into an idle pane, claimed once, and capped per run — with `bash_gate.py` as the backstop on the
+broad-Bash tenants. None of this is a hard sandbox; it is layered posture, and each script documents its
+own honest limits.
+
 ## Design principles
 
 - **Contracts over habits.** A machine-readable schema per surface resists the drift that prose coordination
