@@ -1,0 +1,63 @@
+{
+  "_schema": {
+    "version": 1,
+    "purpose": "Persistent stand-down registry: tools/packages/repos/actions the operator has explicitly said NOT to install/run/integrate. Machine-checkable before any install, MCP add, or settings edit via a check_standdown script. A persistent registry beats a message-level reminder because it survives across sessions and processes.",
+    "entry_shape": {
+      "id": "stable slug, e.g. 'example-suspicious-repo'",
+      "kind": "package | repo | command | mcp | url | pattern",
+      "target": "what to match against (package name, repo URL, or a command/regex when kind=pattern)",
+      "decided_at": "ISO date",
+      "decided_by": "operator | agent | auto-audit",
+      "reason": "1-3 sentences. WHY this stand-down exists.",
+      "severity": "block | warn",
+      "expires_at": "ISO date, or null for permanent",
+      "re_audit_triggers": ["conditions that should re-open evaluation, or 'never'"],
+      "source_decision": "path to a memory/Decisions.md entry or audit memo (optional)"
+    },
+    "lookup_rules": [
+      "Exact/substring match on target preferred. Regex matching only when kind=pattern.",
+      "If severity=block: refuse to proceed, surface the reason to the operator.",
+      "If severity=warn: proceed only with explicit operator re-confirmation citing the reason.",
+      "If expires_at is in the past: treat as expired and re-evaluate (do NOT auto-allow). Surface as expired-needs-review.",
+      "Any short-name-installable tool needs TWO entries: a descriptive one AND a kind=pattern bare-name guard, because a repo-URL target does not match a bare-name install."
+    ]
+  },
+  "entries": [
+    {
+      "id": "example-suspicious-repo",
+      "kind": "repo",
+      "target": "example-org/example-suspicious-repo",
+      "decided_at": "2026-01-15",
+      "decided_by": "operator",
+      "reason": "Fabricated example entry. Anonymous maintainer + inorganic star pattern flagged during audit. Do not re-audit.",
+      "severity": "block",
+      "expires_at": null,
+      "re_audit_triggers": ["never"],
+      "source_decision": "memory/Decisions.md 2026-01-15 example-repo rejected"
+    },
+    {
+      "id": "curl-pipe-bash-guard",
+      "kind": "pattern",
+      "target": "curl.*\\|\\s*(ba)?sh",
+      "decided_at": "2026-01-15",
+      "decided_by": "operator",
+      "reason": "Never pipe a downloaded script straight into a shell. Read it first. This is a standing pattern-block, not a one-off.",
+      "severity": "block",
+      "expires_at": null,
+      "re_audit_triggers": ["never"],
+      "source_decision": "CLAUDE.md Security-First rule"
+    },
+    {
+      "id": "repo-younger-than-7-days-guard",
+      "kind": "pattern",
+      "target": "repo-age:<7d",
+      "decided_at": "2026-01-15",
+      "decided_by": "operator",
+      "reason": "Never install/run any repo less than 7 days old. New repos have not been community-vetted. The check script resolves repo age and matches this sentinel.",
+      "severity": "block",
+      "expires_at": null,
+      "re_audit_triggers": ["never"],
+      "source_decision": "CLAUDE.md Security-First rule"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "_schema": "active-goals-v2",
+  "_description": "Tier-1 active-goal registry. Surfaced in MEMORY.md and any wake-up briefing. Drift-audited on a schedule. See skills/goal.md for the CRUD flow. v2 adds milestones[] and requirements[] per goal so a goal carries its own decomposition and blockers.",
+  "_caps": {
+    "max_active": 10,
+    "review_after_default_days": 30,
+    "drift_threshold_days": 14,
+    "archive_after_terminal_days": 30,
+    "milestone_stale_days": 14,
+    "requirement_block_stale_days": 7
+  },
+  "_goal_entry_shape": {
+    "id": "g-YYYY-MM-DD-NNN",
+    "title": "string",
+    "why": "string",
+    "success_criteria": ["string"],
+    "created": "ISO8601",
+    "due": "YYYY-MM-DD or null",
+    "review_after": "YYYY-MM-DD",
+    "status": "active | paused | done | abandoned",
+    "sessions_touched": 0,
+    "last_advanced": "ISO8601 or null",
+    "tags": ["string"],
+    "notes": [{"ts": "ISO8601", "note": "string"}],
+    "milestones": [
+      {
+        "id": "m-N",
+        "title": "string",
+        "due": "YYYY-MM-DD or null",
+        "status": "open | in_progress | done | skipped",
+        "completed_at": "ISO8601 or null",
+        "depends_on": ["m-X"],
+        "notes": []
+      }
+    ],
+    "requirements": [
+      {
+        "id": "r-N",
+        "type": "skill | infra | content | user-action | external | budget | other",
+        "description": "string",
+        "status": "open | done | blocked",
+        "blocker": "string or null",
+        "owner": "agent | operator | external",
+        "blocked_at": "ISO8601 or null",
+        "notes": []
+      }
+    ]
+  },
+  "_updated": "2026-01-15T00:00:00+00:00",
+  "goals": []
+}

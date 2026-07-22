@@ -1,0 +1,22 @@
+# Utopia OS ships ZERO real content. This ignore is belt-and-suspenders; the
+# repo is BUILT clean, not filtered. Never commit anything matching:
+.env
+*.env
+*.bak
+*.bak-*
+*credentials*
+*secret*
+*token*
+*.key
+*.pem
+__pycache__/
+*.pyc
+.DS_Store
+# runtime/content dirs that must never exist here
+outputs/
+logs/
+private/
+refs/
+memory/state/*.sqlite
+.utopia-build/
+.data/

@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "created": "2026-01-15",
+  "note": "Token-budget ceilings for interactive and scheduled agent runs. Read by a pre-execution gate wrapper for scheduled tasks. Interactive sessions have NO pre-exec gate (the operator is the gate); ceilings there are soft-awareness thresholds recorded to a ledger only. A scheduled run aborts if its projected token cost exceeds the ceiling, or if the day's run count is already at the limit.",
+  "interactive": {
+    "daily_tokens_ceiling": null,
+    "per_turn_tokens_ceiling": null,
+    "comment": "Unlimited by design. The operator is the gate. The ledger records for awareness, not enforcement."
+  },
+  "scheduled": {
+    "default": {
+      "per_run_tokens_ceiling": 50000,
+      "daily_runs_ceiling": 20,
+      "comment": "Fallback for any scheduled task not explicitly listed below."
+    },
+    "consolidation-nightly": {
+      "per_run_tokens_ceiling": 100000,
+      "daily_runs_ceiling": 1,
+      "comment": "The nightly memory-consolidation ('dreaming') job. Higher ceiling, runs once."
+    },
+    "system-audit-nightly": {
+      "per_run_tokens_ceiling": 80000,
+      "daily_runs_ceiling": 1
+    },
+    "content-job": {
+      "per_run_tokens_ceiling": 200000,
+      "daily_runs_ceiling": 3
+    },
+    "harvester-job": {
+      "per_run_tokens_ceiling": 30000,
+      "daily_runs_ceiling": 6
+    },
+    "briefing-job": {
+      "per_run_tokens_ceiling": 40000,
+      "daily_runs_ceiling": 2
+    }
+  }
+}

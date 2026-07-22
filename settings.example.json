@@ -1,0 +1,115 @@
+{
+  "_README": [
+    "EXAMPLE runtime config for a coding-agent CLI (e.g. .claude/settings.json). This is a SKELETON:",
+    "copy it to your runtime's settings path, replace every ${WORKSPACE} with your absolute repo root,",
+    "and point each hook command at the real gate script. JSON has no comments, so guidance lives here.",
+    "The hooks below wire the security gates described in CLAUDE.md and docs/security-gates.md:",
+    "  SessionStart     -> load the session-bootstrap parachute + run idempotent boot tasks",
+    "  UserPromptSubmit -> reset the auto-compound counter on each new operator message",
+    "  PreToolUse       -> stand-down registry check before installs / MCP adds / settings edits",
+    "  PreToolUse       -> lint skill files for injection patterns before they are trusted",
+    "  PostToolUse      -> verify-after-write on file edits (re-read the written value)",
+    "  Stop             -> reply-guard / save-nudge at end of turn",
+    "Replace the matcher tool names with your runtime's actual tool identifiers.",
+    "permissions.deny encodes the BLOCKED class: secrets are never readable, outbound-send is never run,",
+    "and curl-pipe-bash is refused. Tighten allow[] to the tools you actually want auto-approved."
+  ],
+  "permissions": {
+    "allow": [
+      "Read",
+      "Grep",
+      "Glob",
+      "WebSearch",
+      "WebFetch",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(ls:*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./**/.env)",
+      "Read(./**/.ssh/**)",
+      "Read(./**/*wallet*)",
+      "Read(./**/*credentials*)",
+      "Read(./**/*secret*)",
+      "Bash(curl:* | sh)",
+      "Bash(curl:* | bash)",
+      "Bash(wget:* | sh)",
+      "Bash(sendmail:*)"
+    ]
+  },
+  "enabledPlugins": [],
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${WORKSPACE}/scripts/memory/session_bootstrap.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${WORKSPACE}/scripts/security/auto_compound_counter.py --reset",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${WORKSPACE}/scripts/security/check_standdown.py --from-hook",
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${WORKSPACE}/scripts/security/skill_linter.py --from-hook",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${WORKSPACE}/scripts/memory/verify_after_write.py --from-hook",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${WORKSPACE}/scripts/security/reply_guard.sh",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}

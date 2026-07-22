@@ -1,0 +1,25 @@
+{
+  "_schema": {
+    "version": 1,
+    "purpose": "Allowlist of git hooks you deployed intentionally. A repo-hook auditor reads this to suppress self-detection on hooks you authored. A (path, sha256) match = skip silently. A path match with a DIFFERENT hash = elevated severity, because a known hook was tampered with.",
+    "entry_shape": {
+      "path": "absolute filesystem path to the hook",
+      "sha256": "hex digest of the file contents at time of allowlisting",
+      "reason": "1-2 sentences. why this hook exists, what it does",
+      "decided_at": "ISO date",
+      "decided_by": "operator | agent | auto",
+      "related_decision": "path to a memory/Decisions.md or memory/Infra/ entry (optional)"
+    },
+    "audit_behavior": [
+      "Path in allowlist AND sha256 matches: skip, log info-level 'allowlisted hook present'.",
+      "Path in allowlist BUT sha256 differs: flag ELEVATED 'allowlisted hook tampered', investigate.",
+      "Path NOT in allowlist: flag NORMAL severity (a hook you did not record)."
+    ],
+    "lifecycle": [
+      "Deploying a new legitimate hook: compute sha256, append an entry here, then ship the hook.",
+      "Intentionally updating an allowlisted hook: re-compute sha256 and update the entry, or the audit flags drift on the next run.",
+      "Removing a hook: remove its allowlist entry to keep the registry tidy."
+    ]
+  },
+  "entries": []
+}
