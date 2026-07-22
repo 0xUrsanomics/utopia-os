@@ -49,6 +49,8 @@ When operating in Mode 2 (explicit text review):
 2. Count violations per rule (#1-25).
 3. Score severity per violation: 🔴 critical / 🟡 medium / 🟢 minor.
 4. Output annotated diff: original passage + suggested rewrite + rule cited.
+5. **Detect-mode stance (never claim authorship):** you are NOT an AI detector. detectors guess; named patterns are EVIDENCE the reader can verify. never assert "this was written by AI" or hand back a probability. hand back the specific named patterns + line refs and let them judge. (lifted from no-ai-slop, Peter Yang, MIT)
+6. **Minimum-effective edit:** amount of cutting is proportional to the actual slop. leave strong human sentences alone. a rough draft with a real voice should still sound like the same person afterward, don't scrub a live voice into generic polish. (lifted from no-ai-slop)
 
 ## Two Modes
 
@@ -182,6 +184,8 @@ Never end with a paragraph that restates what was already said.
 
 **Kill patterns:** "In conclusion...", "Overall...", "In summary...", "By [doing X], we can [vague outcome]"
 
+**Also the fake-profound kicker:** the final "deep" mic-drop line reaching for aphorism ("and that's the real question, isn't it", "the future is already here, just unevenly distributed"). DELETE it, don't rewrite it into a better metaphor or preserve its rhythm. End on the clearest concrete sentence already in the draft. (lifted from no-ai-slop, Peter Yang, MIT)
+
 ### 13. No Corporate Therapist Voice
 Never write like a motivational HR memo.
 
@@ -302,6 +306,9 @@ Everything closes; no reason to read on, reply, or quote. **Fix:** leave a gap t
 
 ### 40. Low Temporal / Structural Complexity (long-form)
 Strictly linear, no time-shifts / callbacks / non-obvious ordering. Human long-form varies structure. **Fix:** vary it where it serves.
+
+### 41. No Synonym Cycling (elegant variation)
+Rotating terms for the same referent purely for "variety" when the plain word is right: "the agent reviews the draft… the assistant then scores it… the tool finally suggests edits." Naming one thing three ways to dodge repetition is a classic AI tell (elegant variation). **Fix:** if the clear word is correct, repeat it. Vary the word only when it carries a genuinely different sense, never just for rhythm. (lifted from no-ai-slop, Peter Yang, MIT)
 
 Provenance: the StoryScope take (arXiv 2604.03136), lifted into the content-authoring phases.
 

@@ -22,6 +22,7 @@ it will be fixed.
 - **Andrej Karpathy** — the agent-loop and "LLM council" patterns behind the autoresearch skills.
 - **Alireza Rezvani** — the AI-SEO, marketing-psychology, and content-humanizer skills.
 - **[VectifyAI/OpenKB](https://github.com/VectifyAI)** — AGENTS.md structure and path-guard patterns.
+- **[petergyang/no-ai-slop](https://github.com/petergyang/no-ai-slop)** (MIT, Peter Yang) — the synonym-cycling / elegant-variation rule, the fake-profound-kicker "delete, don't rewrite" rule, and the detect-mode + minimum-effective-edit stances in the `anti-ai-slop` skill.
 
 ## Knowledge packs
 - **[tw93/Waza](https://github.com/tw93/Waza)** (MIT) — the `waza-skills/` pack.
