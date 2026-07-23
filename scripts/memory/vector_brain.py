@@ -739,11 +739,11 @@ def expand_nucleus_window(results: list[dict], window_size: int) -> list[dict]:
 
 
 def load_embedding_model():
-    """Load sentence-transformers model. Uses CUDA if available, falls back to CPU."""
+    """Load sentence-transformers model. Uses CUDA, then Apple Metal (MPS), else CPU."""
     from sentence_transformers import SentenceTransformer
     try:
         import torch
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+        device = "cuda" if torch.cuda.is_available() else ("mps" if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else "cpu")
     except Exception:
         device = "cpu"
     print(f"Loading embedding model: {EMBEDDING_MODEL} on {device}...")
@@ -874,7 +874,7 @@ def load_hf_model():
         return _hf_tokenizer_cache, _hf_model_cache
     from transformers import AutoModel, AutoTokenizer
     import torch
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = "cuda" if torch.cuda.is_available() else ("mps" if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else "cpu")
     print(f"Loading HF model for late chunking: {EMBEDDING_MODEL} on {device}...")
     tok = AutoTokenizer.from_pretrained(EMBEDDING_MODEL)
     mdl = AutoModel.from_pretrained(EMBEDDING_MODEL).to(device)
@@ -1520,7 +1520,7 @@ def load_reranker():
     try:
         from sentence_transformers import CrossEncoder
         import torch
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+        device = "cuda" if torch.cuda.is_available() else ("mps" if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else "cpu")
         print(f"Loading reranker: {RERANKER_MODEL} on {device}...")
         _rerank_model_cache = CrossEncoder(RERANKER_MODEL, device=device, max_length=512)
         print("Reranker loaded.")
