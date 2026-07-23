@@ -1,0 +1,14 @@
+{
+  "_doc": "Egress-proxy injection rules. Each ruled host is MITM-terminated (leaf cert signed by the local CA the caller trusts); the real secret is pulled from your broker and injected on the wire, so the calling tool only ever holds a placeholder. Non-ruled hosts blind-tunnel untouched. Copy to egress_rules.json. inject_location = header|query|path.",
+  "api.example-header.com": {
+    "inject_location": "header", "name": "X-Api-Key",
+    "placeholder": "PLACEHOLDER::EXAMPLE_KEY",
+    "broker_key": "EXAMPLE_KEY", "broker_agent": "my-tool",
+    "header_allowlist": ["X-Api-Key", "User-Agent", "Accept"]
+  },
+  "api.example-query.com": {
+    "inject_location": "query", "name": "api_key",
+    "placeholder": "PLACEHOLDER::EXAMPLE_KEY",
+    "broker_key": "EXAMPLE_KEY", "broker_agent": "my-tool"
+  }
+}

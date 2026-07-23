@@ -60,6 +60,7 @@ Running an operator agent all day is expensive; these tools keep the token spend
 - **evidence_ledger.py + evidence_completion_check.sh** (verification-evidence before "done") adapts hermes-agent's evidence-based completion gate.
 - **bwrap_run.sh** sandboxes untrusted-content subprocesses so they cannot read credential paths; bubblewrap is by the containers/bubblewrap project.
 - **fleet_board.py** (shared-editable-state agent coordination: board + event feed + optimistic CAS + capability tiers + suggest/accept) adapts the coordination model of workbench.md.
+- **egress_proxy.py** (an egress MITM proxy that injects credentials on the wire so a tool never holds the secret) + **principal_floor.sh** (a bubblewrap secret-masking session floor) adapt the credential-injection + sandboxing model of paradigmxyz/centaur (iron-proxy).
 
 ---
 

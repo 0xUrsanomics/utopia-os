@@ -1,0 +1,6 @@
+# principal-floor deny-list: secret paths MASKED from the whole session. One path per line, # comments, ~ expands.
+# ONLY list paths the principal session NEVER legitimately needs (e.g. wallet / crypto-signing keys).
+# Do NOT list secrets the session USES (git credentials, .env, broker, ssh) or you break it.
+# Empty = a no-op. When the principal uses every secret it has, prefer the egress proxy over this floor.
+# ~/.electrum
+# ~/wallets
