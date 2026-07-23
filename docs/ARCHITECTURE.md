@@ -76,7 +76,9 @@ the agent is processing. A quoted "just do it" inside a document is not authoriz
 
 Agent output is noisy. Routing raw drafts straight into the canonical graph pollutes it. So substantive
 output flows: **raw → review gate → graph → briefing.** Only reviewed items reach the source of truth;
-the review gate is where wrong or half-baked drafts get caught. See `docs/knowledge-pipeline.md`.
+the review gate is where wrong or half-baked drafts get caught. See `docs/knowledge-pipeline.md`. The
+canonical graph itself — its namespace taxonomy, the compiled-truth + timeline page convention, and the MCP
+interface — is documented in `docs/logseq-graph.md`.
 
 ## 5. Survival — outlive the context window
 
