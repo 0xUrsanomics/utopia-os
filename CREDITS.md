@@ -54,6 +54,11 @@ Running an operator agent all day is expensive; these tools keep the token spend
 - **[LanceDB](https://github.com/lancedb/lancedb)** — the local vector store for archival memory.
 - **[BAAI/bge-m3](https://huggingface.co/BAAI/bge-m3)** — the multilingual embedding model.
 
+## Adapter-era security lifts (2026-07)
+- **confirm_gate.py** (per-request approval IDs + hash-bound approvals) adapts patterns from OpenClaw and OpenAI Codex CLI.
+- **fleet-root-policy.json + fleet_policy_check.py** (admin-immutable fleet floor) adapts the Codex `requirements.toml` managed-config layer.
+- **evidence_ledger.py + evidence_completion_check.sh** (verification-evidence before "done") adapts hermes-agent's evidence-based completion gate.
+
 ---
 
 Where an upstream project ships a LICENSE, that license is preserved in the relevant subdirectory
