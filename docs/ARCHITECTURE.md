@@ -107,6 +107,16 @@ read-only localhost cockpit renders the whole state (blocked-on-you, tasks, budg
 changes) as a panel grid. Each panel is one fail-isolated collector; adding a monitor is one function +
 one registry row. See `docs/cockpit.md`.
 
+## 8. Integrations — the MCP layer, an airlock for secrets
+
+The agent has no native ability to send a message, write to the graph, post, or fire a job between
+sessions. Those capabilities come from MCP servers running in a local daemon beside the agent. The design
+rule is a boundary: the daemon holds every credential (bot tokens, OAuth, API keys) and exposes only typed
+tools, so the reasoning loop acts on the world without ever seeing a secret. Credentials are held in an
+encrypted, per-agent-scoped, audited broker outside the repo, and write-capable tools sit behind the
+`CONFIRM` gate. The server code is credential-bearing and account-specific, so it is not shipped; the
+interface is. See `docs/mcp-layer.md`.
+
 ## Design principles
 
 - **Compounding over stateless.** Every session should leave the next one smarter.
