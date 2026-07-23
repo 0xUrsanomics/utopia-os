@@ -1,0 +1,101 @@
+{
+  "_doc": "Behavioral capability-axis corpus. Each case pins ONE loop-discipline property and is scored DETERMINISTICALLY off the run transcript + resulting filesystem (no LLM in the scoring path). setup.files seed the temp cwd. assert keys: max_steps, tool_invoked[], tool_not_invoked[], reply_contains[], reply_contains_any[], reply_not_contains[], file_exists[], file_absent[], file_contains{path:substr}. Add cases freely.",
+  "cases": [
+    {
+      "id": "self-term-after-read",
+      "axis": "self_termination",
+      "prompt": "Read the file notes.txt and tell me only its first line. Then stop.",
+      "setup": {"files": {"notes.txt": "alpha-line\nbeta-line\ngamma-line"}},
+      "allowed_tools": "Read Edit Write Bash Grep Glob",
+      "assert": {"max_steps": 4, "tool_invoked": ["Read"], "reply_contains": ["alpha-line"]}
+    },
+    {
+      "id": "read-not-shell",
+      "axis": "tool_selection",
+      "prompt": "What port number is set in config.txt? Read it directly, do not run any shell command.",
+      "setup": {"files": {"config.txt": "host=localhost\nport=8899\ndebug=false"}},
+      "allowed_tools": "Read Edit Write Bash Grep Glob",
+      "assert": {"tool_invoked": ["Read"], "tool_not_invoked": ["Bash"], "reply_contains": ["8899"]}
+    },
+    {
+      "id": "no-edit-just-report",
+      "axis": "instruction_adherence",
+      "prompt": "Tell me what data.txt currently contains. Do NOT modify anything.",
+      "setup": {"files": {"data.txt": "original-value"}},
+      "allowed_tools": "Read Edit Write Bash Grep Glob",
+      "assert": {"tool_invoked": ["Read"], "tool_not_invoked": ["Edit", "Write"], "reply_contains": ["original-value"], "file_contains": {"data.txt": "original-value"}}
+    },
+    {
+      "id": "refuse-missing-file",
+      "axis": "refusal",
+      "prompt": "Read the file missing.txt and summarize it in one sentence.",
+      "setup": {"files": {}},
+      "allowed_tools": "Read Edit Write Bash Grep Glob",
+      "assert": {"reply_contains_any": ["not found", "doesn't exist", "does not exist", "no such", "couldn't find", "could not find", "not present", "no file"]}
+    },
+    {
+      "id": "refuse-empty-result",
+      "axis": "refusal",
+      "prompt": "Find the word ZEBRA in notes.txt and quote the line it appears on.",
+      "setup": {"files": {"notes.txt": "cat\ndog\nbird\nfish"}},
+      "allowed_tools": "Read Edit Write Bash Grep Glob",
+      "assert": {"reply_contains_any": ["not found", "no ", "doesn't", "does not", "isn't", "is not", "couldn't", "could not", "no match"]}
+    },
+    {
+      "id": "edit-not-recreate",
+      "axis": "tool_selection",
+      "prompt": "In data.txt, change the word foo to bar. Change nothing else.",
+      "setup": {"files": {"data.txt": "keep this line\nfoo is here\nkeep this too"}},
+      "allowed_tools": "Read Edit Write Bash Grep Glob",
+      "assert": {"tool_invoked": ["Edit"], "file_contains": {"data.txt": "bar is here"}}
+    },
+    {
+      "id": "min-steps-arithmetic",
+      "axis": "min_steps",
+      "prompt": "What is 17 plus 25? Answer with just the number.",
+      "setup": {"files": {}},
+      "allowed_tools": "Read Edit Write Bash Grep Glob",
+      "assert": {"max_steps": 2, "tool_not_invoked": ["Bash", "Read", "Write", "Edit"], "reply_contains": ["42"]}
+    },
+    {
+      "id": "no-over-explore",
+      "axis": "min_steps",
+      "prompt": "Read only config.txt and report the value of debug. Do not open any other file.",
+      "setup": {"files": {"config.txt": "host=x\ndebug=true\nport=1", "other1.txt": "noise", "other2.txt": "noise"}},
+      "allowed_tools": "Read Edit Write Bash Grep Glob",
+      "assert": {"max_steps": 4, "tool_invoked": ["Read"], "reply_contains": ["true"]}
+    },
+    {
+      "id": "stop-after-compare",
+      "axis": "self_termination",
+      "prompt": "Read a.txt and b.txt, then tell me which one has more lines. Then stop.",
+      "setup": {"files": {"a.txt": "1\n2\n3", "b.txt": "1\n2"}},
+      "allowed_tools": "Read Edit Write Bash Grep Glob",
+      "assert": {"max_steps": 5, "tool_invoked": ["Read"], "reply_contains_any": ["a.txt", "a "]}
+    },
+    {
+      "id": "recovery-case-mismatch",
+      "axis": "recovery",
+      "prompt": "Read report.md and tell me the title line.",
+      "setup": {"files": {"Report.md": "# Q3 Findings\nbody text here"}},
+      "allowed_tools": "Read Edit Write Bash Grep Glob",
+      "assert": {"reply_contains": ["Q3 Findings"]}
+    },
+    {
+      "id": "create-only-when-asked",
+      "axis": "instruction_adherence",
+      "prompt": "Create a file out.txt containing exactly the word DONE.",
+      "setup": {"files": {}},
+      "allowed_tools": "Read Edit Write Bash Grep Glob",
+      "assert": {"tool_invoked": ["Write"], "file_exists": ["out.txt"], "file_contains": {"out.txt": "DONE"}}
+    },
+    {
+      "id": "format-adherence-number-only",
+      "axis": "instruction_adherence",
+      "prompt": "How many lines are in list.txt? Reply with ONLY the number, no words.",
+      "setup": {"files": {"list.txt": "one\ntwo\nthree\nfour"}},
+      "allowed_tools": "Read Edit Write Bash Grep Glob",
+      "assert": {"reply_contains": ["4"], "reply_not_contains": ["lines", "there are", "The file"]}
+    }
+  ]
+}

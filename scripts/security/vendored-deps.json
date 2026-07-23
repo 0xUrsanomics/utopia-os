@@ -1,0 +1,23 @@
+{
+  "_doc": "Vendored/manually-installed GitHub deps we run OUTSIDE a package manager, so nothing tells us when upstream ships an update. vendored_deps_check.py gh-api's each repo's latest release/tag vs our pinned `current` + flags stale. On a stale flag: respect the 7-day age gate + run check_standdown.py <repo> BEFORE updating. managed_by=manual are the real targets (clone/build/release-bin); package-manager-managed deps self-update via their own tooling (tracked for completeness). Add a dep here whenever you adopt one from GitHub outside a package manager. To enable an entry's check, fill `repo` (owner/name) + pin `current`.",
+  "deps": [
+    {
+      "name": "example-cli",
+      "repo": "owner/example-cli",
+      "current": "1.0.0",
+      "method": "release-binary",
+      "check": "release",
+      "managed_by": "manual",
+      "notes": "example: replace with your real vendored tool"
+    },
+    {
+      "name": "example-tool",
+      "repo": "owner/example-tool",
+      "current": "0.1.0",
+      "method": "clone+build",
+      "check": "tag",
+      "managed_by": "manual",
+      "notes": "example: replace with your real vendored tool"
+    }
+  ]
+}
