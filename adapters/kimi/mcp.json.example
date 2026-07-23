@@ -1,0 +1,26 @@
+{
+  "_comment": "Utopia OS MCP servers for Kimi Code. Copy to ~/.kimi-code/mcp.json (or .kimi-code/mcp.json in the project; project overrides user). Same mcpServers shape as Claude Code's .mcp.json. Replace /path/to placeholders. Supply credentials via env, never inline a secret here.",
+  "mcpServers": {
+    "memory": {
+      "command": "python3",
+      "args": ["/path/to/utopia-os/scripts/memory/memory_server.py"]
+    },
+    "recall": {
+      "command": "python3",
+      "args": ["/path/to/utopia-os/scripts/memory/vector_brain.py", "--serve"]
+    },
+    "telegram": {
+      "command": "node",
+      "args": ["/path/to/daemon/telegram_mcp/server.js"],
+      "env": { "TELEGRAM_BOT_TOKEN": "" }
+    },
+    "sheets": {
+      "command": "python3",
+      "args": ["/path/to/daemon/sheets_mcp/server.py"],
+      "env": { "GOOGLE_SERVICE_ACCOUNT_JSON": "" }
+    },
+    "daemon_http": {
+      "url": "https://your-daemon.example/mcp"
+    }
+  }
+}

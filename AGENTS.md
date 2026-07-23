@@ -33,6 +33,8 @@ The system splits cleanly into a **portable substrate** that runs on any harness
 4. Reimplement the `settings.example.json` hooks on your harness's event system. Until then the guardrails do not fire automatically, so run the critical ones (stand-down, send guards) by hand.
 
 The adapter model (portable core vs harness shim, the four dimensions, per-harness mapping) is in
-[`docs/adapters.md`](docs/adapters.md). The reference adapter is [`adapters/codex/`](adapters/codex/)
-(OpenAI Codex CLI, the lowest-cost target). More per-harness adapters, including a grok build, are
-tracked as follow-up.
+[`docs/adapters.md`](docs/adapters.md). The low-cost adapters are shipped:
+[`adapters/codex/`](adapters/codex/) (reference), [`adapters/kimi/`](adapters/kimi/), and
+[`adapters/grok/`](adapters/grok/). The medium-tier adapters (Hermes, OpenClaw, opencode, pi) need
+guardrail scripts rewritten as in-process plugins and are tracked as follow-up; Kilo is parked (no
+lifecycle hook layer).

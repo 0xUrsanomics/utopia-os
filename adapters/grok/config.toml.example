@@ -1,0 +1,26 @@
+# Utopia OS MCP servers for grok (xAI grok CLI).
+# Copy into ~/.grok/config.toml (or .grok/config.toml per-project). Same [mcp_servers.*]
+# shape as Codex. Replace /path/to placeholders. Do NOT inline real tokens in the
+# env table; source them from the environment / a secret manager.
+
+[mcp_servers.memory]
+command = "python3"
+args = ["/path/to/utopia-os/scripts/memory/memory_server.py"]
+enabled = true
+
+[mcp_servers.recall]
+command = "python3"
+args = ["/path/to/utopia-os/scripts/memory/vector_brain.py", "--serve"]
+enabled = true
+
+[mcp_servers.telegram]
+command = "node"
+args = ["/path/to/daemon/telegram_mcp/server.js"]
+# token comes from the environment; do not paste it here
+env = { TELEGRAM_BOT_TOKEN = "" }
+startup_timeout_sec = 30
+
+# example remote HTTP server
+# [mcp_servers.daemon_http]
+# url = "https://your-daemon.example/mcp"
+# headers = { "x-mcp-session-id" = "{{session_id}}" }

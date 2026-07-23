@@ -1,0 +1,38 @@
+# Utopia OS guardrail + hygiene hooks for Kimi Code.
+# Merge these [[hooks]] blocks into ~/.kimi-code/config.toml. A faithful port of
+# settings.example.json: same scripts, same events, Kimi's [[hooks]] TOML wrapper.
+# Kimi's [[hooks]] allows ONLY event/matcher/command/timeout — no extra fields.
+# Replace /path/to/utopia-os with your checkout. Confirm the tool-name matchers
+# (Bash / Read|Edit|Write / Write|Edit|MultiEdit) against Kimi's tool names.
+
+[[hooks]]
+event = "SessionStart"
+command = "/path/to/utopia-os/scripts/memory/session_bootstrap.sh"
+timeout = 600
+
+[[hooks]]
+event = "UserPromptSubmit"
+command = "python3 /path/to/utopia-os/scripts/security/auto_compound_counter.py --reset"
+
+[[hooks]]
+event = "UserPromptSubmit"
+command = "python3 /path/to/utopia-os/scripts/agents/bus_turn_poll.py"
+
+[[hooks]]
+event = "PreToolUse"
+matcher = "Bash"
+command = "python3 /path/to/utopia-os/scripts/security/check_standdown.py --from-hook"
+
+[[hooks]]
+event = "PreToolUse"
+matcher = "Read|Edit|Write"
+command = "python3 /path/to/utopia-os/scripts/security/skill_linter.py --from-hook"
+
+[[hooks]]
+event = "PostToolUse"
+matcher = "Write|Edit|MultiEdit"
+command = "python3 /path/to/utopia-os/scripts/memory/verify_after_write.py --from-hook"
+
+[[hooks]]
+event = "Stop"
+command = "/path/to/utopia-os/scripts/security/reply_guard.sh"
