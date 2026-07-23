@@ -132,6 +132,8 @@ def _inject(head, rule):
     real = broker_value(rule["broker_key"], rule["broker_agent"])
     if not real:
         return head, False
+    # value_template lets an auth scheme prefix the secret, e.g. "Bearer {value}".
+    val = rule.get("value_template", "{value}").format(value=real)
     lines = head.split(b"\r\n")
     reqline, hdrs = lines[0], lines[1:]
     loc = rule.get("inject_location", "header")
@@ -143,16 +145,16 @@ def _inject(head, rule):
         out = []
         for line in hdrs:
             if line.lower().startswith((name.lower() + ":").encode()):
-                out.append(f"{name}: {real}".encode()); done = True
+                out.append(f"{name}: {val}".encode()); done = True
             else:
                 out.append(line)
         if not done:                       # header absent -> add it
-            out.append(f"{name}: {real}".encode()); done = True
+            out.append(f"{name}: {val}".encode()); done = True
         hdrs = out
     elif loc in ("query", "path") and ph:
         rl = reqline.decode("latin1")
         if ph in rl:
-            reqline = rl.replace(ph, real).encode("latin1"); done = True
+            reqline = rl.replace(ph, val).encode("latin1"); done = True
 
     allow = rule.get("header_allowlist")
     if allow:
