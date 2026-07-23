@@ -1,0 +1,38 @@
+# Utopia OS
+
+> A Claude-Code-native personal-AI-ops framework, built to be portable to any MCP-capable agent
+> harness. It splits into a portable core (an MCP daemon of tools + memory + recall, Markdown memory,
+> and skills) and a thin per-harness shim (adapters). An agent can point at this repo and self-install it.
+
+If you are an agent asked to set this up, read [SETUP.md](SETUP.md) and follow it. This file is the map.
+
+## Start here
+
+- [SETUP.md](SETUP.md): the LLM-executable auto-setup runbook. Detects the user's harness, reads the matching adapter, and wires the portable core + MCP config + hooks + skills, filling in voice and user model, never inlining a secret.
+- [README.md](README.md): what Utopia OS is, what is in the repo, what is deliberately excluded, and the manual getting-started path.
+
+## Understand the design
+
+- [docs/adapters.md](docs/adapters.md): the adapter model (portable core vs harness shim, the four dimensions every adapter maps, and the per-harness capability matrix).
+- [AGENTS.md](AGENTS.md): the harness-portability guide and the instruction-file entry point for non-Claude-Code harnesses.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): the whole-system architecture.
+
+## Harness adapters
+
+- [adapters/codex/README.md](adapters/codex/README.md): OpenAI Codex CLI (low-tier reference adapter).
+- [adapters/kimi/README.md](adapters/kimi/README.md): Kimi Code, Moonshot AI (low-tier).
+- [adapters/grok/README.md](adapters/grok/README.md): grok, xAI (low-tier).
+- [adapters/hermes/README.md](adapters/hermes/README.md): Hermes Agent (medium-tier, ships a shell-hook bridge + Python plugin scaffold).
+- [adapters/openclaw/README.md](adapters/openclaw/README.md): OpenClaw (medium-tier, TS plugin scaffold).
+- [adapters/opencode/README.md](adapters/opencode/README.md): opencode (medium-tier, TS plugin scaffold).
+- [adapters/pi/README.md](adapters/pi/README.md): pi (medium-tier, TS extension scaffold).
+
+## Optional
+
+- [docs/memory-system.md](docs/memory-system.md): the 3-tier memory + recall.
+- [docs/security-gates.md](docs/security-gates.md): the security gate suite (stand-down, send-guards, sandbox, approval binding, fleet policy).
+- [docs/mcp-layer.md](docs/mcp-layer.md): the MCP / daemon airlock (where credentials live).
+- [docs/knowledge-pipeline.md](docs/knowledge-pipeline.md): the WORK to REVIEW to BRAIN to BRIEF pipeline.
+- [docs/session-management.md](docs/session-management.md): session survival, handoff, and compaction.
+- [docs/cockpit.md](docs/cockpit.md): the zero-dependency read-only dashboard.
+- [CREDITS.md](CREDITS.md): upstream projects and lifted patterns.
