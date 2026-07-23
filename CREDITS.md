@@ -58,6 +58,7 @@ Running an operator agent all day is expensive; these tools keep the token spend
 - **confirm_gate.py** (per-request approval IDs + hash-bound approvals) adapts patterns from OpenClaw and OpenAI Codex CLI.
 - **fleet-root-policy.json + fleet_policy_check.py** (admin-immutable fleet floor) adapts the Codex `requirements.toml` managed-config layer.
 - **evidence_ledger.py + evidence_completion_check.sh** (verification-evidence before "done") adapts hermes-agent's evidence-based completion gate.
+- **bwrap_run.sh** sandboxes untrusted-content subprocesses so they cannot read credential paths; bubblewrap is by the containers/bubblewrap project.
 
 ---
 
