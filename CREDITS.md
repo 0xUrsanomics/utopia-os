@@ -59,6 +59,7 @@ Running an operator agent all day is expensive; these tools keep the token spend
 - **fleet-root-policy.json + fleet_policy_check.py** (admin-immutable fleet floor) adapts the Codex `requirements.toml` managed-config layer.
 - **evidence_ledger.py + evidence_completion_check.sh** (verification-evidence before "done") adapts hermes-agent's evidence-based completion gate.
 - **bwrap_run.sh** sandboxes untrusted-content subprocesses so they cannot read credential paths; bubblewrap is by the containers/bubblewrap project.
+- **fleet_board.py** (shared-editable-state agent coordination: board + event feed + optimistic CAS + capability tiers + suggest/accept) adapts the coordination model of workbench.md.
 
 ---
 
