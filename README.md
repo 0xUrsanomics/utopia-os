@@ -58,6 +58,14 @@ identity. If you're adopting it, you bring your own content.
    format). To use one in Claude Code, copy its folder into your `.claude/skills/`. Shared helper
    scripts live under `scripts/` and are referenced by repo-root-relative path.
 
+## Harness compatibility
+
+Utopia OS is Claude-Code-native, but it splits into two layers. A **portable substrate** (the MCP daemon,
+the Markdown memory, the recall machinery, and all skill and knowledge content) runs on any MCP-capable
+harness. A **Claude Code wiring layer** (`CLAUDE.md`, the `settings.json` hooks, `SKILL.md` routing) needs
+a per-harness adapter. Hermes and OpenClaw port cheapest; opencode and Codex are a medium lift; pi, Kimi
+Code, and Kilo Code vary. See [AGENTS.md](AGENTS.md) for the full portability guide and adoption steps.
+
 ## Acknowledgments
 
 Utopia OS adapts patterns, skills, and reference packs from a lot of open-source work and public
