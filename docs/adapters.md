@@ -72,3 +72,14 @@ Each `adapters/<harness>/` ships:
 
 Build low-tier first: it proves the portable-core boundary holds before spending real engineering on
 the medium tier.
+
+## Hosts (run Utopia OS inside another platform)
+
+Distinct from a harness adapter (which maps the four dimensions to a CLI), a **host** runs a coding-agent
+CLI *inside* it. For a host, Utopia OS runs as the Claude Code harness in the host's sandbox, so the four
+dimensions pass through unchanged and the host adds isolation / egress / coordination around it.
+
+- [`adapters/centaur/`](../adapters/centaur/) — paradigmxyz/centaur: self-hosted, multiplayer, runs the CC
+  CLI in a per-thread Kubernetes sandbox pod with egress-proxy credential injection. The adapter is a deploy
+  guide, not a config translation. Heavy (K8s), team-oriented, pre-1.0 — for a solo/local setup the lighter
+  harness adapters are a better fit.
