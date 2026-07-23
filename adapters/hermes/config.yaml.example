@@ -1,0 +1,110 @@
+# Utopia OS on Hermes Agent — ~/.hermes/config.yaml
+#
+# Hermes keeps everything in ONE per-profile YAML file: MCP servers AND shell hooks
+# live here (unlike Claude Code's split .mcp.json + settings.json). Copy the blocks
+# below into ~/.hermes/config.yaml (or $HERMES_HOME/config.yaml for a named profile),
+# or run `hermes config edit`.
+#
+# Secrets: NEVER inline a token here. Put it in ~/.hermes/.env and reference it with
+# ${VAR} — Hermes substitutes ${VAR} from the environment (which includes .env) at
+# connect time. All /path/to/... values are placeholders — replace with your paths.
+#
+# Verified against Hermes docs (user-guide/features/mcp.md + hooks.md) on 2026-07-23.
+
+# ============================================================================
+# MCP servers — the portable Utopia OS daemon. Ports 1:1 (Hermes is a full MCP
+# client). stdio servers = local subprocess (command/args/env); HTTP servers =
+# remote endpoint (url/headers, or auth: oauth). Tools register as
+# mcp_<server>_<tool>.
+# ============================================================================
+mcp_servers:
+
+  # --- local-only servers (no external secret) ---
+  memory:
+    command: "python3"
+    args: ["/path/to/utopia-os/scripts/memory/memory_server.py"]
+
+  recall:
+    command: "python3"
+    args: ["/path/to/utopia-os/scripts/memory/vector_brain.py", "--serve"]
+
+  # --- credentialed outbound servers (token via ${VAR} from ~/.hermes/.env) ---
+  telegram:
+    command: "node"
+    args: ["/path/to/daemon/telegram_mcp/server.js"]
+    env:
+      TELEGRAM_BOT_TOKEN: "${TELEGRAM_BOT_TOKEN}"
+
+  sheets:
+    command: "python3"
+    args: ["/path/to/daemon/sheets_mcp/server.py"]
+    env:
+      GOOGLE_SERVICE_ACCOUNT_JSON: "${GOOGLE_SERVICE_ACCOUNT_JSON}"
+
+  # --- example remote HTTP server (uncomment + adapt if the daemon is served over HTTP) ---
+  # daemon_http:
+  #   url: "https://your-daemon.example/mcp"
+  #   headers:
+  #     Authorization: "Bearer ${DAEMON_BEARER_TOKEN}"
+  #   # For OAuth 2.1 servers instead of a static bearer, drop `headers` and use:
+  #   # auth: oauth
+
+# ============================================================================
+# Shell hooks — the STATELESS Utopia OS guards. These run the SAME portable-core
+# scripts settings.example.json runs, but Hermes differs from Claude Code in three
+# load-bearing ways, so they go through the hermes_shell_hook.sh bridge:
+#
+#   1. EVENT NAMES. Hermes has no SessionStart/UserPromptSubmit/PreToolUse/
+#      PostToolUse/Stop. Shell-hook events must be plugin-hook events. The remap:
+#        SessionStart      -> on_session_start   (side effects only; output ignored)
+#        UserPromptSubmit  -> pre_llm_call       (docs: "fires at the same place")
+#        PreToolUse        -> pre_tool_call       (matcher supported; can block)
+#        PostToolUse       -> post_tool_call      (matcher supported)
+#        Stop              -> (no clean analogue — see README, handled in the plugin)
+#   2. BLOCK CONTRACT. A non-zero exit only logs a warning on Hermes. To BLOCK a
+#      tool the hook must print {"decision":"block","reason":"..."} to STDOUT. The
+#      bridge translates our exit-2 guards into that shape.
+#   3. TOOL NAMES. matcher regexes are Hermes tool names: terminal / read_file /
+#      write_file / patch  (NOT Bash / Read / Edit / Write).
+#
+# The STATEFUL / BLOCKING gates (autonomy-mode veto, CONFIRM-gate binding, the
+# compound-counter threshold-block) are NOT here — they need shared in-process
+# state and a clean veto, so they live in the Python plugin (see plugin.example/).
+#
+# Consent: each (event, command) prompts once, then persists to
+# ~/.hermes/shell-hooks-allowlist.json. Non-TTY runs (gateway/cron) need one of:
+# `hooks_auto_accept: true` below, HERMES_ACCEPT_HOOKS=1, or `--accept-hooks`.
+# ============================================================================
+hooks:
+
+  on_session_start:
+    # SessionStart -> load the bootstrap parachute + idempotent boot tasks.
+    # NOTE: on_session_start output is ignored, so this runs side effects only.
+    # To INJECT the parachute TEXT into the first turn, use the plugin's
+    # pre_llm_call gated on is_first_turn (see README).
+    - command: "/path/to/utopia-os/adapters/hermes/hermes_shell_hook.sh /path/to/utopia-os/scripts/memory/session_bootstrap.sh"
+      timeout: 120
+
+  pre_llm_call:
+    # UserPromptSubmit #1 -> reset the auto-compound counter on each new turn.
+    - command: "/path/to/utopia-os/adapters/hermes/hermes_shell_hook.sh python3 /path/to/utopia-os/scripts/security/auto_compound_counter.py --reset"
+    # UserPromptSubmit #2 -> surface new fleet-bus messages (injects via {"context":...}).
+    - command: "/path/to/utopia-os/adapters/hermes/hermes_shell_hook.sh python3 /path/to/utopia-os/scripts/agents/bus_turn_poll.py"
+
+  pre_tool_call:
+    # PreToolUse[Bash] -> stand-down registry check before installs / MCP adds / edits.
+    - matcher: "terminal"
+      command: "/path/to/utopia-os/adapters/hermes/hermes_shell_hook.sh python3 /path/to/utopia-os/scripts/security/check_standdown.py --from-hook"
+      timeout: 15
+    # PreToolUse[Read|Edit|Write] -> lint skill files for injection patterns before trust.
+    - matcher: "read_file|write_file|patch"
+      command: "/path/to/utopia-os/adapters/hermes/hermes_shell_hook.sh python3 /path/to/utopia-os/scripts/security/skill_linter.py --from-hook"
+
+  post_tool_call:
+    # PostToolUse[Write|Edit|MultiEdit] -> verify-after-write (re-read the written value).
+    - matcher: "write_file|patch"
+      command: "/path/to/utopia-os/adapters/hermes/hermes_shell_hook.sh python3 /path/to/utopia-os/scripts/memory/verify_after_write.py --from-hook"
+
+# Uncomment for headless (gateway / cron) deployments where no operator can answer
+# the first-use consent prompt. Treat the whole `hooks:` block as privileged config.
+# hooks_auto_accept: true

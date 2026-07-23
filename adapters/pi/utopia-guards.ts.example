@@ -1,0 +1,125 @@
+// utopia-guards.ts — Utopia OS guardrail hooks re-expressed as ONE pi extension.
+//
+// pi has no settings.json "hooks" block (that is what makes Codex/Kimi/grok low-tier).
+// Its hook layer is code: TypeScript extensions that subscribe to lifecycle events. So the
+// six hooks in ../../settings.example.json collapse into this single extension file.
+//
+// STRATEGY: shell-out shim. The audited portable-core gate scripts (check_standdown.py,
+// skill_linter.py, auto_compound_counter.py, verify_after_write.py, session_bootstrap.sh,
+// reply_guard.sh) are NOT rewritten — their logic stays in one place, shared with the Claude
+// Code deployment. This extension only (a) subscribes to pi's events, (b) builds the CC-shaped
+// stdin JSON the scripts expect, (c) maps the script's exit code back to pi's control shape.
+// For the hot path (tool_call fires on every bash/read/edit/write) you may instead port the
+// stand-down match + lint scan into TS to avoid a subprocess per call — see README.
+//
+// INSTALL: drop this file at ~/.pi/agent/extensions/utopia-guards.ts (global) or
+// .pi/extensions/utopia-guards.ts (project; loads only after project-trust approval).
+// Runs with pi's full permissions (pi has no sandbox) — same trust surface as the gates.
+// jiti loads it directly, no build step. Erasable-TS syntax only (no enums / param-properties),
+// per pi's own AGENTS.md contract.
+//
+// VERIFY before relying: field names on each tool's `input` (e.g. write/edit `path`) against
+// packages/coding-agent/src/core/extensions/types.ts for YOUR pi version. Confirmed here:
+// tool_call is the only blockable event; its handler returns { block?: boolean; reason?: string };
+// to modify args you mutate event.input in place.
+
+import { spawnSync } from "node:child_process";
+
+// Point at your Utopia OS checkout. Prefer an env var over hardcoding.
+const ROOT = process.env.UTOPIA_ROOT ?? "/path/to/utopia-os";
+
+type GateResult = { code: number; stdout: string; stderr: string };
+
+// Run a gate script, feeding pi's event as the stdin JSON the scripts read. Fail-open on a
+// spawn error EXCEPT where the caller decides otherwise (the block gates below fail-closed).
+function runGate(cmd: string, args: string[], stdin: unknown): GateResult {
+  try {
+    const r = spawnSync(cmd, args, {
+      input: JSON.stringify(stdin ?? {}),
+      cwd: ROOT,
+      encoding: "utf8",
+      timeout: 15000,
+    });
+    return { code: r.status ?? 0, stdout: r.stdout ?? "", stderr: r.stderr ?? "" };
+  } catch (e) {
+    return { code: -1, stdout: "", stderr: String(e) };
+  }
+}
+
+export default function (pi: any) {
+  // ---- SessionStart -> session_start (observe-only) ------------------------------------
+  // Surface the bootstrap parachute. Cannot block; injects context, which is its only job.
+  pi.on("session_start", (_event: any, ctx: any) => {
+    const g = runGate(`${ROOT}/scripts/memory/session_bootstrap.sh`, [], {});
+    if (g.stdout.trim()) pi.sendMessage?.(g.stdout.trim());
+  });
+
+  // ---- UserPromptSubmit -> turn_start (observe-only) -----------------------------------
+  // Reset the auto-compound counter each user turn, then surface new fleet-bus messages.
+  // NOTE: confirm whether turn_start fires once per USER message on your version; the `input`
+  // event is the finer-grained user-keystroke analog if turn_start also fires on continuations.
+  pi.on("turn_start", (_event: any, _ctx: any) => {
+    runGate("python3", [`${ROOT}/scripts/security/auto_compound_counter.py`, "--reset"], {});
+    const bus = runGate("python3", [`${ROOT}/scripts/agents/bus_turn_poll.py`], {});
+    if (bus.stdout.trim()) pi.sendMessage?.(bus.stdout.trim());
+  });
+
+  // ---- PreToolUse -> tool_call (BLOCKABLE) ---------------------------------------------
+  // The only gates that must veto. pi's block contract ({ block, reason } + mutate input in
+  // place) is strictly richer than CC's exit-2, so the security guarantee survives the port.
+  pi.on("tool_call", (event: any, _ctx: any) => {
+    const tool = event?.toolName;
+
+    // PreToolUse[Bash] -> stand-down registry (installs / mcp-add / settings edits).
+    if (tool === "bash") {
+      const command = event?.input?.command ?? "";
+      // exact-target + pattern check; scripts read argv, we also pass stdin for parity.
+      const g = runGate(
+        "python3",
+        [`${ROOT}/scripts/security/check_standdown.py`, "--pattern", command],
+        { tool_name: tool, tool_input: event?.input },
+      );
+      // exit 2 = block, 1 = warn (needs re-confirm), 3 = expired (needs review), 0 = clear.
+      if (g.code === 2) return { block: true, reason: `stand-down: ${g.stdout.trim() || "blocked"}` };
+      if (g.code === 1 || g.code === 3) {
+        // surface, do not hard-block: warn/expired want explicit human re-confirmation.
+        pi.sendMessage?.(`stand-down ${g.code === 3 ? "expired" : "warn"}: ${g.stdout.trim()}`);
+      }
+    }
+
+    // PreToolUse[Read|Edit|Write] -> skill linter (injection scan of skill markdown).
+    if (tool === "read" || tool === "edit" || tool === "write") {
+      const path = event?.input?.path ?? event?.input?.file_path ?? "";
+      // Only lint skill-corpus files; skip everything else so normal edits are untouched.
+      if (/\/skills(-shared)?\//.test(path) && path.endsWith(".md")) {
+        const g = runGate(
+          "python3",
+          [`${ROOT}/scripts/security/skill_linter.py`, path, "--json"],
+          {},
+        );
+        if (g.code === 2) return { block: true, reason: `skill-lint FAIL: ${g.stdout.trim()}` };
+      }
+    }
+
+    return undefined; // no block
+  });
+
+  // ---- PostToolUse -> tool_execution_end (observe-only) --------------------------------
+  // Advisory verify-after-write; never blocks a routine write.
+  pi.on("tool_execution_end", (event: any, _ctx: any) => {
+    const tool = event?.toolName;
+    if (tool === "write" || tool === "edit") {
+      runGate("python3", [`${ROOT}/scripts/memory/verify_after_write.py`, "--from-hook"], {
+        tool_name: tool,
+        tool_input: event?.input,
+      });
+    }
+  });
+
+  // ---- Stop -> agent_end (observe-only) ------------------------------------------------
+  // Reply/turn-completion contract. In an interactive pi TUI the reply is already visible,
+  // so this is a safe no-op unless you run pi headless into a delivery channel.
+  pi.on("agent_end", (_event: any, _ctx: any) => {
+    runGate(`${ROOT}/scripts/security/reply_guard.sh`, [], {});
+  });
+}

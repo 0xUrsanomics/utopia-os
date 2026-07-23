@@ -1,0 +1,62 @@
+// Utopia OS MCP servers for opencode (anomalyco/opencode).
+// Copy to  opencode.jsonc  in your repo root (or  ~/.config/opencode/opencode.jsonc  for global),
+// or merge the "mcp" block into an existing config. opencode reads .json OR .jsonc; this file uses
+// .jsonc so the guidance can live inline. Strip the comments if you save it as opencode.json.
+//
+// Schema notes (verified 2026-07-23 against opencode.ai/docs/mcp-servers):
+//   - each server has  "type": "local"  (spawns a process) or  "type": "remote"  (HTTP endpoint)
+//   - local: "command" is a SINGLE ARRAY [bin, ...args] (NOT separate command/args), plus optional
+//            "environment" (NOT "env"), "cwd", "enabled", "timeout" (ms)
+//   - remote: "url" + optional "headers", "oauth" ({} = auto-OAuth, false = off), "enabled", "timeout"
+//   - credentials: use  {env:VAR}  substitution — opencode expands it at load. NEVER inline a secret.
+// Replace every /path/to/... with your checkout / daemon path.
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "mcp": {
+    // --- local-only servers (no external secret) ---
+    "memory": {
+      "type": "local",
+      "command": ["python3", "/path/to/utopia-os/scripts/memory/memory_server.py"],
+      "enabled": true
+    },
+    "recall": {
+      "type": "local",
+      "command": ["python3", "/path/to/utopia-os/scripts/memory/vector_brain.py", "--serve"],
+      "enabled": true
+    },
+
+    // --- credentialed servers (token via {env:...}, never inline) ---
+    "telegram": {
+      "type": "local",
+      "command": ["node", "/path/to/daemon/telegram_mcp/server.js"],
+      "environment": { "TELEGRAM_BOT_TOKEN": "{env:TELEGRAM_BOT_TOKEN}" },
+      "enabled": true
+    },
+    "sheets": {
+      "type": "local",
+      "command": ["python3", "/path/to/daemon/sheets_mcp/server.py"],
+      "environment": { "GOOGLE_SERVICE_ACCOUNT_JSON": "{env:GOOGLE_SERVICE_ACCOUNT_JSON}" },
+      "enabled": true
+    }
+
+    // --- example remote HTTP daemon with auto-OAuth (uncomment + adapt) ---
+    // ,"daemon_http": {
+    //   "type": "remote",
+    //   "url": "https://your-daemon.example/mcp",
+    //   "oauth": {},
+    //   "headers": { "Authorization": "Bearer {env:DAEMON_BEARER_TOKEN}" },
+    //   "enabled": true
+    // }
+  },
+
+  // Utopia OS's canonical instructions live in CLAUDE.md. opencode auto-reads AGENTS.md (repo root)
+  // and, in Claude Code compat mode, CLAUDE.md + ~/.claude/CLAUDE.md. The "instructions" array below
+  // is OPTIONAL — use it only to pin extra always-load files; it is merged with your AGENTS.md.
+  "instructions": ["CLAUDE.md"]
+
+  // The guardrail hooks are NOT configured here — opencode has no shell-hook block. They are an
+  // in-process plugin: copy  plugins/utopia-guard.ts  into  .opencode/plugins/  (auto-loaded).
+  // See README.md ("What needs a plugin rewrite"). npm-published plugins go in a top-level
+  // "plugin": ["pkg-name"] array; local files load from the plugins dir, not the array.
+}

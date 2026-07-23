@@ -1,0 +1,105 @@
+// Utopia OS on OpenClaw — config template for ~/.openclaw/openclaw.json
+// Format is JSON5 (comments + trailing commas allowed). All fields are optional; OpenClaw fills safe defaults.
+// This wires three of the four adapter dimensions directly: MCP servers, the guard PLUGIN, and the bootstrap hook.
+// (The instruction file is a workspace bootstrap file — see the adapter README, step 1.)
+// Replace every /path/to/... placeholder with your real checkout / daemon path. NEVER inline a secret here — use env.
+{
+  // ---------------------------------------------------------------------------
+  // DIMENSION: MCP config  (portable core — the daemon moves unchanged)
+  // Add these with `openclaw mcp add <name> ...` or hand-edit mcp.servers.
+  // ---------------------------------------------------------------------------
+  mcp: {
+    servers: {
+      // local-only stdio servers (no external secret)
+      memory: {
+        command: "python3",
+        args: ["/path/to/utopia-os/scripts/memory/memory_server.py"],
+      },
+      recall: {
+        command: "python3",
+        args: ["/path/to/utopia-os/scripts/memory/vector_brain.py", "--serve"],
+      },
+
+      // credentialed stdio servers — token supplied via env, never inline
+      telegram: {
+        command: "node",
+        args: ["/path/to/daemon/telegram_mcp/server.js"],
+        env: { TELEGRAM_BOT_TOKEN: "${TELEGRAM_BOT_TOKEN}" },
+      },
+      sheets: {
+        command: "python3",
+        args: ["/path/to/daemon/sheets_mcp/server.py"],
+        env: { GOOGLE_SERVICE_ACCOUNT_JSON: "${GOOGLE_SERVICE_ACCOUNT_JSON}" },
+      },
+
+      // optional remote HTTP daemon (uncomment + adapt if you serve the daemon over HTTP)
+      // daemon_http: {
+      //   url: "https://your-daemon.example/mcp",
+      //   transport: "streamable-http",   // or "sse"
+      //   auth: "oauth",                    // omit for unauthenticated / header-token endpoints
+      //   requestTimeoutMs: 45000,
+      //   connectionTimeoutMs: 20000,
+      //   toolFilter: { include: ["recall", "memory_*"] },
+      // },
+    },
+  },
+
+  // ---------------------------------------------------------------------------
+  // DIMENSION: Hook layer  (the guardrail scripts, re-expressed as ONE TS plugin)
+  // The 6 settings.example.json hooks CANNOT be shell commands on OpenClaw — the
+  // blocking gates only exist as typed plugin hooks (api.on). See ./plugin/ + README.
+  // Load the local plugin directly by path (dev), or install it with
+  //   `openclaw plugins install -l /path/to/utopia-os/adapters/openclaw/plugin`
+  // ---------------------------------------------------------------------------
+  plugins: {
+    load: {
+      paths: ["/path/to/utopia-os/adapters/openclaw/plugin/index.ts"],
+    },
+    entries: {
+      "utopia-guards": {
+        enabled: true,
+        hooks: {
+          // required: before_agent_run / before_agent_finalize are raw-conversation hooks
+          // and are inert unless the plugin is granted conversation access.
+          allowConversationAccess: true,
+          // Give blocking gates a generous budget: on timeout OpenClaw DROPS the
+          // decision and proceeds (fail-open), it does not block. Keep the Python fast.
+          timeoutMs: 15000,
+          timeouts: {
+            before_tool_call: 15000,
+            before_agent_finalize: 20000,
+          },
+        },
+      },
+    },
+  },
+
+  // ---------------------------------------------------------------------------
+  // Optional: coarse, observe-only lifecycle automation via file-based internal hooks.
+  // Use ONLY for side effects (idempotent boot tasks, logging) — these cannot block a
+  // tool or gate policy. The SessionStart "parachute" is better handled as a workspace
+  // bootstrap file (BOOTSTRAP.md / MEMORY.md); see README step 1.
+  // ---------------------------------------------------------------------------
+  hooks: {
+    internal: {
+      enabled: true,
+      entries: {
+        // runs <workspace>/BOOT.md at gateway startup (idempotent boot tasks)
+        "boot-md": { enabled: true },
+      },
+    },
+  },
+
+  // ---------------------------------------------------------------------------
+  // Tool policy — the closest analog to Claude Code's permissions.allow / deny.
+  // Granularity is tool-name / group, not path glob. Per-PATH secret protection
+  // (Read(./.env), curl|bash) is enforced by the guard plugin + workspace sandbox,
+  // not here. `security.installPolicy` is the operator-owned, fail-closed allow/block
+  // for `openclaw plugins/skills install` (native installs) — configure it to run
+  // the same stand-down check; see README "what needs a plugin rewrite".
+  // ---------------------------------------------------------------------------
+  tools: {
+    profile: "coding", // group:fs + group:runtime + group:web + group:memory + ...
+    // deny: ["<tool-or-group>"],   // e.g. drop an outbound-send tool entirely (BLOCKED class)
+  },
+}

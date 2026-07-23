@@ -44,10 +44,10 @@ Every adapter maps exactly these four things from Claude Code to the target harn
 | **Codex CLI** | AGENTS.md (32 KiB cap) | 10 events, CC's 5 present by name; same exit-2 contract | auto-trigger + `/skills` | `[mcp_servers.*]` TOML | **low** |
 | **Kimi Code** | AGENTS.md | 14 events; 3 blockable; CC exit-code contract | auto-trigger (opt-out `type:flow`) | `mcp.json` (CC-shaped) | **low** |
 | **grok** | AGENTS.md | 13 events, superset; reads `~/.claude/settings.json` (hooks compat) | auto-trigger; skills in `.grok/` (NOT `~/.claude/skills`) | `[mcp_servers.*]` TOML | **low** |
-| **Hermes** | SOUL.md (voice only; no CLAUDE.md analogue) | 3-tier (plugin `pre_tool_call` can veto) | LLM-discretionary + `/skill` | native stdio/HTTP | **medium** |
-| **OpenClaw** | AGENTS.md (+ `@openclaw/migrate-claude`) | file hooks + typed TS plugins | LLM-discretionary + `/skill` | client + server | **medium** |
+| **Hermes** | AGENTS.md native (also detects CLAUDE.md); SOUL.md = voice | 3-tier; blocks via stdout-JSON (not exit-2); no `Stop` analogue | LLM-discretionary + `/skill` | `mcp_servers:` YAML (stdio/HTTP) | **medium** |
+| **OpenClaw** | AGENTS.md (+ bundled `migrate` importer, 3 of 4 dims) | file hooks (observe) + typed TS plugins (block) | LLM-discretionary + `/skill` | `mcp.servers` JSON5 (client + server) | **medium** |
 | **opencode** | AGENTS.md (falls back to `~/.claude/CLAUDE.md`) | plugin hooks, different taxonomy | **manual invoke only** | JSON `mcp:` block | **medium** |
-| **pi** | AGENTS.md **and** CLAUDE.md | TS extensions, superset of CC | auto-trigger | **no built-in MCP** (community adapter) | **medium** |
+| **pi** | AGENTS.md or CLAUDE.md (first match) | TS extensions, superset of CC | auto-trigger (own skill dirs, NOT `~/.claude/skills`) | **no built-in MCP** (community adapter) | **medium** |
 | **Kilo Code** | AGENTS.md | **none** (lifecycle hooks not supported) | judgment / manual | STDIO/SSE | **high** |
 
 ## Adapter contract

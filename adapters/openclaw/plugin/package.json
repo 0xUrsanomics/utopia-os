@@ -1,0 +1,17 @@
+{
+  "name": "@utopia-os/openclaw-guards",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Utopia OS guardrail hooks as an OpenClaw plugin (thin TS shim over the portable Python gates).",
+  "peerDependencies": {
+    "openclaw": ">=2026.3.24-beta.2"
+  },
+  "openclaw": {
+    "extensions": ["./index.ts"],
+    "compat": {
+      "pluginApi": ">=2026.3.24-beta.2",
+      "minGatewayVersion": "2026.3.24-beta.2"
+    }
+  }
+}

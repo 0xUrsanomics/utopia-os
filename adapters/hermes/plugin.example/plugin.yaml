@@ -1,0 +1,30 @@
+# Utopia OS guardrails — Hermes Python plugin manifest.
+# Install: copy this plugin.example/ dir to ~/.hermes/plugins/utopia-guardrails/
+# (rename the dir; the dir name is the plugin id). Hermes loads it in BOTH CLI and
+# gateway sessions and calls register(ctx) once at startup.
+#
+# This plugin carries the STATEFUL / BLOCKING gates that shell hooks can't do
+# cleanly: the autonomy-mode veto, the CONFIRM-gate hash-binding, and the
+# compound-counter threshold-block all need shared in-process state and a single
+# authoritative veto point (pre_tool_call). The stateless per-call guards stay as
+# shell hooks in config.yaml.example.
+#
+# Verified against Hermes docs (developer-guide/plugins, user-guide/features/hooks.md)
+# on 2026-07-23: plugin.yaml fields (name/version/description/provides_hooks/
+# requires_env) and the register(ctx) + ctx.register_hook() API.
+
+name: utopia-guardrails
+version: 0.1.0
+description: Utopia OS autonomy-mode, CONFIRM-gate, stand-down and compound-counter enforcement
+provides_hooks:
+  - pre_tool_call     # blocking veto: autonomy-mode / CONFIRM-gate / stand-down / compound-counter
+  - pre_llm_call      # context injection: bootstrap parachute (first turn), fleet-bus, counter reset
+  - post_tool_call    # observer: verify-after-write
+  - post_llm_call     # observer: reply-obligation logging (degraded Stop/reply_guard)
+
+# This plugin shells out to the portable-core guard scripts, so it needs no extra
+# credentials. If you wire a gate that calls a credentialed service, declare it here:
+# requires_env:
+#   - name: SOME_KEY
+#     description: "..."
+#     secret: true

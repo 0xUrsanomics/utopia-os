@@ -1,0 +1,30 @@
+{
+  "_comment": "Utopia OS MCP servers for pi (earendil-works/pi). pi has NO built-in MCP by design; this file is read by the community pi-mcp-adapter extension (npm:pi-mcp-adapter), which you must audit + install first (see README step 3). The adapter reads a standard mcpServers block from ~/.pi/agent/mcp.json, .pi/mcp.json, ~/.config/mcp/mcp.json, or .mcp.json (project overrides global). Same mcpServers shape as Claude Code's .mcp.json, so this ports 1:1. Replace /path/to placeholders. Supply credentials via env, never inline a secret. 'lifecycle: lazy' is a pi-mcp-adapter option: the server process starts only on first use.",
+  "mcpServers": {
+    "memory": {
+      "command": "python3",
+      "args": ["/path/to/utopia-os/scripts/memory/memory_server.py"],
+      "lifecycle": "lazy"
+    },
+    "recall": {
+      "command": "python3",
+      "args": ["/path/to/utopia-os/scripts/memory/vector_brain.py", "--serve"],
+      "lifecycle": "lazy"
+    },
+    "telegram": {
+      "command": "node",
+      "args": ["/path/to/daemon/telegram_mcp/server.js"],
+      "env": { "TELEGRAM_BOT_TOKEN": "" },
+      "lifecycle": "lazy"
+    },
+    "sheets": {
+      "command": "python3",
+      "args": ["/path/to/daemon/sheets_mcp/server.py"],
+      "env": { "GOOGLE_SERVICE_ACCOUNT_JSON": "" },
+      "lifecycle": "lazy"
+    },
+    "daemon_http": {
+      "url": "https://your-daemon.example/mcp"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "id": "utopia-guards",
+  "name": "Utopia OS Guards",
+  "description": "Re-implements the Utopia OS guardrail + hygiene hooks (stand-down, skill-lint, verify-after-write, auto-compound reset, fleet-bus poll, reply/finalize guard) as OpenClaw typed plugin hooks. Each handler shells out to the unchanged portable Python gate under scripts/, so only the wiring is rewritten, not the logic.",
+  "activation": {
+    "onStartup": true
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "utopiaRoot": {
+        "type": "string",
+        "description": "Absolute path to the utopia-os checkout. Used to locate scripts/. Falls back to the UTOPIA_OS_ROOT env var."
+      }
+    }
+  }
+}
