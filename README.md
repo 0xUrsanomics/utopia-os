@@ -49,6 +49,18 @@ No real memory content, no business data, no personal information, no secrets. U
 clean skeleton, not a filtered dump — every file was authored or ported to be free of the operator's
 identity. If you're adopting it, you bring your own content.
 
+## Set it up (point your agent at this repo)
+
+The fastest path: open your coding agent in an empty project and tell it
+
+> Read `SETUP.md` from https://github.com/0xUrsanomics/utopia-os and set up Utopia OS for my harness.
+
+[`SETUP.md`](SETUP.md) is a runbook written for the agent: it detects your harness (Claude Code, Codex,
+Kimi, grok, Hermes, OpenClaw, opencode, pi, or other), reads the matching [`adapters/`](adapters/) guide,
+and wires the portable core + MCP config + hooks + skills, filling in your voice and user model as it
+goes. It never inlines a secret and tells you what still needs your input. Prefer to do it by hand? The
+manual path is below.
+
 ## Getting started
 
 1. Read `docs/ARCHITECTURE.md` for the whole-system picture, then the subsystem docs.
