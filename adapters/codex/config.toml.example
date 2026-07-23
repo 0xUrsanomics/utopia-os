@@ -1,0 +1,40 @@
+# Utopia OS MCP servers for OpenAI Codex CLI
+# Copy into ~/.codex/config.toml, or merge these [mcp_servers.*] tables into an existing one.
+# stdio servers launch a local process; HTTP servers point at a running daemon endpoint.
+# Set every referenced env var before launch. NEVER inline a secret in this file.
+# All /path/to/... values are placeholders — replace with your checkout / daemon paths.
+
+# --- local-only servers (no external secret) ---
+
+[mcp_servers.memory]
+command = "python3"
+args = ["/path/to/utopia-os/scripts/memory/memory_server.py"]
+
+[mcp_servers.recall]
+command = "python3"
+args = ["/path/to/utopia-os/scripts/memory/vector_brain.py", "--serve"]
+
+# --- credentialed outbound servers (token supplied via env, never inline) ---
+
+[mcp_servers.telegram]
+command = "node"
+args = ["/path/to/daemon/telegram_mcp/server.js"]
+env_vars = ["TELEGRAM_BOT_TOKEN"]
+
+[mcp_servers.sheets]
+command = "python3"
+args = ["/path/to/daemon/sheets_mcp/server.py"]
+env_vars = ["GOOGLE_SERVICE_ACCOUNT_JSON"]
+
+# --- example remote HTTP server (uncomment + adapt if your daemon is served over HTTP) ---
+
+# [mcp_servers.daemon_http]
+# url = "https://your-daemon.example/mcp"
+# bearer_token_env_var = "DAEMON_BEARER_TOKEN"
+# enabled_tools = ["recall", "memory_read"]
+# default_tools_approval_mode = "prompt"
+# startup_timeout_sec = 20
+# tool_timeout_sec = 45
+
+# --- optional: raise the AGENTS.md size cap if your ruleset exceeds 32 KiB ---
+# project_doc_max_bytes = 65536

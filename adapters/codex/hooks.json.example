@@ -1,0 +1,50 @@
+{
+  "_comment": "Utopia OS guardrail + hygiene hooks translated for OpenAI Codex CLI. A faithful port of settings.example.json: same scripts, same events, Codex hooks.json wrapper. Copy to ~/.codex/hooks.json (or inline as [[hooks.*]] in config.toml). Replace /path/to/utopia-os with your checkout path. Confirm tool-name matchers (Bash / Read|Edit|Write / Write|Edit|MultiEdit) against your Codex version's tool names.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          { "type": "command", "command": "/path/to/utopia-os/scripts/memory/session_bootstrap.sh", "timeout": 600, "statusMessage": "Loading session bootstrap" }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "python3 /path/to/utopia-os/scripts/security/auto_compound_counter.py --reset" },
+          { "type": "command", "command": "python3 /path/to/utopia-os/scripts/agents/bus_turn_poll.py" }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "python3 /path/to/utopia-os/scripts/security/check_standdown.py --from-hook", "statusMessage": "Stand-down check" }
+        ]
+      },
+      {
+        "matcher": "Read|Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "python3 /path/to/utopia-os/scripts/security/skill_linter.py --from-hook" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "python3 /path/to/utopia-os/scripts/memory/verify_after_write.py --from-hook" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "/path/to/utopia-os/scripts/security/reply_guard.sh" }
+        ]
+      }
+    ]
+  }
+}

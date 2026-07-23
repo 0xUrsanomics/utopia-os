@@ -32,4 +32,7 @@ The system splits cleanly into a **portable substrate** that runs on any harness
 3. Copy the skill and knowledge content. Wire triggering to your harness, or invoke manually.
 4. Reimplement the `settings.example.json` hooks on your harness's event system. Until then the guardrails do not fire automatically, so run the critical ones (stand-down, send guards) by hand.
 
-Per-harness adapters, including a grok build, are tracked as follow-up.
+The adapter model (portable core vs harness shim, the four dimensions, per-harness mapping) is in
+[`docs/adapters.md`](docs/adapters.md). The reference adapter is [`adapters/codex/`](adapters/codex/)
+(OpenAI Codex CLI, the lowest-cost target). More per-harness adapters, including a grok build, are
+tracked as follow-up.
