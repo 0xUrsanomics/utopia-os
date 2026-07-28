@@ -8,6 +8,21 @@ through the MCP layer described in [`mcp-layer.md`](mcp-layer.md).
 Pick one to start. Telegram is faster to get working; Discord is better if you want several
 people in the same space.
 
+## What this repo gives you, and where the line is
+
+Read this before you start, so you know what you are holding at the end.
+
+| | Status |
+|---|---|
+| **Telegram** | A working reference MCP server ships: [`scripts/mcp/telegram_bridge.py`](../scripts/mcp/telegram_bridge.py). Stdlib only, credentials from the environment, allowlist enforced. Follow this doc, set two variables, and the bridge runs. |
+| **Discord** | **No server ships.** This doc gets you a token, a channel ID and the permissions right. Wiring them to an agent is yours to build. Start from the Telegram bridge as the shape, plus [`knowledge/mcp-builder-reference/`](../knowledge/mcp-builder-reference/). |
+
+The asymmetry is deliberate rather than accidental. One complete, readable reference server is
+worth more than several half-servers, and the doctrine in
+[`mcp-layer.md`](mcp-layer.md) still holds: the repo documents the interface and never carries
+the credentials. `telegram_bridge.py` reads `os.environ` and stores nothing, so it ships no
+secret while still being a real, runnable server.
+
 ---
 
 ## Before either one
@@ -78,11 +93,33 @@ first. If it returns `409 Conflict`, another process is already long-polling the
 ```bash
 # .env, gitignored
 TELEGRAM_BOT_TOKEN=123456789:AAExample-TokenStringGoesHere
-TELEGRAM_CHAT_ID=123456789
+TELEGRAM_ALLOWED_CHAT_IDS=123456789      # comma-separated for more than one
 ```
 
-Then point your harness's MCP config at the Telegram server. Your adapter README under
-[`adapters/`](../adapters/) has the exact block for your harness.
+`TELEGRAM_ALLOWED_CHAT_IDS` is **required** and the server refuses to start without it. Empty
+means nothing is allowed; it never means allow-all. Your bot has a public username, so an
+unfiltered inbox would hand a stranger's text to your agent as if it were yours.
+
+Check it before wiring anything:
+
+```bash
+python3 scripts/mcp/telegram_bridge.py --selftest     # no token, no network needed
+```
+
+Then point your harness at the bridge. Each adapter template already carries the block:
+
+```json
+"telegram": {
+  "command": "python3",
+  "args": ["/path/to/utopia-os/scripts/mcp/telegram_bridge.py"],
+  "env": { "TELEGRAM_BOT_TOKEN": "", "TELEGRAM_ALLOWED_CHAT_IDS": "" }
+}
+```
+
+The server exposes three tools: `whoami` (verify the token first, it separates a bad
+credential from bad wiring), `send_message`, and `get_updates`. `get_updates` is the inbound
+direction, and it drops non-allowlisted messages before your agent sees them while reporting
+how many it dropped, so a filter can never be mistaken for a quiet channel.
 
 ### Verify
 

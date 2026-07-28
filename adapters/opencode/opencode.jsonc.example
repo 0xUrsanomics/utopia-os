@@ -29,8 +29,8 @@
     // --- credentialed servers (token via {env:...}, never inline) ---
     "telegram": {
       "type": "local",
-      "command": ["node", "/path/to/daemon/telegram_mcp/server.js"],
-      "environment": { "TELEGRAM_BOT_TOKEN": "{env:TELEGRAM_BOT_TOKEN}" },
+      "command": ["python3", "/path/to/utopia-os/scripts/mcp/telegram_bridge.py"],
+      "environment": { "TELEGRAM_BOT_TOKEN": "{env:TELEGRAM_BOT_TOKEN}", "TELEGRAM_ALLOWED_CHAT_IDS": "{env:TELEGRAM_ALLOWED_CHAT_IDS}" },
       "enabled": true
     },
     "sheets": {

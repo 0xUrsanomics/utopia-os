@@ -14,7 +14,7 @@ written for you, and assumes nothing.
 
 The core of Utopia OS has no third-party dependencies. Memory is Markdown files, the state
 store is stdlib `sqlite3`, the security gates are stdlib, and the cockpit is stdlib
-`http.server`. All 48 Python modules under `scripts/` import with nothing installed.
+`http.server`. All 49 Python modules under `scripts/` import with nothing installed.
 
 ```bash
 python3 --version     # need 3.9+
@@ -145,10 +145,17 @@ gate status. If this renders, your core install is good.
 
 ## 6. Optional: a chat interface
 
-Most of the value of an ops system is being able to talk to it from your phone. That is a
-Telegram bot or a Discord bot, and it needs credentials from the respective developer
-portal. Full walkthrough with the exact click paths:
-**[`docs/bot-setup.md`](docs/bot-setup.md)**.
+Most of the value of an ops system is being able to talk to it from your phone. For Telegram
+a working MCP server ships, so this is wiring rather than building:
+
+```bash
+python3 scripts/mcp/telegram_bridge.py --selftest    # 16 checks, no token or network needed
+```
+
+Then get a token and your chat id, set `TELEGRAM_BOT_TOKEN` and `TELEGRAM_ALLOWED_CHAT_IDS`,
+and point your adapter's MCP block at the bridge. Full walkthrough with the exact click
+paths: **[`docs/bot-setup.md`](docs/bot-setup.md)**. Discord gets you as far as credentials;
+the server for it is yours to write, and the Telegram bridge is the shape to copy.
 
 Never put a token in a file you commit. The gates include a secret scanner, but do not make
 it do work it should not have to.

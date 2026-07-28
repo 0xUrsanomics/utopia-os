@@ -110,14 +110,17 @@ fifteen minutes to a working core, with the platform matrix and the dependency a
 
 **Requirements: Python 3.9+, and nothing else.** The core has no third-party dependencies.
 Memory is Markdown, the state store is stdlib `sqlite3`, the gates are stdlib, the cockpit
-is stdlib `http.server`; all 48 modules under `scripts/` import with an empty environment.
+is stdlib `http.server`; all 49 modules under `scripts/` import with an empty environment.
 Semantic recall is the one heavy piece and it is opt-in
 ([`requirements-memory.txt`](requirements-memory.txt)), because a multi-gigabyte download
 should not stand between you and a Markdown memory system you have not decided on yet.
 
 Setting up the chat bridge is the other thing worth doing early, since it is what puts the
-system on your phone: [`docs/bot-setup.md`](docs/bot-setup.md) has the click-by-click path
-for Telegram and Discord.
+system on your phone. A working reference MCP server ships at
+[`scripts/mcp/telegram_bridge.py`](scripts/mcp/telegram_bridge.py): stdlib only, credentials
+read from the environment and never stored, and an allowlist it refuses to run without.
+[`docs/bot-setup.md`](docs/bot-setup.md) has the click-by-click path for the credentials, and
+is explicit that Telegram ships a server while Discord is yours to build.
 
 Then, the manual route:
 

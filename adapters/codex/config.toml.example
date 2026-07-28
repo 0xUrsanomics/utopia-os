@@ -17,9 +17,9 @@ args = ["/path/to/utopia-os/scripts/memory/vector_brain.py", "--serve"]
 # --- credentialed outbound servers (token supplied via env, never inline) ---
 
 [mcp_servers.telegram]
-command = "node"
-args = ["/path/to/daemon/telegram_mcp/server.js"]
-env_vars = ["TELEGRAM_BOT_TOKEN"]
+command = "python3"
+args = ["/path/to/utopia-os/scripts/mcp/telegram_bridge.py"]
+env_vars = ["TELEGRAM_BOT_TOKEN", "TELEGRAM_ALLOWED_CHAT_IDS"]
 
 [mcp_servers.sheets]
 command = "python3"

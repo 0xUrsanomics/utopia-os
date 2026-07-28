@@ -22,9 +22,9 @@
 
       // credentialed stdio servers — token supplied via env, never inline
       telegram: {
-        command: "node",
-        args: ["/path/to/daemon/telegram_mcp/server.js"],
-        env: { TELEGRAM_BOT_TOKEN: "${TELEGRAM_BOT_TOKEN}" },
+        command: "python3",
+        args: ["/path/to/utopia-os/scripts/mcp/telegram_bridge.py"],
+        env: { TELEGRAM_BOT_TOKEN: "${TELEGRAM_BOT_TOKEN}", TELEGRAM_ALLOWED_CHAT_IDS: "${TELEGRAM_ALLOWED_CHAT_IDS}" },
       },
       sheets: {
         command: "python3",

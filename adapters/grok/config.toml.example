@@ -14,10 +14,10 @@ args = ["/path/to/utopia-os/scripts/memory/vector_brain.py", "--serve"]
 enabled = true
 
 [mcp_servers.telegram]
-command = "node"
-args = ["/path/to/daemon/telegram_mcp/server.js"]
+command = "python3"
+args = ["/path/to/utopia-os/scripts/mcp/telegram_bridge.py"]
 # token comes from the environment; do not paste it here
-env = { TELEGRAM_BOT_TOKEN = "" }
+env = { TELEGRAM_BOT_TOKEN = "", TELEGRAM_ALLOWED_CHAT_IDS = "" }
 startup_timeout_sec = 30
 
 # example remote HTTP server
