@@ -39,9 +39,51 @@ make long-running autonomous work safe and durable:
 | `scripts/security/` | The safety gates (stand-down registry, compound counter, skill linter, send guards). |
 | `scripts/memory/` | The state store (SSOT), recall, and memory machinery. |
 | `scripts/cockpit/` | A zero-dependency, read-only localhost dashboard for the whole system. |
-| `skills/` | Reusable agent workflows (save, scope, critic, review-gate, dreaming, and more). |
-| `skills-shared/` | Cross-persona skills built from public research (anti-slop, sycophancy guard, premortem). |
+| `skills/` | 42 reusable agent workflows. |
+| `skills-shared/` | 18 cross-persona skills built from public research. |
 | `CLAUDE.md` | The system-prompt skeleton that wires it all together. |
+
+## The 60 skills, by what they do for you
+
+Every one of these is a real folder in this repo, not a roadmap. Adopt them one at a time.
+
+**Keep yourself honest.** `critic` runs a tool-grounded adversarial pass over your own
+output before it ships. `sycophancy-guard` stops the agent agreeing with you because you
+said it. `premortem` assumes the plan failed and asks why. `anti-ai-slop` and
+`content-humanizer` strip the tells. `review-gate` stands between a draft and your canonical
+notes so the agent's own output never becomes its own source of truth. `self-audit` and
+`skill-audit` turn that scrutiny on the system itself.
+
+**Remember and compound.** `save` extracts durable preferences, decisions and learnings from
+a session instead of letting them evaporate. `recall` searches the archive. `dreaming` and
+`meta-memory-review` consolidate memory offline. `memory-offload` gets working state out of
+context. `graph-hygiene` keeps the notes from rotting.
+
+**Think before building.** `scope` restates the ask, its assumptions and what is explicitly
+out of scope, before any work starts. `decision-council` runs an anonymised panel over a
+call. `plan-design-review` and `plan-ceo-review` attack a plan from two different angles.
+`prd`, `wave-plan` and `branching-workflow` turn an intent into staged work.
+`debugging-discipline` breaks the flailing loop.
+
+**Sound like you.** `voice-profiler` builds a voice profile from your own writing, so the
+output reads as yours rather than as a model's. `negotiation` and `marketing-psychology` are
+applied-research packs, not prompt tricks.
+
+**Work in parallel.** `agent-dispatch`, `subagent-delegation` and `skill-chaining` hand work
+to sub-agents with a depth limit. `spawn-tenant` and `spawn-agent-in-tenant` stand up
+isolated agent tenants with their own memory.
+
+**Run on a clock.** `daily-forest` and `forest-synthesis` compress a day into something
+readable. `eod-summary`, `weekly-retro` and `reality-review-weekly` close the loop by
+grading what the system actually predicted against what happened. `goals` keeps a small,
+capped, live goal registry instead of an aspirational backlog.
+
+**Handle real inputs.** `deep-research` and `autoresearch` for open questions.
+`intel-analyzer` and `signal-scorer` for noisy feeds. `telegram-dump-router` and
+`task-extractor` for the mess that arrives from chat. `redact` for anything that leaves.
+
+A full index is in [`skills/`](skills/) and [`skills-shared/`](skills-shared/); each is a
+standard `SKILL.md`.
 
 ## What's deliberately NOT here
 
@@ -62,6 +104,22 @@ goes. It never inlines a secret and tells you what still needs your input. Prefe
 manual path is below.
 
 ## Getting started
+
+**New to this? Start with [`QUICKSTART.md`](QUICKSTART.md)** — a human first-run path,
+fifteen minutes to a working core, with the platform matrix and the dependency answer.
+
+**Requirements: Python 3.9+, and nothing else.** The core has no third-party dependencies.
+Memory is Markdown, the state store is stdlib `sqlite3`, the gates are stdlib, the cockpit
+is stdlib `http.server`; all 48 modules under `scripts/` import with an empty environment.
+Semantic recall is the one heavy piece and it is opt-in
+([`requirements-memory.txt`](requirements-memory.txt)), because a multi-gigabyte download
+should not stand between you and a Markdown memory system you have not decided on yet.
+
+Setting up the chat bridge is the other thing worth doing early, since it is what puts the
+system on your phone: [`docs/bot-setup.md`](docs/bot-setup.md) has the click-by-click path
+for Telegram and Discord.
+
+Then, the manual route:
 
 1. Read `docs/ARCHITECTURE.md` for the whole-system picture, then the subsystem docs.
 2. Copy `CLAUDE.md` and the `memory/templates/` scaffolds, and fill them with your own voice + user model.

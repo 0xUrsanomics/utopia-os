@@ -37,8 +37,20 @@ from pathlib import Path
 try:
     import fcntl  # POSIX only
     _HAVE_FCNTL = True
-except ImportError:  # pragma: no cover - defensive, non-POSIX only
+except ImportError:  # pragma: no cover - non-POSIX (native Windows) only
     _HAVE_FCNTL = False
+    # SAY SO. Without fcntl the "exclusive lock" below degrades to a no-op, so two
+    # processes can interleave writes and the guarantee in _exclusive_lock's docstring
+    # quietly stops being true. A silent downgrade of a concurrency control is worse
+    # than a missing feature, because nothing distinguishes it from a working lock
+    # until data is already lost. Run under WSL2 on Windows; see QUICKSTART.md.
+    import warnings
+    warnings.warn(
+        "fcntl is unavailable on this platform, so lib_signal_store's cross-process "
+        "lock is a NO-OP and concurrent writers are not serialised. Run under WSL2 on "
+        "Windows, or ensure only one process writes the signal store.",
+        RuntimeWarning, stacklevel=2,
+    )
 
 
 @contextmanager

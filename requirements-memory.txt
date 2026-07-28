@@ -1,0 +1,37 @@
+# Utopia OS semantic recall tier (OPTIONAL)
+#
+# WHY THIS IS A SEPARATE FILE. These packages are large, they pull CUDA wheels on Linux,
+# and they are needed by EXACTLY ONE module in the entire repo: scripts/memory/vector_brain.py.
+# Everything else, including the whole Markdown memory system, the state store, the security
+# gates, the skills and the cockpit, runs without any of it.
+#
+# Putting a multi-gigabyte torch download in front of somebody who is still deciding whether
+# they want a Markdown memory system would lose them before their first run, so the split is
+# deliberate. Install this only when you want embedding-based recall over your notes.
+#
+#   pip install -r requirements-memory.txt
+#
+# Expect roughly 2.5 to 6 GB depending on platform and whether you get a CUDA build, plus a
+# further ~2 GB the first time the embedding model is downloaded at runtime.
+
+# Embedding model loading and inference. vector_brain.py selects its device automatically:
+# CUDA, then Apple Silicon MPS, then CPU. CPU works, it is just slower.
+torch>=2.1.0
+transformers>=4.40.0
+sentence-transformers>=3.0.0
+
+# On-disk vector store. No server, no daemon; the index is a directory.
+lancedb>=0.13.0
+
+# ---------------------------------------------------------------------------------------
+# NOT PACKAGED, and deliberately so
+# ---------------------------------------------------------------------------------------
+# vector_brain.py can also use a sibling module `lib_temporal_rerank` for temporal-decay
+# reranking (--temporal). It is imported inside a try/except and the feature silently turns
+# itself off when the module is absent, so the recall path keeps working. It is not shipped
+# here; the flag's help text documents it as optional.
+#
+# CPU-ONLY INSTALL. If you do not want the CUDA wheels, install torch from the CPU index
+# first, then this file:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+#   pip install -r requirements-memory.txt

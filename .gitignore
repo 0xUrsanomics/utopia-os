@@ -17,6 +17,12 @@ outputs/
 logs/
 private/
 refs/
-memory/state/*.sqlite
+# Runtime state. Everything under memory/state/ is generated at run time EXCEPT the
+# *.example.* templates, which are the shipped scaffolds. Broadened 2026-07-28 after
+# `ssot.py self-test` and `confirm_gate.py list` produced confirm_gate.db and
+# active_persona.txt, neither of which the old *.sqlite rule caught.
+memory/state/*
+!memory/state/*.example.json
+!memory/state/*.example.txt
 .utopia-build/
 .data/
