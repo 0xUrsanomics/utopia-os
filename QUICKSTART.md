@@ -14,7 +14,7 @@ written for you, and assumes nothing.
 
 The core of Utopia OS has no third-party dependencies. Memory is Markdown files, the state
 store is stdlib `sqlite3`, the security gates are stdlib, and the cockpit is stdlib
-`http.server`. All 49 Python modules under `scripts/` import with nothing installed.
+`http.server`. All 50 Python modules under `scripts/` import with nothing installed.
 
 ```bash
 python3 --version     # need 3.9+

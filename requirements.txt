@@ -3,7 +3,7 @@
 # THIS FILE IS INTENTIONALLY EMPTY OF HARD REQUIREMENTS, and that is a design property
 # rather than an oversight.
 #
-# Measured on the current tree: all 49 Python modules under scripts/ import cleanly with
+# Measured on the current tree: all 50 Python modules under scripts/ import cleanly with
 # NO third-party packages installed at all. The memory system is Markdown files, the state
 # store is stdlib sqlite3, the security gates are stdlib, and the cockpit is stdlib
 # http.server. You can clone this repo and run the core with nothing but Python 3.9+.

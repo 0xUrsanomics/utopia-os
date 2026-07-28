@@ -110,7 +110,7 @@ fifteen minutes to a working core, with the platform matrix and the dependency a
 
 **Requirements: Python 3.9+, and nothing else.** The core has no third-party dependencies.
 Memory is Markdown, the state store is stdlib `sqlite3`, the gates are stdlib, the cockpit
-is stdlib `http.server`; all 49 modules under `scripts/` import with an empty environment.
+is stdlib `http.server`; all 50 modules under `scripts/` import with an empty environment.
 Semantic recall is the one heavy piece and it is opt-in
 ([`requirements-memory.txt`](requirements-memory.txt)), because a multi-gigabyte download
 should not stand between you and a Markdown memory system you have not decided on yet.

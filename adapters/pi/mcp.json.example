@@ -1,8 +1,7 @@
 {
   "_comment": "Utopia OS MCP servers for pi (earendil-works/pi). pi has NO built-in MCP by design; this file is read by the community pi-mcp-adapter extension (npm:pi-mcp-adapter), which you must audit + install first (see README step 3). The adapter reads a standard mcpServers block from ~/.pi/agent/mcp.json, .pi/mcp.json, ~/.config/mcp/mcp.json, or .mcp.json (project overrides global). Same mcpServers shape as Claude Code's .mcp.json, so this ports 1:1. Replace /path/to placeholders. Supply credentials via env, never inline a secret. 'lifecycle: lazy' is a pi-mcp-adapter option: the server process starts only on first use.",
   "mcpServers": {
-    "_memory_DISABLED": {
-      "_note": "NOT SHIPPED. utopia-os does not include a memory MCP server; this entry is left here as the slot to fill. Build one exposing your Markdown memory + SSOT, using scripts/mcp/telegram_bridge.py as the shape and knowledge/mcp-builder-reference/ as the guide. Re-enable this block once it exists.",
+    "memory": {
       "command": "python3",
       "args": ["/path/to/utopia-os/scripts/memory/memory_server.py"],
       "lifecycle": "lazy"

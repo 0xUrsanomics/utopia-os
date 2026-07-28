@@ -11,11 +11,10 @@
   mcp: {
     servers: {
       // local-only stdio servers (no external secret)
-      // NOT SHIPPED. utopia-os does not include a memory MCP server; this entry is left here as the slot to fill. Build one exposing your Markdown memory + SSOT, using scripts/mcp/telegram_bridge.py as the shape and knowledge/mcp-builder-reference/ as the guide. Re-enable this block once it exists.
-      // memory: {
-      //   command: "python3",
-      //   args: ["/path/to/utopia-os/scripts/memory/memory_server.py"],
-      // },
+      memory: {
+        command: "python3",
+        args: ["/path/to/utopia-os/scripts/memory/memory_server.py"],
+      },
       recall: {
         command: "python3",
         args: ["/path/to/utopia-os/scripts/memory/vector_brain.py", "serve"],
@@ -41,7 +40,7 @@
       //   requestTimeoutMs: 45000,
       //   connectionTimeoutMs: 20000,
       //   toolFilter: { include: ["recall", "memory_*"] },
-      // },
+      },
     },
   },
 

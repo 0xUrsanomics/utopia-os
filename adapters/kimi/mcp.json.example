@@ -1,8 +1,7 @@
 {
   "_comment": "Utopia OS MCP servers for Kimi Code. Copy to ~/.kimi-code/mcp.json (or .kimi-code/mcp.json in the project; project overrides user). Same mcpServers shape as Claude Code's .mcp.json. Replace /path/to placeholders. Supply credentials via env, never inline a secret here.",
   "mcpServers": {
-    "_memory_DISABLED": {
-      "_note": "NOT SHIPPED. utopia-os does not include a memory MCP server; this entry is left here as the slot to fill. Build one exposing your Markdown memory + SSOT, using scripts/mcp/telegram_bridge.py as the shape and knowledge/mcp-builder-reference/ as the guide. Re-enable this block once it exists.",
+    "memory": {
       "command": "python3",
       "args": ["/path/to/utopia-os/scripts/memory/memory_server.py"]
     },
