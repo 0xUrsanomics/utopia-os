@@ -175,7 +175,10 @@ it do work it should not have to.
 - **`ModuleNotFoundError` on a core script.** Should not happen; the core is stdlib-only.
   Check you are on Python 3.9+ and not accidentally running Python 2.
 - **Recall returns nothing.** You have not installed `requirements-memory.txt`, or you have
-  not indexed yet: `python3 scripts/memory/vector_brain.py index`.
+  not indexed yet: `python3 scripts/memory/vector_brain.py index`. Recall also runs as an MCP
+  server (`vector_brain.py serve`, protocol check with `vector_brain.py selftest`), which is
+  the `recall` entry in your adapter's config. It is the one server that needs the optional
+  dependency group; it starts either way and tells you which file to install.
 - **A hook does not fire.** Harness hook config is the usual culprit. Check your adapter
   README, and confirm the script is executable (`chmod +x`).
 - **A gate blocks something you wanted.** That is the gate working. Read the reason it

@@ -1977,6 +1977,207 @@ def add_document(text: str, source: str, doc_id: str | None = None,
     }
 
 
+# ---------------------------------------------------------------- MCP server (`serve`)
+# The adapter templates advertised a `recall` MCP server and pointed at a `--serve` flag that
+# did not exist, so every harness config shipped with a server that fails at launch. This is
+# that flag, made real.
+#
+# TWO THINGS MAKE THIS SAFE TO BOLT ON HERE RATHER THAN IN A SEPARATE FILE. The heavy imports
+# (torch, lancedb, sentence_transformers) are already lazy, inside the functions that need
+# them, so this module still imports on a bare Python and the server starts and can report a
+# missing dependency instead of dying on import. And `search()` already RETURNS its result
+# list; it just also prints a human view. Printing is the hazard: stdout is the JSON-RPC
+# channel, so a stray print corrupts the stream. Every call below runs inside
+# redirect_stdout(stderr), which keeps the human output visible in the server log where it is
+# useful and out of the protocol where it is fatal.
+
+MCP_SERVER_NAME = "utopia-recall"
+MCP_SERVER_VERSION = "1.0.0"
+MCP_DEFAULT_PROTOCOL = "2025-06-18"
+
+MCP_TOOLS = [
+    {
+        "name": "recall",
+        "description": ("Semantic search over the indexed memory corpus. Hybrid vector + BM25 "
+                        "by default. Returns the matching chunks with their source paths."),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "What to search for."},
+                "top_k": {"type": "integer", "description": "How many results. Default 5."},
+                "mode": {"type": "string", "enum": ["hybrid", "vector", "bm25"],
+                         "description": "Retrieval mode. Default hybrid."},
+            },
+            "required": ["query"],
+        },
+    },
+    {
+        "name": "recall_stats",
+        "description": ("Index statistics: row count and sources. Use it to tell 'the index is "
+                        "empty' apart from 'the query matched nothing', which look identical "
+                        "from a caller's side."),
+        "inputSchema": {"type": "object", "properties": {}},
+    },
+]
+
+_MCP_DEPS_HINT = ("The recall tier is not installed. It is the one optional dependency group "
+                  "in this repo: pip install -r requirements-memory.txt. Everything else in "
+                  "Utopia OS runs without it.")
+
+
+def _mcp_recall(args: dict) -> str:
+    import contextlib
+    q = (args.get("query") or "").strip()
+    if not q:
+        raise ValueError("query is empty")
+    top_k = int(args.get("top_k") or 5)
+    mode = args.get("mode") or "hybrid"
+    with contextlib.redirect_stdout(sys.stderr):
+        rows = search(q, top_k, mode) or []
+    return json.dumps({
+        "query": q, "mode": mode, "count": len(rows),
+        "results": [{
+            "title": r.get("title"),
+            "source": r.get("source"),
+            "source_type": r.get("source_type"),
+            "text": r.get("text", ""),
+        } for r in rows],
+    }, indent=2, ensure_ascii=False)
+
+
+def _mcp_stats(_args: dict) -> str:
+    import contextlib
+    with contextlib.redirect_stdout(sys.stderr):
+        s = stats()
+    return json.dumps(s if isinstance(s, dict) else {"stats": str(s)},
+                      indent=2, ensure_ascii=False, default=str)
+
+
+_MCP_HANDLERS = {"recall": _mcp_recall, "recall_stats": _mcp_stats}
+
+
+def mcp_handle(req: dict):
+    """Return a response dict, or None for notifications (which must not be answered)."""
+    method, req_id = req.get("method"), req.get("id")
+    params = req.get("params") or {}
+
+    if method == "initialize":
+        return {"jsonrpc": "2.0", "id": req_id, "result": {
+            "protocolVersion": params.get("protocolVersion") or MCP_DEFAULT_PROTOCOL,
+            "capabilities": {"tools": {}},
+            "serverInfo": {"name": MCP_SERVER_NAME, "version": MCP_SERVER_VERSION}}}
+    if method in ("notifications/initialized", "initialized"):
+        return None
+    if method == "ping":
+        return {"jsonrpc": "2.0", "id": req_id, "result": {}}
+    if method == "tools/list":
+        return {"jsonrpc": "2.0", "id": req_id, "result": {"tools": MCP_TOOLS}}
+    if method == "tools/call":
+        fn = _MCP_HANDLERS.get(params.get("name"))
+        if fn is None:
+            return {"jsonrpc": "2.0", "id": req_id,
+                    "error": {"code": -32602, "message": f"unknown tool: {params.get('name')}"}}
+        try:
+            return {"jsonrpc": "2.0", "id": req_id,
+                    "result": {"content": [{"type": "text", "text": fn(params.get("arguments") or {})}]}}
+        except ImportError as e:
+            # The expected failure, and it must be legible: an agent that gets "No module named
+            # lancedb" cannot act, whereas one told which requirements file to install can.
+            return {"jsonrpc": "2.0", "id": req_id, "result": {
+                "content": [{"type": "text", "text": f"{_MCP_DEPS_HINT} (underlying: {e})"}],
+                "isError": True}}
+        except Exception as e:
+            return {"jsonrpc": "2.0", "id": req_id, "result": {
+                "content": [{"type": "text", "text": f"{type(e).__name__}: {e}"}], "isError": True}}
+    if req_id is None:
+        return None
+    return {"jsonrpc": "2.0", "id": req_id,
+            "error": {"code": -32601, "message": f"method not found: {method}"}}
+
+
+def mcp_serve(stdin=None, stdout=None) -> None:
+    stdin = stdin or sys.stdin
+    stdout = stdout or sys.stdout
+    for line in stdin:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            req = json.loads(line)
+        except json.JSONDecodeError:
+            stdout.write(json.dumps({"jsonrpc": "2.0", "id": None,
+                                     "error": {"code": -32700, "message": "parse error"}}) + "\n")
+            stdout.flush()
+            continue
+        resp = mcp_handle(req)
+        if resp is not None:
+            stdout.write(json.dumps(resp) + "\n")
+            stdout.flush()
+
+
+def mcp_selftest() -> int:
+    """Protocol-level, and deliberately runs WITHOUT the recall tier installed.
+
+    The point is to prove the server starts and degrades legibly on a bare Python, because
+    that is the state every first-time reader is in.
+    """
+    import io
+    checks, failed = [], 0
+
+    def check(label, cond):
+        nonlocal failed
+        checks.append((label, bool(cond)))
+        if not cond:
+            failed += 1
+
+    r = mcp_handle({"jsonrpc": "2.0", "id": 1, "method": "initialize",
+                    "params": {"protocolVersion": "2099-01-01"}})
+    check("initialize echoes the client protocol version",
+          r["result"]["protocolVersion"] == "2099-01-01")
+    check("serverInfo names this server",
+          r["result"]["serverInfo"]["name"] == MCP_SERVER_NAME)
+    check("initialized notification gets no reply",
+          mcp_handle({"jsonrpc": "2.0", "method": "notifications/initialized"}) is None)
+
+    r = mcp_handle({"jsonrpc": "2.0", "id": 2, "method": "tools/list"})
+    check("tools/list returns recall + recall_stats",
+          {t["name"] for t in r["result"]["tools"]} == {"recall", "recall_stats"})
+    check("every tool has an inputSchema",
+          all("inputSchema" in t for t in r["result"]["tools"]))
+
+    r = mcp_handle({"jsonrpc": "2.0", "id": 3, "method": "tools/call",
+                    "params": {"name": "nope", "arguments": {}}})
+    check("unknown tool is a JSON-RPC error", "error" in r)
+    check("unknown method is -32601",
+          mcp_handle({"jsonrpc": "2.0", "id": 4, "method": "zzz"})["error"]["code"] == -32601)
+
+    r = mcp_handle({"jsonrpc": "2.0", "id": 5, "method": "tools/call",
+                    "params": {"name": "recall", "arguments": {"query": "  "}}})
+    check("empty query is rejected before any model load", r["result"].get("isError"))
+
+    r = mcp_handle({"jsonrpc": "2.0", "id": 6, "method": "tools/call",
+                    "params": {"name": "recall", "arguments": {"query": "anything"}}})
+    txt = r["result"]["content"][0]["text"]
+    check("a real call either works or names the requirements file, never a bare traceback",
+          (not r["result"].get("isError")) or "requirements-memory.txt" in txt
+          or "Error" in txt or "error" in txt)
+
+    out = io.StringIO()
+    mcp_serve(io.StringIO('{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n'
+                          'not json\n'
+                          '{"jsonrpc":"2.0","method":"notifications/initialized"}\n'), out)
+    lines = [l for l in out.getvalue().splitlines() if l.strip()]
+    check("stdio transport: 2 replies for 3 lines (notification is silent)", len(lines) == 2)
+    check("malformed line is a parse error and does not kill the loop",
+          json.loads(lines[1])["error"]["code"] == -32700)
+
+    width = max(len(c[0]) for c in checks)
+    for label, ok in checks:
+        print(f"  [{'PASS' if ok else 'FAIL'}] {label.ljust(width)}", file=sys.stderr)
+    print(f"\n{len(checks) - failed}/{len(checks)} passed", file=sys.stderr)
+    return 1 if failed else 0
+
+
 def main():
     parser = argparse.ArgumentParser(description="Vector Brain. Semantic Search")
     sub = parser.add_subparsers(dest="command")
@@ -1988,6 +2189,9 @@ def main():
     idx.add_argument("--force", action="store_true",
                      help="Required with --source. Acknowledges that --source WIPES every other source "
                           "from the brain (see the 2026-07-13 and 2026-07-17 self-inflicted wipes).")
+
+    sub.add_parser("serve", help="Run as an MCP server over stdio (JSON-RPC). This is the `recall` server the adapter templates point at.")
+    sub.add_parser("selftest", help="Protocol selftest for `serve`. No model load, no index needed.")
 
     srch = sub.add_parser("search", help="Hybrid search (vector + BM25)")
     srch.add_argument("query", help="Search query")
@@ -2019,7 +2223,7 @@ def main():
                             "DEFAULT-OFF). Soft-boosts pooled chunks whose page is a "
                             "1-hop graph neighbour of a top hit. tag-hubs excluded, "
                             "fan-out capped. opt-in: graph link density is currently "
-                            "low (26%, measured 2026-05-17), so off until densified.")
+                            "low (26%%, measured 2026-05-17), so off until densified.")  # %% is REQUIRED: argparse %-formats help text, so a bare % here made `search --help` raise ValueError instead of printing help.
     srch.set_defaults(graph_expand=False)
 
     sub.add_parser("stats", help="Show index statistics")
@@ -2055,6 +2259,10 @@ def main():
                expand_enable=getattr(args, "expand", True),
                confidence_boost_enable=getattr(args, "confidence_boost", True),
                graph_expand_enable=getattr(args, "graph_expand", False))
+    elif args.command == "serve":
+        mcp_serve()
+    elif args.command == "selftest":
+        sys.exit(mcp_selftest())
     elif args.command == "stats":
         stats()
     else:
