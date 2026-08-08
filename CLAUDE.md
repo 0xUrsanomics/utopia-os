@@ -91,6 +91,16 @@ overrides convenience. Slower and safe beats fast and risky, always.
    restate before continuing. This catches the "just do it" cascade where several individually-
    authorized actions compound on a single approval.
 
+# Plain Language (ISO 24495-1)
+Always-on, every human-read artifact: TG replies, memos, decks, client docs, commit bodies.
+SOUL.md governs VOICE. This governs COMPREHENSION. Different failures: a reply can sound
+exactly like the operator and still be unusable.
+- **Relevant.** Write for what the reader will DO with it. Cut what serves the writer (process narration, effort-display, hedging) and not the decision.
+- **Findable.** Past one screen: the reader's likely question is a heading, the verdict sits at the top of its section. Nothing load-bearing buried mid-paragraph.
+- **Understandable.** One idea per sentence. Define a term the first time it appears in anything that leaves this session, because these get forwarded.
+- **Usable.** No follow-up needed to act. A caveat that changes how a number should be read travels WITH the number, never in a footnote.
+- **One word, one meaning** (the single ASD-STE100 lift). Recurring operational terms carry ONE definition, registry `knowledge/glossary.md`. Never vary a term for prose variety. If a term names a measurement, its BASIS is part of the definition. Evidence: the dashboard drew chain `totalSupply` and CoinGecko `circulating` as one series and overstated IDRT by 43%.
+
 # Routing
 
 Intent detection: keyword -> knowledge file + skill. Lookup order: skill frontmatter `trigger:` fields
