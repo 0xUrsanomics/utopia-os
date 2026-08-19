@@ -88,6 +88,45 @@ first. If it returns `409 Conflict`, another process is already long-polling the
   the same way, from a message sent inside that topic. Routing different classes of output
   to different topics (alerts, briefings, logs) is worth the setup.
 
+#### The two-surface pattern (recommended for a solo operator)
+
+One **private** forum group with two topics beats both a second bot and a shared/public group.
+The topics split the two things an ops agent produces, so they never bury each other:
+
+| Topic | What lands here |
+|---|---|
+| **Ops** | your live back-and-forth with the agent (the operator chat). |
+| **Cron Reports** | everything scheduled fires here: heartbeats, briefings, digests, alerts. |
+
+The split matters because a cron heartbeat interrupting a live conversation, or a real question
+scrolling away under an automated digest, is the exact friction this is meant to remove.
+
+**The one part a bot cannot do.** A bot cannot create a group, and it cannot turn Topics on;
+both are owner-only actions in the Telegram app. So you do three things by hand, once:
+
+1. Create a group (just you in it is fine).
+2. **Group → Edit → Topics → on** (this is the step no API can do for you).
+3. Add the bot, promote it to admin, and grant **Manage Topics**.
+
+After that the bot does the rest. With Topics on and the bot an admin, it creates each topic
+itself:
+
+```bash
+# GROUP_ID is the negative -100... id from getUpdates (step 2)
+curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/createForumTopic" \
+  -d "chat_id=$GROUP_ID" -d "name=Ops"
+curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/createForumTopic" \
+  -d "chat_id=$GROUP_ID" -d "name=Cron Reports"
+```
+
+Each call returns a `result.message_thread_id`. Those two numbers are the routing table:
+the harness sends live replies with the **Ops** thread id, and every scheduled task sends with
+the **Cron Reports** thread id. A `sendMessage` with no `message_thread_id` lands in the group's
+General topic, which is a fine default but not where you want automated noise.
+
+The order is load-bearing: `createForumTopic` on a group whose Topics are still off returns
+`400 the chat is not a forum`. If you see that, you skipped step 2.
+
 ### 4. Wire it
 
 ```bash

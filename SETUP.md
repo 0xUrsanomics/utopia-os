@@ -28,8 +28,11 @@ authoritative, schema-verified guide for that harness. The rest of this file is 
 
 1. **Instruction file.** Copy `AGENTS.md` to the user's project (Claude Code uses `CLAUDE.md`). Fill in
    their operating rules. Keep it within the harness's size cap (e.g. Codex 32 KiB).
-2. **Memory scaffolds.** Copy `memory/templates/` and have the user fill `SOUL.md` (voice), `USER.md`
-   (who they are), and the indexes. Do NOT copy anyone else's memory content.
+2. **Memory scaffolds.** Copy `memory/templates/`, then run the **`setup-interview`** skill
+   (`skills/setup-interview.md`): it interviews the operator and writes `SOUL.md` (voice), `USER.md`
+   (who they are), the operating rules, and the `MEMORY.md` seed from their answers, instead of leaving
+   them blank templates to fill by hand (which almost nobody does). Do NOT copy anyone else's memory
+   content.
 3. **Core scripts.** Copy `scripts/` (security gates, memory/recall, cockpit). They are path-relative
    (`AGENT_ROOT`/`WORKSPACE`), no edits needed.
 4. **Skills.** Copy `skills/` and `skills-shared/` into the harness's skill directory (the adapter says
