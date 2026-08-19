@@ -99,9 +99,9 @@ The fastest path: open your coding agent in an empty project and tell it
 
 [`SETUP.md`](SETUP.md) is a runbook written for the agent: it detects your harness (Claude Code, Codex,
 Kimi, grok, Hermes, OpenClaw, opencode, pi, or other), reads the matching [`adapters/`](adapters/) guide,
-and wires the portable core + MCP config + hooks + skills, filling in your voice and user model as it
-goes. It never inlines a secret and tells you what still needs your input. Prefer to do it by hand? The
-manual path is below.
+and wires the portable core + MCP config + hooks + skills, then runs the `setup-interview` skill to fill
+your voice and user model by interviewing you (not by handing you blank templates). It never inlines a
+secret and tells you what still needs your input. Prefer to do it by hand? The manual path is below.
 
 ## Getting started
 

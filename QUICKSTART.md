@@ -91,6 +91,10 @@ Both ship as templates with the section headings already in place. Write a parag
 each; you will refine them for months. **Nothing works well until these two are real** —
 an agent with an empty voice file sounds like every other agent.
 
+> **Faster than filling blanks:** run the `setup-interview` skill (`skills/setup-interview.md`).
+> It interviews you and writes `SOUL.md`, `USER.md`, and the operating rules from your answers.
+> Almost nobody fills a blank template well; being asked the right questions works better.
+
 ---
 
 ## 3. Wire the system prompt

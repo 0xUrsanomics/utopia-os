@@ -127,6 +127,14 @@ General topic, which is a fine default but not where you want automated noise.
 The order is load-bearing: `createForumTopic` on a group whose Topics are still off returns
 `400 the chat is not a forum`. If you see that, you skipped step 2.
 
+A helper does both calls and prints the routing table, with the same stdlib-only,
+token-from-the-environment doctrine as the bridge:
+
+```bash
+python3 scripts/setup/provision_topics.py <group_id>              # creates Ops + Cron Reports
+python3 scripts/setup/provision_topics.py <group_id> --selftest   # offline check, no token
+```
+
 ### 4. Wire it
 
 ```bash
