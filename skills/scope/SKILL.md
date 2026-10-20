@@ -16,8 +16,8 @@ Hard-edged, brief, no hedging in the restate. Read like a co-pilot confirming na
 
 ## Source & Pairs with
 
-- `memory/Infra/permissions-schema.json`. the full tool→autonomy-mode mapping; consult before deciding if /scope auto-fires
-- `memory/Feedback/helicopter-check-before-infra.md`. sibling pattern: 3 ripple-bullets before an infra change. /scope handles WHAT, helicopter-check handles BLAST-RADIUS
+- the Autonomy Modes table in `CLAUDE.md`. the full tool→autonomy-mode mapping; consult before deciding if /scope auto-fires
+- the helicopter-check lesson (list 3 ripple effects before any infra change). sibling pattern: 3 ripple-bullets before an infra change. /scope handles WHAT, helicopter-check handles BLAST-RADIUS
 - `CLAUDE.md` Autonomy Modes section. defines AUTO / INFORM / CONFIRM / BLOCKED tiers
 - Sister skills: `skills/critic/SKILL.md` (post-output adversarial review), `skills-shared/sycophancy-guard/SKILL.md` (catches drift in subsequent compliance), `skills/agent-dispatch/SKILL.md` (subagent briefing follows the same restate-pattern)
 - `outputs/raw/agent/` past /scope outputs for calibration
@@ -115,7 +115,7 @@ Zoom out before zooming in. 2-4 bullets, concrete:
 - **Reversibility**: exactly how this is undone if wrong (revert one file / disable one scheduler entry / restore from backup). If NOT cleanly reversible, say so loud.
 - **Failure mode**: the most likely way this bites later, and what would catch it.
 
-This is the `memory/Feedback/helicopter-check-before-infra.md` pattern promoted from infra-only into every /scope. /scope answers WHAT, the helicopter view answers WHAT ELSE MOVES. A restate without it under-serves the approval: the operator can only meaningfully approve what they can see the blast radius of. If the change genuinely touches nothing downstream (rare), say "blast radius: contained to {file}, nothing consumes it" explicitly. do not omit the section.
+This is the the helicopter-check lesson (list 3 ripple effects before any infra change) pattern promoted from infra-only into every /scope. /scope answers WHAT, the helicopter view answers WHAT ELSE MOVES. A restate without it under-serves the approval: the operator can only meaningfully approve what they can see the blast radius of. If the change genuinely touches nothing downstream (rare), say "blast radius: contained to {file}, nothing consumes it" explicitly. do not omit the section.
 
 ### Step 4. Ask for corrections
 One line:

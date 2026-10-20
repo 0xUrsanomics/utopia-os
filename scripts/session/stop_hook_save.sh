@@ -1,5 +1,5 @@
 #!/bin/bash
-# stop_hook_save.sh — the Stop-hook trigger half of the /save mechanism.
+# stop_hook_save.sh, the Stop-hook trigger half of the /save mechanism.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 # Writes a save signal file when conditions are met.
 #

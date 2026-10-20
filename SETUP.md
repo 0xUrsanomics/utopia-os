@@ -1,4 +1,4 @@
-# SETUP.md — for the agent setting this up
+# SETUP.md: for the agent setting this up
 
 **You are an AI coding agent.** A user pointed you at this repository and asked you to set up Utopia OS
 for them. Follow this runbook. Work in the user's environment; make no outbound network calls beyond
@@ -7,24 +7,24 @@ reading this repo; never print or commit a secret. Confirm before overwriting an
 Utopia OS = a **portable core** (works on any MCP-capable harness) + a small **harness shim** (the
 adapter for the user's specific tool). See [`docs/adapters.md`](docs/adapters.md) for the model.
 
-## Step 1 — identify the user's harness
+## Step 1: identify the user's harness
 
 Ask, or infer from what's installed: **Claude Code, Codex, Kimi Code, grok, Hermes, OpenClaw, opencode,
 pi**, or *other*. This decides which adapter you use.
 
 | Harness | Adapter | Tier |
 |---|---|---|
-| Claude Code | none — use the repo as-is (`CLAUDE.md`, `settings.json`, `skills/`) | native |
+| Claude Code | none, use the repo as-is (`CLAUDE.md`, `settings.json`, `skills/`) | native |
 | Codex / Kimi Code / grok | [`adapters/codex`](adapters/codex/) · [`adapters/kimi`](adapters/kimi/) · [`adapters/grok`](adapters/grok/) | low (config translation) |
 | Hermes / OpenClaw / opencode / pi | [`adapters/hermes`](adapters/hermes/) · [`adapters/openclaw`](adapters/openclaw/) · [`adapters/opencode`](adapters/opencode/) · [`adapters/pi`](adapters/pi/) | medium (guardrails become a plugin) |
-| other / unknown | portable core + `AGENTS.md` only (skip the hook wiring) | — |
+| other / unknown | portable core + `AGENTS.md` only (skip the hook wiring) |, |
 
-## Step 2 — read the matching adapter
+## Step 2: read the matching adapter
 
 Open `adapters/<harness>/README.md` and follow its **Steps** and **What degrades** sections. It is the
 authoritative, schema-verified guide for that harness. The rest of this file is the shared skeleton.
 
-## Step 3 — install the portable core (every harness)
+## Step 3: install the portable core (every harness)
 
 1. **Instruction file.** Copy `AGENTS.md` to the user's project (Claude Code uses `CLAUDE.md`). Fill in
    their operating rules. Keep it within the harness's size cap (e.g. Codex 32 KiB).
@@ -38,9 +38,9 @@ authoritative, schema-verified guide for that harness. The rest of this file is 
 4. **Skills.** Copy `skills/` and `skills-shared/` into the harness's skill directory (the adapter says
    which). `SKILL.md` content is portable; only *triggering* differs per harness.
 5. **MCP.** Use the adapter's MCP config template to point the harness at the user's tool servers.
-   Supply every credential via the environment or a secret manager — **never inline a token**.
+   Supply every credential via the environment or a secret manager, **never inline a token**.
 
-## Step 4 — wire the guardrail hooks (per adapter)
+## Step 4: wire the guardrail hooks (per adapter)
 
 - **Low-tier (Codex/Kimi/grok):** copy the adapter's hooks config template into the harness's config;
   the same guard scripts run, only the wrapper format changes.
@@ -50,12 +50,12 @@ authoritative, schema-verified guide for that harness. The rest of this file is 
 - **Unknown harness:** skip hooks. The prose rules in `AGENTS.md` still apply; note to the user that the
   *automated* gates (stand-down, send-guard, compound-counter) are not enforced until hooks exist.
 
-## Step 5 — verify, then hand off
+## Step 5: verify, then hand off
 
 1. Run `python3 scripts/memory/check_always_loaded_budget.py` (should be within budget).
 2. Smoke-test one skill and one MCP tool.
 3. Tell the user what was installed, what still needs their input (voice/user model, secrets in `.env`),
-   and — for medium/unknown harnesses — which automated guards are not yet enforced.
+   and, for medium/unknown harnesses, which automated guards are not yet enforced.
 
 ## Safety rules you must keep
 

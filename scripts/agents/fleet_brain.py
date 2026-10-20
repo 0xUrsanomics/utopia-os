@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# fleet_brain.py — the fleet shared-brain blackboard: per-agent inboxes drained into one shared brain.
+# fleet_brain.py, the fleet shared-brain blackboard: per-agent inboxes drained into one shared brain.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
-"""fleet_brain — the fleet shared-brain blackboard.
+"""fleet_brain: the fleet shared-brain blackboard.
 
 Agents drop FINDINGS into a per-agent inbox; a drain step moves them to a permanent corpus
 dir and indexes them incrementally into the SAME vector_brain every other agent already
@@ -14,7 +14,7 @@ Design (integrates with vector_brain.py rather than bolting on):
                                  the nightly FULL reindex; never lost)
   drain (index):  move inbox -> corpus, then `vector_brain.py index-append --paths ...`
                   (incremental add + BM25 insert; NO full rebuild).
-  recall:         unchanged — every agent's recall already hits the same brain; a
+  recall:         unchanged: every agent's recall already hits the same brain; a
                   fleet-source boost surfaces fresh cross-agent findings.
 
 Single-writer discipline: agents only ever WRITE their own inbox/<self>/ ; the single

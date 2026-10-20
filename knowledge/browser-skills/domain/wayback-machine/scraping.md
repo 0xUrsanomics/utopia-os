@@ -272,8 +272,8 @@ page_count = int(r.strip())   # returns plain integer, not JSON
 
 | API | Typical latency | Safe timeout | Notes |
 |---|---|---|---|
-| CDX search | 5–40s | 60s | Intermittently slow; retry on timeout |
-| Snapshot fetch (`/web/`) | 2–10s | 30s | Reliable |
+| CDX search | 5-40s | 60s | Intermittently slow; retry on timeout |
+| Snapshot fetch (`/web/`) | 2-10s | 30s | Reliable |
 | Metadata (`/metadata/`) | <1s | 20s | Fast, stable |
 | Advanced search | <1s | 20s | Fast, stable |
 

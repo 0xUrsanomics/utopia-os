@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# osv_check.py — pre-install check of npm/PyPI packages against Google's OSV vulnerability DB.
+# osv_check.py, pre-install check of npm/PyPI packages against Google's OSV vulnerability DB.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """OSV malware/vulnerability check for npm/PyPI packages.
 

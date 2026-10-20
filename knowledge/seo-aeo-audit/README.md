@@ -6,7 +6,7 @@ attribution: Original work © Warp Inc. Ported 2026-05-06.
 purpose: Reference docs for auditing/improving search engine visibility (SEO) + AI citation visibility (AEO).
 ---
 
-# SEO + AEO Audit — Reference Materials
+# SEO + AEO Audit: Reference Materials
 
 Ported from `warpdotdev/oz-skills` (MIT). Reference material for when a site becomes a real inbound
 funnel and needs search-visibility and AI-citation tuning.

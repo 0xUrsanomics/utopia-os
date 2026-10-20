@@ -3,7 +3,7 @@
 # configurable deny-list of never-legitimately-needed secret paths, while leaving the
 # session otherwise NORMAL (writable home, full env, network) so it never breaks git
 # push / MCP servers / ssh / .env-reads. NARROW BY DESIGN: this is not the untrusted-
-# subprocess sandbox (bwrap_run.sh) — it is a light mask of a few crown-jewel paths on
+# subprocess sandbox (bwrap_run.sh), it is a light mask of a few crown-jewel paths on
 # an otherwise-normal session.
 #
 # Deny-list: memory/state/principal_floor_denylist.txt (one path per line, # comments).
@@ -18,7 +18,7 @@
 # memory/Infra/b7-phase2-landlock-design.md.
 #
 # FAIL-OPEN (unlike bwrap_run.sh): if bwrap is missing, run the command UNSANDBOXED +
-# warn — locking the operator out of their own session is worse than a missing narrow floor.
+# warn, locking the operator out of their own session is worse than a missing narrow floor.
 #
 # Usage: principal_floor.sh -- <command...>   (e.g. the claude launch command)
 set -uo pipefail

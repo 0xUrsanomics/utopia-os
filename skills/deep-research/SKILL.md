@@ -33,13 +33,13 @@ If it's unclear which mode, default to **standard**. Surface the mode pick to th
 | # | Phase | Quick | Std | Deep | Ultra |
 |---|-------|-------|-----|------|-------|
 | 1 | SCOPE. restate the question, list assumptions, define out-of-scope | ✓ | ✓ | ✓ | ✓ |
-| 2 | PLAN. decompose into 4-8 sub-questions, plan source classes | – | ✓ | ✓ | ✓ |
+| 2 | PLAN. decompose into 4-8 sub-questions, plan source classes |, | ✓ | ✓ | ✓ |
 | 3 | RETRIEVE. pull evidence (web-search primary, browser-automation for JS-render/auth-gated, WebFetch fallback) | ✓ | ✓ | ✓ | ✓ |
-| 4 | TRIANGULATE. cross-check claims across ≥3 cluster-independent sources | – | ✓ | ✓ | ✓ |
-| 4.5 | OUTLINE REFINEMENT. re-org structure based on what evidence actually exists | – | ✓ | ✓ | ✓ |
-| 5 | SYNTHESIZE. write findings with inline citations | – | ✓ | ✓ | ✓ |
-| 6 | CRITIQUE. adversarial pass: weakest claim? sourcing gaps? steel-man counter-thesis? | – | – | ✓ | ✓ |
-| 7 | REFINE. fold critique into v2 | – | – | ✓ | ✓ |
+| 4 | TRIANGULATE. cross-check claims across ≥3 cluster-independent sources |, | ✓ | ✓ | ✓ |
+| 4.5 | OUTLINE REFINEMENT. re-org structure based on what evidence actually exists |, | ✓ | ✓ | ✓ |
+| 5 | SYNTHESIZE. write findings with inline citations |, | ✓ | ✓ | ✓ |
+| 6 | CRITIQUE. adversarial pass: weakest claim? sourcing gaps? steel-man counter-thesis? |, |, | ✓ | ✓ |
+| 7 | REFINE. fold critique into v2 |, |, | ✓ | ✓ |
 | 8 | PACKAGE. write to the knowledge graph with cross-links | ✓ | ✓ | ✓ | ✓ |
 
 Phases 3-5 are an evidence loop per sub-question, NOT strict sequential gates. If a finding falls apart at TRIANGULATE, drop back to RETRIEVE.

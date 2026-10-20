@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-# verify_subagent_diff.py — verify a subagent's claimed file changes against actual filesystem state.
+# verify_subagent_diff.py, verify a subagent's claimed file changes against actual filesystem state.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """
-verify_subagent_diff.py — verify a subagent's claimed file changes against actual filesystem state.
+verify_subagent_diff.py: verify a subagent's claimed file changes against actual filesystem state.
 
 Used by the parent (main session) AFTER a subagent returns its structured `subagent_return_v1` JSON.
 Confirms claimed `files_changed` actually got modified within the dispatch window, and surfaces
@@ -152,7 +152,7 @@ def main() -> int:
     }
 
     if not args.quiet:
-        print(f"# verify_subagent_diff.py — verdict: {verdict}", file=sys.stderr)
+        print(f"# verify_subagent_diff.py: verdict: {verdict}", file=sys.stderr)
         print(f"# {len(verified)} verified, {len(missing_claimed)} missing-claimed, {len(unexpected)} unexpected", file=sys.stderr)
 
     print(json.dumps(result, indent=2))

@@ -73,4 +73,4 @@ When an idea entry triggers a longer thread (the operator explicitly references 
 
 ## Pairs with
 
-Pairs with `the `project` skill (not bundled in this skeleton)` (the project context switcher) — same filesystem-projects layer.
+Pairs with `the `project` skill (not bundled in this skeleton)` (the project context switcher), same filesystem-projects layer.

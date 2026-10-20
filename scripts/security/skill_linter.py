@@ -1,4 +1,4 @@
-# skill_linter.py — static security scan of skill markdown files before they are trusted/registered.
+# skill_linter.py, static security scan of skill markdown files before they are trusted/registered.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Local pre-deploy skill linter. Static security scan of skill markdown files.
 
@@ -314,7 +314,7 @@ def main() -> int:
         for f in sorted(r["findings"], key=lambda f: sev_rank[f["severity"]]):
             print(f"        {f['severity']:<8} L{f['line']:<4} {f['rule']}: {f['match']}")
     if len(targets) == 1 and not flagged:
-        print(f"[PASS] score {results[0]['score']}  {results[0]['file']} — clean")
+        print(f"[PASS] score {results[0]['score']}  {results[0]['file']}: clean")
     if len(targets) > 1 and not flagged:
         print("all clean.")
     return verdict_exit(worst)

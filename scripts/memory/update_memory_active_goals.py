@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# update_memory_active_goals.py — regenerate the Active Goals block in MEMORY.md from state.
+# update_memory_active_goals.py, regenerate the Active Goals block in MEMORY.md from state.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """
 update_memory_active_goals.py. Regenerate the `## 🎯 Active Goals` block at the top of
@@ -73,9 +73,9 @@ def render_block(state: dict) -> str:
             bar = progress_bar(ms_done, ms_total)
             tail = ""
             if g.get("due"):
-                tail = f" — due {g['due']}"
+                tail = f": due {g['due']}"
             elif g.get("review_after"):
-                tail = f" — review {g['review_after']}"
+                tail = f": review {g['review_after']}"
             lines.append(f"- `{gid}` {title}  {bar} {ms_done}/{ms_total}{tail}")
     lines.append("")
     lines.append(END_MARKER)

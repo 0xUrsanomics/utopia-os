@@ -1,13 +1,13 @@
 ---
 name: gstack-cross-cutting-patterns
-description: Cross-cutting procedural patterns adapted from gstack (garrytan/gstack, MIT). Referenced by review-style skills (office-hours, CEO-review, design-review) and any future review-style skill. Source: ~5 sections that appear in every gstack skill — extracted here as shared substrate instead of duplicated in each skill.
+description: Cross-cutting procedural patterns adapted from gstack (garrytan/gstack, MIT). Referenced by review-style skills (office-hours, CEO-review, design-review) and any future review-style skill. Source: ~5 sections that appear in every gstack skill, extracted here as shared substrate instead of duplicated in each skill.
 type: knowledge
 provenance: gstack (garrytan/gstack, MIT)
 ---
 
 # Cross-Cutting Patterns from gstack
 
-These patterns appeared as boilerplate in every gstack skill. They are NOT boilerplate — each is a substantive procedural primitive that hardens any review-style or scoping skill. Extracted here as a shared reference so review-style skills (e.g. an office-hours, a CEO-review, a design-review skill) and any future review skill can cite without duplicating.
+These patterns appeared as boilerplate in every gstack skill. They are NOT boilerplate, each is a substantive procedural primitive that hardens any review-style or scoping skill. Extracted here as a shared reference so review-style skills (e.g. an office-hours, a CEO-review, a design-review skill) and any future review skill can cite without duplicating.
 
 ---
 
@@ -37,28 +37,28 @@ B) <option label>
 
 ---
 
-## 2. Cognitive Patterns — How Great Designers See
+## 2. Cognitive Patterns: How Great Designers See
 
 For `plan-design-review` and any design-evaluating skill. These are perceptual instincts, not a checklist. Let them run automatically while reviewing.
 
-1. **See the system, not the screen** — never evaluate in isolation. What comes before, after, when things break.
-2. **Empathy as simulation** — not "I feel for the user" but mental simulations: bad signal, one hand free, boss watching, first-time-vs-1000th-time.
-3. **Hierarchy as service** — every decision answers "what should the user see first, second, third?" Respecting time, not prettifying pixels.
-4. **Constraint worship** — limitations force clarity. "If I can only show 3 things, which 3 matter most?"
-5. **The question reflex** — first instinct is questions, not opinions. "Who is this for? What did they try before this?"
-6. **Edge case paranoia** — what if name is 47 chars? Zero results? Network fails? Colorblind? RTL language?
-7. **The 'Would I notice?' test** — invisible = perfect. Highest compliment is not noticing the design.
-8. **Principled taste** — "this feels wrong" must be traceable to a broken principle. Taste is *debuggable*, not subjective (Zhuo).
-9. **Subtraction default** — "as little design as possible" (Rams). "Subtract the obvious, add the meaningful" (Maeda).
-10. **Time-horizon design** — first 5 sec (visceral) / 5 min (behavioral) / 5-yr relationship (reflective) — design for all three (Norman).
-11. **Design for trust** — every decision builds or erodes trust. Strangers sharing a home requires pixel-level intentionality (Gebbia).
-12. **Storyboard the journey** — before pixels, storyboard the emotional arc. Each moment is a scene with a mood (Gebbia, "Snow White" method).
+1. **See the system, not the screen**, never evaluate in isolation. What comes before, after, when things break.
+2. **Empathy as simulation**, not "I feel for the user" but mental simulations: bad signal, one hand free, boss watching, first-time-vs-1000th-time.
+3. **Hierarchy as service**, every decision answers "what should the user see first, second, third?" Respecting time, not prettifying pixels.
+4. **Constraint worship**, limitations force clarity. "If I can only show 3 things, which 3 matter most?"
+5. **The question reflex**, first instinct is questions, not opinions. "Who is this for? What did they try before this?"
+6. **Edge case paranoia**, what if name is 47 chars? Zero results? Network fails? Colorblind? RTL language?
+7. **The 'Would I notice?' test**, invisible = perfect. Highest compliment is not noticing the design.
+8. **Principled taste**, "this feels wrong" must be traceable to a broken principle. Taste is *debuggable*, not subjective (Zhuo).
+9. **Subtraction default**, "as little design as possible" (Rams). "Subtract the obvious, add the meaningful" (Maeda).
+10. **Time-horizon design**, first 5 sec (visceral) / 5 min (behavioral) / 5-yr relationship (reflective), design for all three (Norman).
+11. **Design for trust**, every decision builds or erodes trust. Strangers sharing a home requires pixel-level intentionality (Gebbia).
+12. **Storyboard the journey**, before pixels, storyboard the emotional arc. Each moment is a scene with a mood (Gebbia, "Snow White" method).
 
 Key refs: Rams' 10 Principles, Norman's 3 Levels, Nielsen's 10 Heuristics, Gestalt Principles, Krug (3-second scan / trunk test / satisficing / goodwill reservoir), Redish (Letting Go of the Words), Ira Glass on taste-gap, Jony Ive on care/carelessness, Gebbia on trust + storyboarding.
 
 ---
 
-## 3. UX Principles — How Users Actually Behave
+## 3. UX Principles: How Users Actually Behave
 
 Observed behavior, not preferences. Apply before/during/after every design decision.
 
@@ -80,19 +80,19 @@ Observed behavior, not preferences. Apply before/during/after every design decis
 - **Eliminate noise.** 3 sources: shouting / disorganization / clutter. Fix by removal, not addition.
 - **Clarity > consistency.** If clarity makes something slightly inconsistent, choose clarity.
 
-**Navigation as wayfinding:** users have no sense of scale, direction, or location. Nav must always answer: what site is this, what page am I on, what are the major sections, where am I, how can I search. The "trunk test": cover everything except the nav — should still know.
+**Navigation as wayfinding:** users have no sense of scale, direction, or location. Nav must always answer: what site is this, what page am I on, what are the major sections, where am I, how can I search. The "trunk test": cover everything except the nav, should still know.
 
 **Goodwill reservoir:** users start with goodwill. Friction depletes it.
 - **Deplete:** hiding info wanted (pricing, contact), punishing non-conformance, asking for unnecessary info, sizzle (splash screens), sloppy appearance.
 - **Replenish:** make right action obvious, tell upfront, save steps, easy error recovery, apologize when wrong.
 
-**Mobile:** same rules, higher stakes. Real estate scarce but never sacrifice usability for space. Affordances must be VISIBLE — no cursor hover. Touch targets 44px+.
+**Mobile:** same rules, higher stakes. Real estate scarce but never sacrifice usability for space. Affordances must be VISIBLE, no cursor hover. Touch targets 44px+.
 
 ---
 
 ## 4. Capture Learnings (inline during review)
 
-If a review uncovers a non-obvious pattern / pitfall / preference / architectural insight, log it for future sessions. Don't wait for /save — log immediately, /save will reconcile.
+If a review uncovers a non-obvious pattern / pitfall / preference / architectural insight, log it for future sessions. Don't wait for /save, log immediately, /save will reconcile.
 
 **Format** (append to `memory/Learnings.md` with the same date-tag-block shape used elsewhere):
 
@@ -115,7 +115,7 @@ files: [relevant paths]
 
 ---
 
-## 5. Review Chaining — Recommend Next Skill
+## 5. Review Chaining: Recommend Next Skill
 
 After a review skill completes, recommend the next review based on what THIS review surfaced. Don't blindly fire the full chain.
 
@@ -129,7 +129,7 @@ After a review skill completes, recommend the next review based on what THIS rev
 
 **Format the recommendation as AUQ** with explicit options:
 - A) Run /<next-skill> next (recommended because X)
-- B) Skip — handle next steps manually
+- B) Skip, handle next steps manually
 - C) Run /<other-skill> instead
 
 **Hard rule:** if eng-review-equivalent (`/code-review`) is the required ship-gate for this artifact type, it goes BEFORE optional design/ceo passes when both are needed.
@@ -141,10 +141,10 @@ After a review skill completes, recommend the next review based on what THIS rev
 When closing any review skill, declare status explicitly. Don't end with vague "looks good."
 
 **One of:**
-- **DONE** — completed with evidence (cite the evidence inline).
-- **DONE_WITH_CONCERNS** — completed but list specific concerns.
-- **BLOCKED** — cannot proceed; state the blocker + what was tried.
-- **NEEDS_CONTEXT** — missing info; state exactly what's needed.
+- **DONE**, completed with evidence (cite the evidence inline).
+- **DONE_WITH_CONCERNS**, completed but list specific concerns.
+- **BLOCKED**, cannot proceed; state the blocker + what was tried.
+- **NEEDS_CONTEXT**, missing info; state exactly what's needed.
 
 **Format:**
 ```
@@ -162,10 +162,10 @@ RECOMMENDATION: <what to do next>
 
 For any skill that starts a new session (not continuation), recover recent project context before the substantive work. Adapt to your own stack. If you keep a session-bootstrap/handoff file + a watchdog, the gstack-equivalent flows are:
 
-1. **Read latest checkpoint** — e.g. a `memory/session-bootstrap.md` Active Handoff block.
-2. **Recent timeline** — `tail -50 logs/session.jsonl` for last 24h of skill executions.
-3. **Branch + repo context** — `git branch --show-current` + `git log --oneline -10`.
-4. **Last 3 outputs from this skill type** — `ls -t outputs/raw/<skill-type>/ | head -3`.
+1. **Read latest checkpoint**, e.g. a `memory/session-bootstrap.md` Active Handoff block.
+2. **Recent timeline**, `tail -50 logs/session.jsonl` for last 24h of skill executions.
+3. **Branch + repo context**, `git branch --show-current` + `git log --oneline -10`.
+4. **Last 3 outputs from this skill type**, `ls -t outputs/raw/<skill-type>/ | head -3`.
 
 If 2+ artifacts recovered, give 2-sentence "welcome back" summary before launching the skill. If recent skill-execution pattern implies a next step, mention once (don't pressure).
 
@@ -176,7 +176,7 @@ If 2+ artifacts recovered, give 2-sentence "welcome back" summary before launchi
 - **Telemetry** (`~/.gstack/analytics/skill-usage.jsonl`): observable + analytics phone-home. Prefer a local event log (e.g. `logs/session.jsonl`); no external analytics, no new infra needed.
 - **gstack-update-check**: network call per skill fire to check upstream version. Don't auto-update from external repos; a periodic re-audit cadence is safer.
 - **bin/gstack-*** compiled binaries: source-audit burden. Native python/bash equivalents avoid it.
-- **Continuous checkpoint mode** (auto-commit WIP): conflicts with a clean-commit preference + a periodic git-push cadence. The `[gstack-context]` block format is interesting — a candidate pattern for a save/checkpoint skill, but not auto-applied.
+- **Continuous checkpoint mode** (auto-commit WIP): conflicts with a clean-commit preference + a periodic git-push cadence. The `[gstack-context]` block format is interesting, a candidate pattern for a save/checkpoint skill, but not auto-applied.
 - **Question tuning** (per-question preference learning): requires a `gstack-question-preference` + `question-registry.ts` infrastructure. The concept (adaptive friction reduction) is valuable but the implementation is tool-coupled. Re-evaluate once you have 50+ AUQ-fired data points in your own logs.
 - **Proactive auto-suggest config**: gstack auto-suggests skills based on context. If your model already auto-routes via skill frontmatter triggers, doubly-applying would create noise.
 - **Cross-project learnings**: shared learnings across all projects on the machine. An alternative is per-persona memory + a global Learnings file. Different architecture, intentional.

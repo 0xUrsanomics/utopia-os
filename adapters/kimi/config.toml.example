@@ -1,7 +1,7 @@
 # Utopia OS guardrail + hygiene hooks for Kimi Code.
 # Merge these [[hooks]] blocks into ~/.kimi-code/config.toml. A faithful port of
 # settings.example.json: same scripts, same events, Kimi's [[hooks]] TOML wrapper.
-# Kimi's [[hooks]] allows ONLY event/matcher/command/timeout — no extra fields.
+# Kimi's [[hooks]] allows ONLY event/matcher/command/timeout, no extra fields.
 # Replace /path/to/utopia-os with your checkout. Confirm the tool-name matchers
 # (Bash / Read|Edit|Write / Write|Edit|MultiEdit) against Kimi's tool names.
 

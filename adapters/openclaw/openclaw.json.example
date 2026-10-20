@@ -1,11 +1,11 @@
-// Utopia OS on OpenClaw — config template for ~/.openclaw/openclaw.json
+// Utopia OS on OpenClaw, config template for ~/.openclaw/openclaw.json
 // Format is JSON5 (comments + trailing commas allowed). All fields are optional; OpenClaw fills safe defaults.
 // This wires three of the four adapter dimensions directly: MCP servers, the guard PLUGIN, and the bootstrap hook.
-// (The instruction file is a workspace bootstrap file — see the adapter README, step 1.)
-// Replace every /path/to/... placeholder with your real checkout / daemon path. NEVER inline a secret here — use env.
+// (The instruction file is a workspace bootstrap file, see the adapter README, step 1.)
+// Replace every /path/to/... placeholder with your real checkout / daemon path. NEVER inline a secret here, use env.
 {
   // ---------------------------------------------------------------------------
-  // DIMENSION: MCP config  (portable core — the daemon moves unchanged)
+  // DIMENSION: MCP config  (portable core, the daemon moves unchanged)
   // Add these with `openclaw mcp add <name> ...` or hand-edit mcp.servers.
   // ---------------------------------------------------------------------------
   mcp: {
@@ -20,7 +20,7 @@
         args: ["/path/to/utopia-os/scripts/memory/vector_brain.py", "serve"],
       },
 
-      // credentialed stdio servers — token supplied via env, never inline
+      // credentialed stdio servers, token supplied via env, never inline
       telegram: {
         command: "python3",
         args: ["/path/to/utopia-os/scripts/mcp/telegram_bridge.py"],
@@ -46,7 +46,7 @@
 
   // ---------------------------------------------------------------------------
   // DIMENSION: Hook layer  (the guardrail scripts, re-expressed as ONE TS plugin)
-  // The 6 settings.example.json hooks CANNOT be shell commands on OpenClaw — the
+  // The 6 settings.example.json hooks CANNOT be shell commands on OpenClaw, the
   // blocking gates only exist as typed plugin hooks (api.on). See ./plugin/ + README.
   // Load the local plugin directly by path (dev), or install it with
   //   `openclaw plugins install -l /path/to/utopia-os/adapters/openclaw/plugin`
@@ -76,7 +76,7 @@
 
   // ---------------------------------------------------------------------------
   // Optional: coarse, observe-only lifecycle automation via file-based internal hooks.
-  // Use ONLY for side effects (idempotent boot tasks, logging) — these cannot block a
+  // Use ONLY for side effects (idempotent boot tasks, logging), these cannot block a
   // tool or gate policy. The SessionStart "parachute" is better handled as a workspace
   // bootstrap file (BOOTSTRAP.md / MEMORY.md); see README step 1.
   // ---------------------------------------------------------------------------
@@ -91,11 +91,11 @@
   },
 
   // ---------------------------------------------------------------------------
-  // Tool policy — the closest analog to Claude Code's permissions.allow / deny.
+  // Tool policy, the closest analog to Claude Code's permissions.allow / deny.
   // Granularity is tool-name / group, not path glob. Per-PATH secret protection
   // (Read(./.env), curl|bash) is enforced by the guard plugin + workspace sandbox,
   // not here. `security.installPolicy` is the operator-owned, fail-closed allow/block
-  // for `openclaw plugins/skills install` (native installs) — configure it to run
+  // for `openclaw plugins/skills install` (native installs), configure it to run
   // the same stand-down check; see README "what needs a plugin rewrite".
   // ---------------------------------------------------------------------------
   tools: {

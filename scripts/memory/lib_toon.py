@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-# lib_toon.py — encode Python objects to TOON (Token-Oriented Object Notation) for LLM prompts.
+# lib_toon.py, encode Python objects to TOON (Token-Oriented Object Notation) for LLM prompts.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """
 TOON (Token-Oriented Object Notation) encoder for LLM prompt construction.
 
-Per https://github.com/toon-format/toon — TOON combines YAML-style indentation
+Per https://github.com/toon-format/toon, TOON combines YAML-style indentation
 with CSV-style tabular layout for uniform arrays of objects. ~30-60% token
 savings on structured data when fed to an LLM as input.
 

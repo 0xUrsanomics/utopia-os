@@ -65,7 +65,7 @@ The visible `<a href>` on the card points at `loom.com/share/<id>`, so once you 
 ## 3. The virtualization quirk. `scrollIntoView`, NOT `scrollTop`
 
 Loom's library uses an aggressive virtual scroller that:
-- Renders ~30–60 cards at a time
+- Renders ~30-60 cards at a time
 - **Caps `document.scrollingElement.scrollTop` to a value far smaller than `scrollHeight`** as long as the bottom of the list isn't the bottom of the viewport
 - Unmounts cards above the viewport once you scroll past them
 

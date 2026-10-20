@@ -47,7 +47,7 @@ to `spawn-agent-in-tenant`.
 - For internal same-user agents: each gets its own `CLAUDE_CONFIG_DIR` (chmod 700) under its project dir.
 
 ## 4. PATH discipline (host-level, prevents the #1 agent bug)
-Cron runs with a minimal PATH (`/usr/bin:/bin`). Any agent launcher or watchdog invoked by cron must export `~/.bun/bin` (and `~/.local/bin`) BEFORE launching claude, or the bun poller hits ENOENT and the agent goes deaf. Bake this into the host's launcher template so every agent inherits it. See `memory/Feedback/diff-against-working-peer-first.md` and `spawn-agent-in-tenant` section 3.
+Cron runs with a minimal PATH (`/usr/bin:/bin`). Any agent launcher or watchdog invoked by cron must export `~/.bun/bin` (and `~/.local/bin`) BEFORE launching claude, or the bun poller hits ENOENT and the agent goes deaf. Bake this into the host's launcher template so every agent inherits it. See the diff-against-a-working-peer lesson (diff the broken config against one that works before theorizing) and `spawn-agent-in-tenant` section 3.
 
 ## 5. Shared infra (optional, host-level)
 - **Memory + logs**: a per-agent `memory/` + `logs/` tree (agents stay amnesiac of each other unless explicitly bridged).

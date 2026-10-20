@@ -84,11 +84,11 @@ lands at `memory/state/ssot.sqlite` and is gitignored.
 
 Now fill in two files by hand. They are the ones everything else reads:
 
-- `memory/SOUL.md` — your voice constitution. How the agent writes, what it never does.
-- `memory/USER.md` — who you are. Role, timezone, what you are working on.
+- `memory/SOUL.md`, your voice constitution. How the agent writes, what it never does.
+- `memory/USER.md`, who you are. Role, timezone, what you are working on.
 
 Both ship as templates with the section headings already in place. Write a paragraph in
-each; you will refine them for months. **Nothing works well until these two are real** —
+each; you will refine them for months. **Nothing works well until these two are real**, 
 an agent with an empty voice file sounds like every other agent.
 
 > **Faster than filling blanks:** run the `setup-interview` skill (`skills/setup-interview.md`).
@@ -168,11 +168,11 @@ it do work it should not have to.
 
 ## Where to go next
 
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — the whole-system picture.
-- [`docs/memory-system.md`](docs/memory-system.md) — how the tiers actually work.
-- [`skills/`](skills/) — adopt one at a time. `save` and `scope` are the two that pay off
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), the whole-system picture.
+- [`docs/memory-system.md`](docs/memory-system.md), how the tiers actually work.
+- [`skills/`](skills/), adopt one at a time. `save` and `scope` are the two that pay off
   first.
-- [`docs/security-gates.md`](docs/security-gates.md) — read before granting any autonomy.
+- [`docs/security-gates.md`](docs/security-gates.md), read before granting any autonomy.
 
 ## If it does not work
 

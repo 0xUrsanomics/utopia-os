@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# bash_gate.py — PreToolUse Bash danger-pattern gate for the fleet WORKER tenants.
+# bash_gate.py, PreToolUse Bash danger-pattern gate for the fleet WORKER tenants.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Block the high-damage command patterns a prompt-injected worker would run.
 

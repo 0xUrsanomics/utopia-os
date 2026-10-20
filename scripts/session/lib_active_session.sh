@@ -1,5 +1,5 @@
 #!/bin/bash
-# lib_active_session.sh — session-size self-regulation helper.
+# lib_active_session.sh, session-size self-regulation helper.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 # Shared helpers for finding the active Claude Code session transcript.
 #

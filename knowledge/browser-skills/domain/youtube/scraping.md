@@ -409,7 +409,7 @@ that need live UI state, not for reading metadata.
 - **`likeCount` lives in `microformat`, not `videoDetails`**: `videoDetails` does not expose like count. `microformat.playerMicroformatRenderer.likeCount` is a string integer.
 - **`availableCountries` is a list of ISO 3166-1 alpha-2 codes**: 249 entries for globally available videos. An empty list means region data is unavailable, not that the video is globally blocked.
 - **oEmbed thumbnail is always `hqdefault` (480×360)**: if you need 1280×720, construct the `maxresdefault.jpg` URL directly, but check for 404 on older videos.
-- **Search returns ~14–20 results**: YouTube does not guarantee 20 results. Always iterate `itemSectionRenderer.contents` rather than assuming a fixed count.
+- **Search returns ~14-20 results**: YouTube does not guarantee 20 results. Always iterate `itemSectionRenderer.contents` rather than assuming a fixed count.
 - **Channel subscriber count is a rounded string**: `"4.48m subscribers"`, not an integer. Parse with regex if sorting: `re.search(r'([\d.]+)\s*([km]?)', text, re.I)`.
 - **`meta_parts` order is `[handle, subscribers, video_count]`**: the third element is not always present. Index defensively.
 - **Caption `baseUrl` is not fetchable**: `captionTracks[].baseUrl` contains `expire=` and `signature=` params but returns empty bytes in all tested conditions (plain `http_get`, XHR from within the page, and `fetch()` with cookies). Use the Show Transcript UI in the browser for caption text (see `playback.md`).

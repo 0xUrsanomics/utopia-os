@@ -5,7 +5,7 @@
 Most people use an AI assistant as a stateless chat box: every session starts from zero, nothing
 compounds, and the assistant will confidently do irreversible things because nothing stops it. Utopia
 OS is the opposite. It's the memory, skills, security, and multi-agent scaffolding that turns a
-general coding agent into an *operator* — one that remembers across sessions, follows a voice, gates
+general coding agent into an *operator*, one that remembers across sessions, follows a voice, gates
 its own risky actions, and hands work off to sub-agents without losing the thread.
 
 This repo is the **architecture and the reusable machinery**, with every piece of personal and business
@@ -18,7 +18,7 @@ make long-running autonomous work safe and durable:
 
 - **Memory that compounds.** A tiered store (always-loaded core → on-demand recall → semantic archive)
   so the agent knows who you are and what was decided last month without re-reading everything each turn.
-- **A single write path for operational state.** One store, one mutator, every change logged — so
+- **A single write path for operational state.** One store, one mutator, every change logged, so
   "what mode are we in / what's the active project / how much budget is left" never drifts across a
   distributed fleet of processes.
 - **Security-first gates.** A stand-down registry, an auto-compound counter, a skill linter, and a
@@ -114,7 +114,7 @@ standard `SKILL.md`.
 ## What's deliberately NOT here
 
 No real memory content, no business data, no personal information, no secrets. Utopia OS is built as a
-clean skeleton, not a filtered dump — every file was authored or ported to be free of the operator's
+clean skeleton, not a filtered dump, every file was authored or ported to be free of the operator's
 identity. If you're adopting it, you bring your own content.
 
 ## Set it up (point your agent at this repo)
@@ -131,7 +131,7 @@ secret and tells you what still needs your input. Prefer to do it by hand? The m
 
 ## Getting started
 
-**New to this? Start with [`QUICKSTART.md`](QUICKSTART.md)** — a human first-run path,
+**New to this? Start with [`QUICKSTART.md`](QUICKSTART.md)**, a human first-run path,
 fifteen minutes to a working core, with the platform matrix and the dependency answer.
 
 **Requirements: Python 3.9+, and nothing else.** The core has no third-party dependencies.
@@ -153,7 +153,7 @@ Then, the manual route:
 1. Read `docs/ARCHITECTURE.md` for the whole-system picture, then the subsystem docs.
 2. Copy `CLAUDE.md` and the `memory/templates/` scaffolds, and fill them with your own voice + user model.
 3. Wire the security gates as hooks (see `docs/security-gates.md`).
-4. Adopt skills incrementally — each lives in `skills/<name>/SKILL.md` (the standard Agent Skills
+4. Adopt skills incrementally, each lives in `skills/<name>/SKILL.md` (the standard Agent Skills
    format). To use one in Claude Code, copy its folder into your `.claude/skills/`. Shared helper
    scripts live under `scripts/` and are referenced by repo-root-relative path.
 

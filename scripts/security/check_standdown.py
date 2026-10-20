@@ -1,12 +1,12 @@
-# check_standdown.py — stand-down registry checker: gates installs / mcp-adds / settings-edits.
+# check_standdown.py, stand-down registry checker: gates installs / mcp-adds / settings-edits.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Stand-down registry checker. Run before any install / mcp-add / settings-edit.
 
 Returns:
-    exit 0  : clear (no stand-down match) — proceed
-    exit 1  : warn (warn-severity match) — needs explicit user re-confirmation
-    exit 2  : block (block-severity match) — refuse to proceed
-    exit 3  : expired (entry exists but expired) — surface as needs-review
+    exit 0  : clear (no stand-down match), proceed
+    exit 1  : warn (warn-severity match), needs explicit user re-confirmation
+    exit 2  : block (block-severity match), refuse to proceed
+    exit 3  : expired (entry exists but expired), surface as needs-review
     exit 64 : usage error
 
 Usage:

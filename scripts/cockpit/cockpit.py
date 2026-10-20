@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# cockpit.py — read-only localhost dashboard for the whole system: one file, stdlib-only, GET-only.
+# cockpit.py, read-only localhost dashboard for the whole system: one file, stdlib-only, GET-only.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
-"""Cockpit — read-only localhost command center.
+"""Cockpit: read-only localhost command center.
 
 Single stdlib file. 127.0.0.1:8787, GET-only, no deps, no writes, no controls. Manual start:
 
@@ -346,7 +346,7 @@ def c_scheduler() -> dict:
 
 
 _DU_CACHE: dict[str, tuple[float, int]] = {}
-_DU_TTL = 300  # 5min — du is expensive, refresh inline at most every 5min
+_DU_TTL = 300  # 5min, du is expensive, refresh inline at most every 5min
 
 
 def _du_mb(path: str) -> int | None:
@@ -533,7 +533,7 @@ def c_system() -> dict:
         size_s = f"{repo_mb/1024:.1f} GB" if repo_mb >= 1024 else f"{repo_mb} MB"
         items.append({"text": "workspace", "right": size_s, "sub": ""})
 
-    # Top 5 processes by RSS — collapsible group
+    # Top 5 processes by RSS, collapsible group
     proc_items = []
     try:
         ps = subprocess.run(["ps", "-eo", "rss,comm,args", "--sort=-rss"],
@@ -689,7 +689,7 @@ def _ccusage_compute() -> dict:
                           "sub": f"{_fmt_tok(b.get('totalTokens'))} tok · {io} · "
                                  f"burn ${br.get('costPerHour',0):.0f}/hr · "
                                  f"proj ${pcost:.0f} · {mdl}"})
-            note_bits.append(f"block {(b.get('startTime') or '')[11:16]}–"
+            note_bits.append(f"block {(b.get('startTime') or '')[11:16]}-"
                              f"{(b.get('endTime') or '')[11:16]}UTC ~{rem}min left")
 
         def win(label, rs):
@@ -711,7 +711,7 @@ def _ccusage_compute() -> dict:
                 spark = _spark(costs)
                 lo, hi = min(costs), max(costs)
                 items.append({"text": f"{len(last14)}d cost trend",
-                              "sub": f"${lo:.0f}–${hi:.0f}/day range",
+                              "sub": f"${lo:.0f}-${hi:.0f}/day range",
                               "right": "→ today",
                               "spark": spark})
             win("today", days[-1:])

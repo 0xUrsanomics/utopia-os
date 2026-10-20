@@ -8,7 +8,7 @@
 //   - local: "command" is a SINGLE ARRAY [bin, ...args] (NOT separate command/args), plus optional
 //            "environment" (NOT "env"), "cwd", "enabled", "timeout" (ms)
 //   - remote: "url" + optional "headers", "oauth" ({} = auto-OAuth, false = off), "enabled", "timeout"
-//   - credentials: use  {env:VAR}  substitution — opencode expands it at load. NEVER inline a secret.
+//   - credentials: use  {env:VAR}  substitution, opencode expands it at load. NEVER inline a secret.
 // Replace every /path/to/... with your checkout / daemon path.
 {
   "$schema": "https://opencode.ai/config.json",
@@ -52,10 +52,10 @@
 
   // Utopia OS's canonical instructions live in CLAUDE.md. opencode auto-reads AGENTS.md (repo root)
   // and, in Claude Code compat mode, CLAUDE.md + ~/.claude/CLAUDE.md. The "instructions" array below
-  // is OPTIONAL — use it only to pin extra always-load files; it is merged with your AGENTS.md.
+  // is OPTIONAL, use it only to pin extra always-load files; it is merged with your AGENTS.md.
   "instructions": ["CLAUDE.md"]
 
-  // The guardrail hooks are NOT configured here — opencode has no shell-hook block. They are an
+  // The guardrail hooks are NOT configured here, opencode has no shell-hook block. They are an
   // in-process plugin: copy  plugins/utopia-guard.ts  into  .opencode/plugins/  (auto-loaded).
   // See README.md ("What needs a plugin rewrite"). npm-published plugins go in a top-level
   // "plugin": ["pkg-name"] array; local files load from the plugins dir, not the array.

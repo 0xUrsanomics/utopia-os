@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# reality_review_weekly.py — surface due reality-feedback entries for operator outcome-labeling.
+# reality_review_weekly.py, surface due reality-feedback entries for operator outcome-labeling.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Reality-feedback weekly review.
 

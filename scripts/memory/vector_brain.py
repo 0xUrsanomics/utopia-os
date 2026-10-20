@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# vector_brain.py — the Tier-3 semantic recall engine (hybrid vector + BM25 search).
+# vector_brain.py, the Tier-3 semantic recall engine (hybrid vector + BM25 search).
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """
 Vector Brain. hybrid search across ALL knowledge sources.
@@ -811,7 +811,7 @@ def _extract_breadcrumb(source_path: str, chunk_text: str) -> str:
     Pattern lifted from Proxy-Pointer RAG audit 2026-05-22 (TDS article). Prepending
     file-path + first heading at chunk top to embedding input improves retrieval
     relevance for hierarchical-context queries by ~3-5% on hierarchical-style queries.
-    Stored text remains unprefixed — only the embed input gets it.
+    Stored text remains unprefixed, only the embed input gets it.
 
     Example output: "memory/Context/company-profile > # Pricing"
     """
@@ -1907,7 +1907,7 @@ def add_document(text: str, source: str, doc_id: str | None = None,
     Returns dict with {"vectors_added": 1, "bm25_added": 0|1, "table_rows": N}.
 
     Note: this writes directly to the existing "brain" table. Repeated calls
-    with the same doc_id will create duplicate rows — caller manages dedup.
+    with the same doc_id will create duplicate rows, caller manages dedup.
     """
     import lancedb
 

@@ -1,4 +1,4 @@
-# auto_compound_counter.py — detects "just do it" AUTO-op cascades and forces a /scope re-check.
+# auto_compound_counter.py, detects "just do it" AUTO-op cascades and forces a /scope re-check.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Auto-compound action counter. Forces a /scope check-in when AUTO ops chain in same domain.
 
@@ -7,11 +7,11 @@ re-verification. This counter detects the cascade shape and forces an explicit /
 when 3+ AUTO operations happen in the same domain without an intervening user message.
 
 Domains tracked:
-    install         — npm/bun/pip/cargo/pipx install, mcp add
-    settings_edit   — harness settings.json modifications
-    scheduler       — schedule_create, schedule_update, schedule_delete
-    skill_edit      — writes to skills/ or skills-shared/
-    cron_fire       — manual non-interactive invocations / daemon-spawn
+    install, npm/bun/pip/cargo/pipx install, mcp add
+    settings_edit, harness settings.json modifications
+    scheduler, schedule_create, schedule_update, schedule_delete
+    skill_edit, writes to skills/ or skills-shared/
+    cron_fire, manual non-interactive invocations / daemon-spawn
 
 State at memory/state/auto_compound_counter.json. Reset on user message (a Stop hook can
 clear it). Threshold = 3 in same domain → forces the agent to invoke /scope before the next AUTO op.

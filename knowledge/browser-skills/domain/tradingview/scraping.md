@@ -276,7 +276,7 @@ aapl_ideas = get_ideas(symbol="NASDAQ:AAPL")
 
 ## Gotchas
 
-**Scanner `range` is half-open**: `[0, 10]` returns rows 0–9 (10 rows total). `[10, 20]` for the next page.
+**Scanner `range` is half-open**: `[0, 10]` returns rows 0-9 (10 rows total). `[10, 20]` for the next page.
 
 **Column order is critical**: The `"d"` array in each result row is positional. it exactly mirrors your `"columns"` array. Always zip them: `dict(zip(columns, item["d"]))`.
 
@@ -292,7 +292,7 @@ aapl_ideas = get_ideas(symbol="NASDAQ:AAPL")
 
 **Scanner server is AWS CloudFront** (`X-Amz-Cf-Pop` header) with a custom `Server: tv`: no Cloudflare. No anti-bot on the scanner subdomain. Main `www.tradingview.com` is a React SPA with `window.initData = {}` (empty. no embedded data). All data is loaded via API calls after hydration.
 
-**Rate limits**: No 429s observed in testing. 5 concurrent scanner calls complete in ~1s. Symbol search returns `symbols_remaining` in the response (counts against some quota. varies 90–180 across calls but never blocks). Observed no blocking after 15 rapid calls in a row.
+**Rate limits**: No 429s observed in testing. 5 concurrent scanner calls complete in ~1s. Symbol search returns `symbols_remaining` in the response (counts against some quota. varies 90-180 across calls but never blocks). Observed no blocking after 15 rapid calls in a row.
 
 **Sector names**: Use TradingView's own taxonomy, not GICS. "Technology" does not exist. use `"Electronic Technology"` (hardware/semis) or `"Technology Services"` (software/internet).
 

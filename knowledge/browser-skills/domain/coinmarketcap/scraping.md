@@ -426,12 +426,12 @@ Find IDs from the listing API: `c['id']` or from the detail API URL by looking u
 
 **Main site (`coinmarketcap.com`):**
 - `http_get` works with the default `Mozilla/5.0` UA. no Cloudflare, no bot detection triggered.
-- Page loads are ~700ms for 690–710KB of HTML+`__NEXT_DATA__`.
+- Page loads are ~700ms for 690-710KB of HTML+`__NEXT_DATA__`.
 
 **Internal API (`api.coinmarketcap.com`):**
 - No auth headers required. No `X-Request-Id` or `X-Forwarded-For` needed.
 - 25 rapid sequential calls with zero rate limiting or errors. no throttle observed at that volume.
-- Typical latency: 65–250ms per call.
+- Typical latency: 65-250ms per call.
 - `error_code: '0'` and `error_message: 'SUCCESS'` in every response; no `credit_count` consumed.
 
 **v2 API (`api.coinmarketcap.com/v2/`):**
@@ -460,4 +460,4 @@ Find IDs from the listing API: `c['id']` or from the detail API URL by looking u
 
 - **Multiple quotes per coin**: The listing API returns multiple quote objects when you request multiple convert currencies. Always filter by `q['name'] == 'USD'` (or your target currency) before reading price fields.
 
-- **Pagination**: `start` is 1-indexed (not 0-indexed). `start=1&limit=100` returns items 1–100, `start=101&limit=100` returns items 101–200.
+- **Pagination**: `start` is 1-indexed (not 0-indexed). `start=1&limit=100` returns items 1-100, `start=101&limit=100` returns items 101-200.

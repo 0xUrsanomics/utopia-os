@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# skill_activity.py — weekly skill usage + downstream-output score from session logs.
+# skill_activity.py, weekly skill usage + downstream-output score from session logs.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """
 Skill Activity Tracker. Weekly skill usage + downstream-output score.
@@ -329,13 +329,13 @@ def format_summary(report: dict) -> str:
     for r in report["top_used"][:5]:
         prod = f" · {int(r['downstream']*100)}% productive" if r["count"] >= 3 else ""
         pin = " 📌" if r["pinned"] else ""
-        lines.append(f"  {r['skill']}{pin} — {r['count']}x{prod}")
+        lines.append(f"  {r['skill']}{pin}: {r['count']}x{prod}")
 
     lines.append("")
     lines.append("**Bottom 5 active (used but barely):**")
     for r in report["least_used"][:5]:
         pin = " 📌" if r["pinned"] else ""
-        lines.append(f"  {r['skill']}{pin} — {r['count']}x · last {r['last_seen'][:10] if r['last_seen'] else 'n/a'}")
+        lines.append(f"  {r['skill']}{pin}: {r['count']}x · last {r['last_seen'][:10] if r['last_seen'] else 'n/a'}")
 
     n_unused = report["skills_unused"]
     if n_unused:

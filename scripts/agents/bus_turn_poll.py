@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# bus_turn_poll.py — UserPromptSubmit hook: surface new fleet-bus messages at turn start.
+# bus_turn_poll.py, UserPromptSubmit hook: surface new fleet-bus messages at turn start.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Surface NEW fleet-bus messages addressed to the hub at the START of every turn.
 

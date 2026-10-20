@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# ab_eval.py — deterministic A/B eval harness for full-agent config changes.
+# ab_eval.py, deterministic A/B eval harness for full-agent config changes.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """A/B eval harness: hold the model constant, make a CONFIG change the ONLY
 variable, run a behavioral capability-axis corpus through both arms, score

@@ -203,11 +203,11 @@ explicit.
 
 Still on the **Bot** page, under **Privileged Gateway Intents**:
 
-- **MESSAGE CONTENT INTENT** — required if the bot needs to read what people type. Without
+- **MESSAGE CONTENT INTENT**, required if the bot needs to read what people type. Without
   it, message bodies arrive empty and everything looks broken for no visible reason. This is
   the single most common Discord setup failure.
-- **SERVER MEMBERS INTENT** — only if you need the member list.
-- **PRESENCE INTENT** — usually not needed.
+- **SERVER MEMBERS INTENT**, only if you need the member list.
+- **PRESENCE INTENT**, usually not needed.
 
 Save.
 

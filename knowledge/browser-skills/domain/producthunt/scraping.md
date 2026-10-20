@@ -93,7 +93,7 @@ Example: https://www.producthunt.com/leaderboard/daily/2026/4/18
 
 - Uses zero-padded-free month/day (April = `4`, not `04`)
 - Uses same `[data-test^="post-item-"]` selector
-- Shows 12–19 products per day
+- Shows 12-19 products per day
 - Same extraction JS as homepage works identically
 
 **Yesterday's results with real vote counts:**
@@ -111,7 +111,7 @@ URL: https://www.producthunt.com/leaderboard/weekly/YYYY/WW
 Example: https://www.producthunt.com/leaderboard/weekly/2026/16
 ```
 
-- Week number is ISO week (week 16 = April 13–19, 2026)
+- Week number is ISO week (week 16 = April 13-19, 2026)
 - Current week may return 0 items until the week ends
 - Same `[data-test^="post-item-"]` selector
 
@@ -239,7 +239,7 @@ JSON.stringify(
 
 | Page | Selector | Count | Notes |
 |------|----------|-------|-------|
-| Homepage | `[data-test^="post-item-"]` | 30 | 4 sections × ~5–7 products |
+| Homepage | `[data-test^="post-item-"]` | 30 | 4 sections × ~5-7 products |
 | Homepage | `[data-test^="post-name-"]` | 30 | Product name elements |
 | Homepage/Leaderboard | `[data-test="vote-button"]` | varies | `. ` for hidden; numeric for visible |
 | Topics/Categories | `[data-test^="product:"]` | ~15 | Top-rated products |

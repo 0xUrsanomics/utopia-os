@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# stake_classifier.py — hardcoded regex/keyword classifier that scores an output draft's stake level.
+# stake_classifier.py, hardcoded regex/keyword classifier that scores an output draft's stake level.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Stake classifier v1.
 

@@ -105,7 +105,7 @@ Full fields per entry: `id`, `symbol`, `name`, `image`, `current_price`, `market
 
 Extra columns added by `price_change_percentage=1h,7d,30d`: `price_change_percentage_1h_in_currency`, `price_change_percentage_7d_in_currency`, `price_change_percentage_30d_in_currency`
 
-Pagination: use `page=2`, `page=3`, etc. with `per_page` up to 250. Results are 1-indexed. page 2 with per_page=5 returns ranks 6–10.
+Pagination: use `page=2`, `page=3`, etc. with `per_page` up to 250. Results are 1-indexed. page 2 with per_page=5 returns ranks 6-10.
 
 ### Coin detail (full metadata)
 
@@ -314,7 +314,7 @@ Note: ping still counts against the rate limit. Don't use it to check if a 429 h
 
 - **`/coins/list` is expensive (rate-limit-wise)**: It returns 17,564 entries and costs one API call. Fetch once, store in a variable, filter locally. Don't call it in a loop.
 
-- **Pagination is 1-indexed**: `page=1` returns items 1–N, `page=2` returns N+1–2N. `page=0` returns the same as `page=1` (it doesn't error).
+- **Pagination is 1-indexed**: `page=1` returns items 1, N, `page=2` returns N+1-2N. `page=0` returns the same as `page=1` (it doesn't error).
 
 - **`per_page` max is 250**: Requesting more than 250 per page silently returns 250. To get the full top-500, make two calls: `page=1&per_page=250` then `page=2&per_page=250`.
 

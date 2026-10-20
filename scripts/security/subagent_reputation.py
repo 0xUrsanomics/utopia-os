@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# subagent_reputation.py — track per-(subagent_type, domain) verification outcomes; flag repeat failers.
+# subagent_reputation.py, track per-(subagent_type, domain) verification outcomes; flag repeat failers.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """
 Subagent Reputation Tracker. Track per-(subagent_type, domain) verification outcomes.

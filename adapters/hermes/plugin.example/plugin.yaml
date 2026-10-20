@@ -1,4 +1,4 @@
-# Utopia OS guardrails — Hermes Python plugin manifest.
+# Utopia OS guardrails, Hermes Python plugin manifest.
 # Install: copy this plugin.example/ dir to ~/.hermes/plugins/utopia-guardrails/
 # (rename the dir; the dir name is the plugin id). Hermes loads it in BOTH CLI and
 # gateway sessions and calls register(ctx) once at startup.

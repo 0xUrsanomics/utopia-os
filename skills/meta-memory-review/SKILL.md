@@ -11,10 +11,10 @@ trigger: /meta-memory-review, meta memory review, memory self-review, review mem
 **Lift provenance**: AutoMem (arXiv 2607.01224) loop-1 = "a strong LLM reviews complete agent trajectories and iteratively revises the memory structure." Take loop-1 (structure-revision-by-review) and SKIP loop-2 (RL fine-tuning, impossible on a frozen model). The problem it targets: "a single memory mistake hides long before it surfaces" = recurring drift / over-hardening / noop-loop pains, which more text-lessons have failed to fix.
 
 ## Inputs (READ-ONLY)
-1. `logs/session.jsonl` — last ~7 days of session events (categories, save extractions, failures, event mix).
-2. `memory/Learnings.md` — tail + scan for RECURRENCE markers ("Nx", "N-th occurrence", "3rd/4th instance"). Repeated failure modes are the highest-signal targets.
-3. `logs/errors.jsonl` + skill-failure tracker (`scripts/eval/skill_failure_tracker.py` output, or its store) — skills failing 3x/14d.
-4. reality-feedback ledger (`reality_feedback.sqlite` if present) — verdicts + friction signals.
+1. `logs/session.jsonl`, last ~7 days of session events (categories, save extractions, failures, event mix).
+2. `memory/Learnings.md`, tail + scan for RECURRENCE markers ("Nx", "N-th occurrence", "3rd/4th instance"). Repeated failure modes are the highest-signal targets.
+3. `logs/errors.jsonl` + skill-failure tracker (`scripts/eval/skill_failure_tracker.py` output, or its store), skills failing 3x/14d.
+4. reality-feedback ledger (`reality_feedback.sqlite` if present), verdicts + friction signals.
 5. The CURRENT rules to propose AGAINST: `skills/save/SKILL.md` (extraction rules), `memory/MEMORY.md` (tier-1 index + bloat), frontmatter conventions across `memory/Context|Infra|Feedback`.
 
 ## Review lenses (produce proposals under each; SKIP a lens with no evidence)

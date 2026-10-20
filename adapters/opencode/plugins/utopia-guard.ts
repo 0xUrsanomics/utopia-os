@@ -1,8 +1,8 @@
-// utopia-guard.ts — Utopia OS guardrail shim for opencode (anomalyco/opencode).
+// utopia-guard.ts, Utopia OS guardrail shim for opencode (anomalyco/opencode).
 //
 // TEMPLATE. Copy to  .opencode/plugins/utopia-guard.ts  (project) or
 //           ~/.config/opencode/plugins/utopia-guard.ts  (global). Files in those dirs auto-load
-//           at startup — there is no shell-hook block to register.
+//           at startup, there is no shell-hook block to register.
 //
 // This is the medium-tier rewrite of settings.example.json. opencode's hook layer is in-process
 // JS/TS plugin functions, NOT shell commands, so the six Claude Code hooks cannot be pointed at
@@ -57,7 +57,7 @@ export const UtopiaGuard: Plugin = async ({ $, directory, worktree }) => {
         const { code, out } = await run(
           ["python3", `${ROOT}/scripts/security/check_standdown.py`, "--pattern", command],
         )
-        if (code === 2) throw new Error(`stand-down: blocked — ${out.trim()}`)
+        if (code === 2) throw new Error(`stand-down: blocked: ${out.trim()}`)
         // code 1 (warn) / 3 (expired): surface to the operator, don't hard-block here.
       }
 
@@ -69,7 +69,7 @@ export const UtopiaGuard: Plugin = async ({ $, directory, worktree }) => {
           const { code, out } = await run(
             ["python3", `${ROOT}/scripts/security/skill_linter.py`, path, "--json"],
           )
-          if (code === 2) throw new Error(`skill-linter: blocked — ${out.trim()}`)
+          if (code === 2) throw new Error(`skill-linter: blocked: ${out.trim()}`)
         }
       }
     },
@@ -85,7 +85,7 @@ export const UtopiaGuard: Plugin = async ({ $, directory, worktree }) => {
 
     // ── (optional) PermissionRequest -> permission.ask ────────────────────────────────────────
     // The vetoing hook is `permission.ask` (singular): set output.status to "deny"/"allow"/"ask".
-    // (`permission.asked` in the event bus is read-only and fires AFTER — it cannot veto.)
+    // (`permission.asked` in the event bus is read-only and fires AFTER, it cannot veto.)
     // Wire scripts/security/confirm_gate.py here to enforce the CONFIRM gate deterministically.
     "permission.ask": async (_input, _output) => {
       // Example: _output.status = "deny"

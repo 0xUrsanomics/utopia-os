@@ -54,7 +54,7 @@ Every adapter maps exactly these four things from Claude Code to the target harn
 
 Each `adapters/<harness>/` ships:
 
-- **`README.md`** — the four-dimension mapping, step-by-step adoption, and a **"what degrades"**
+- **`README.md`**, the four-dimension mapping, step-by-step adoption, and a **"what degrades"**
   section (e.g. skill auto-trigger loss, an instruction-file size cap).
 - **Config template(s)** in the target's format (MCP servers, hooks), translating what
   `settings.example.json` and the daemon ship.
@@ -62,12 +62,12 @@ Each `adapters/<harness>/` ships:
 
 ## Tiers
 
-- **Low** — a syntax translation only. The target has an MCP client, a hook layer that maps to CC's
+- **Low**, a syntax translation only. The target has an MCP client, a hook layer that maps to CC's
   events, and `SKILL.md` auto-trigger. Config differences are JSON/frontmatter to TOML. (Codex, Kimi,
   grok.)
-- **Medium** — the substrate ports, but guardrail scripts must be rewritten as in-process plugins in
+- **Medium**, the substrate ports, but guardrail scripts must be rewritten as in-process plugins in
   the target's language, and/or skill auto-trigger degrades. (Hermes, OpenClaw, opencode, pi.)
-- **High** — the target lacks an agent-lifecycle hook system, so the automated gates have no
+- **High**, the target lacks an agent-lifecycle hook system, so the automated gates have no
   deterministic trigger point and fall back to prose plus a coarse OS sandbox. (Kilo Code.)
 
 Build low-tier first: it proves the portable-core boundary holds before spending real engineering on
@@ -79,7 +79,7 @@ Distinct from a harness adapter (which maps the four dimensions to a CLI), a **h
 CLI *inside* it. For a host, Utopia OS runs as the Claude Code harness in the host's sandbox, so the four
 dimensions pass through unchanged and the host adds isolation / egress / coordination around it.
 
-- [`adapters/centaur/`](../adapters/centaur/) — paradigmxyz/centaur: self-hosted, multiplayer, runs the CC
+- [`adapters/centaur/`](../adapters/centaur/), paradigmxyz/centaur: self-hosted, multiplayer, runs the CC
   CLI in a per-thread Kubernetes sandbox pod with egress-proxy credential injection. The adapter is a deploy
-  guide, not a config translation. Heavy (K8s), team-oriented, pre-1.0 — for a solo/local setup the lighter
+  guide, not a config translation. Heavy (K8s), team-oriented, pre-1.0, for a solo/local setup the lighter
   harness adapters are a better fit.

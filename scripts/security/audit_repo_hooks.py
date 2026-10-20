@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# audit_repo_hooks.py — scan .git/hooks/ for planted executables (zip-hook attack defense).
+# audit_repo_hooks.py, scan .git/hooks/ for planted executables (zip-hook attack defense).
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Audit .git/hooks/* for non-.sample executable files.
 
@@ -20,7 +20,7 @@ Usage:
 Exit codes:
     0 = no findings (all clean; findings are still printed/logged when present)
     2 = invocation error (e.g. bad path)
-    3 = drift detected (a known allowlisted hook was modified — elevated severity)
+    3 = drift detected (a known allowlisted hook was modified, elevated severity)
 """
 from __future__ import annotations
 
@@ -105,8 +105,8 @@ def audit_hooks_dir(hooks_dir: Path, allowlist: dict[str, str]) -> tuple[list[di
     """Return (findings, allowlisted_clean, drift) tuples.
 
     findings: non-allowlisted suspicious hooks (original behavior).
-    allowlisted_clean: hooks in allowlist with matching sha256 — info only.
-    drift: hooks in allowlist but sha256 MISMATCH — elevated severity.
+    allowlisted_clean: hooks in allowlist with matching sha256, info only.
+    drift: hooks in allowlist but sha256 MISMATCH, elevated severity.
     """
     findings: list[dict] = []
     allowlisted_clean: list[dict] = []
@@ -213,7 +213,7 @@ def main() -> int:
 
     if has_drift:
         drift_total = sum(len(v) for v in drift_by_repo.values())
-        print(f"🚨 DRIFT: {drift_total} allowlisted hook(s) modified — sha256 mismatch")
+        print(f"🚨 DRIFT: {drift_total} allowlisted hook(s) modified: sha256 mismatch")
         for repo, items in drift_by_repo.items():
             print(f"\n{repo}:")
             for item in items:
@@ -241,7 +241,7 @@ def main() -> int:
     # Exit code semantics:
     # exit 0 = script ran cleanly (findings printed to stdout + logged; not a runtime failure)
     # exit 2 = invocation error (bad path)
-    # exit 3 = drift detected (elevated severity — a known hook was tampered with)
+    # exit 3 = drift detected (elevated severity, a known hook was tampered with)
     if has_drift:
         return 3
     return 0

@@ -37,7 +37,7 @@ Re-scan the transcript specifically for casual-register musings that reveal: how
 **Operator-tacit filter (hard gate, this is the anti-bloat valve)**: capture a musing ONLY if "only someone in the operator's exact seat would think or say this." Generic offhand lines, reactions, logistics, jokes-without-signal → still skipped per Step 1. If a musing would be unremarkable coming from any operator, it is not signal.
 
 **Routing**:
-- worldview / thesis / market-position musing → append to `memory/projects/<active>.md` under a `## Voice Excerpts (verbatim worldview anchors)` section (dated block, same format as the voice-authoring interview phase, INCLUDING the `topics:: [..]` multi-tag line from the controlled vocab in `knowledge/interview-sharpening.md`). This feeds the interview-sharpening corpus, so it compounds into future interview questions automatically.
+- worldview / thesis / market-position musing → append to `memory/projects/<active>.md` under a `## Voice Excerpts (verbatim worldview anchors)` section (dated block, same format as the voice-authoring interview phase, INCLUDING the `topics:: [..]` multi-tag line from the controlled vocab in your interview notes (optional, not bundled)). This feeds the interview-sharpening corpus, so it compounds into future interview questions automatically.
 - temperament / values / how-they-decide / communication-pattern → `memory/USER.md` (durable model) and/or `memory/user-model.md` (behavioral, dreaming-updated).
 - a falsifiable cross-session insight → the normal LEARNINGS path (Step 2 cat 5).
 
@@ -333,4 +333,4 @@ When writing a new fact, ask *what KIND of memory is it?*
 
 `/save` was originally a documented convention in CLAUDE.md without a registered skill file. When the Stop-hook signal bridge (`scripts/session/stop_hook_save.sh` + `scripts/session/save_handler.sh`) started dispatching `/save` to the live REPL, the CLI returned "Unknown skill: save" because the convention wasn't wired as an actual skill. This file closes that gap. `/save` is now a real command the REPL can resolve.
 
-Reference: `memory/Infra/stop-hook-save-integration.md` for the full Stop-hook → handler → send-keys chain.
+Reference: `docs/session-management.md` for the full Stop-hook → handler → send-keys chain.

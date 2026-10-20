@@ -121,7 +121,7 @@ Verified = the parent read returned files / confirmed claims / accepted the summ
 ## Cross-references
 
 - `memory/Infra/agent-phase-domains.json`: canonical schema (this skill reads it)
-- `memory/Infra/agent-protocols-v1.md`: the broader agent protocol (3 surfaces: persona handoff / subagent briefing / cross-bot handoff)
+- `docs/agent-protocols.md`: the broader agent protocol (3 surfaces: persona handoff / subagent briefing / cross-bot handoff)
 - The system prompt's `# Session Self-Regulation` → Delegation threshold + Delegation discipline (3 hard rules)
 
 ## Adoption

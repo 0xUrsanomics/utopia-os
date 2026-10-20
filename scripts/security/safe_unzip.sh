@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# safe_unzip.sh — unzip an archive, then neutralize any planted .git/hooks executables.
+# safe_unzip.sh, unzip an archive, then neutralize any planted .git/hooks executables.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 #
 # Defense against the zip-hook attack vector (as used in the "Contagious Interview"
@@ -60,7 +60,7 @@ echo "   chmod -x applied to $NEUTRALIZED file(s)"
 echo "🔍 running audit_repo_hooks.py for confirmation ..."
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 if python3 "$SCRIPT_DIR/audit_repo_hooks.py" "$TARGET" --quiet; then
-    echo "✅ all clean — $TARGET is safe for git ops"
+    echo "✅ all clean: $TARGET is safe for git ops"
     exit 0
 else
     echo "⚠️  audit STILL found suspicious files after neutralize. Investigate $TARGET manually."

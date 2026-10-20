@@ -305,14 +305,14 @@ Default `fl=` when omitted: `urlkey,timestamp,original,mimetype,statuscode,diges
 ## Rate limits
 
 No auth, no API key. In practice:
-- CDX API: **intermittently slow**: individual queries time out at 20s and succeed at 40–60s. Always use `timeout=40.0` minimum. 3 rapid sequential CDX calls in ~10s completed; 10 rapid calls produced 3 timeouts.
+- CDX API: **intermittently slow**: individual queries time out at 20s and succeed at 40-60s. Always use `timeout=40.0` minimum. 3 rapid sequential CDX calls in ~10s completed; 10 rapid calls produced 3 timeouts.
 - Metadata API: Fast and reliable. 5 sequential calls completed in 3.0s with no errors.
-- Search API: Fast. typically responds in 30–65ms (`QTime` in response header).
+- Search API: Fast. typically responds in 30-65ms (`QTime` in response header).
 - No documented per-second or per-day limits. Archive.org's policy is to be respectful: add `time.sleep(1)` between CDX calls in loops.
 
 ## Gotchas
 
-- **CDX times out. always set `timeout=40.0` or higher.** The default 20s is often too short for CDX. Metadata and search APIs are fine at 20–30s. CDX slowness is backend-side and unpredictable; add retry logic for production use.
+- **CDX times out. always set `timeout=40.0` or higher.** The default 20s is often too short for CDX. Metadata and search APIs are fine at 20-30s. CDX slowness is backend-side and unpredictable; add retry logic for production use.
 
 - **Wayback Availability API is unreliable.** `GET /wayback/available?url=iana.org` returns `{"url": "iana.org", "archived_snapshots": {}}` even for URLs confirmed archived via CDX. Tested 2026-04-18 across many URLs and timestamp combinations. consistently empty. Use `CDX ?sort=closest&limit=1` instead (confirmed working).
 

@@ -41,8 +41,8 @@ created: 2026-01-15
 > Dated events, oldest first (or newest first, pick one and stay consistent). This is the evidence
 > trail the compiled-truth section is synthesized from. Never edit past entries, append new ones.
 
-- **2026-01-10** — first contact via a warm intro. inbound interest, no commercials discussed.
-- **2026-01-13** — discovery call. surfaced the real constraint (their planning cycle). scoped a
+- **2026-01-10**, first contact via a warm intro. inbound interest, no commercials discussed.
+- **2026-01-13**, discovery call. surfaced the real constraint (their planning cycle). scoped a
   bounded pilot as the low-risk entry.
-- **2026-01-15** — sent the pilot outline. flagged the fixed-vs-milestone question as the one open
+- **2026-01-15**, sent the pilot outline. flagged the fixed-vs-milestone question as the one open
   decision. moved status to active, awaiting-reply.

@@ -41,7 +41,7 @@ So this adapter is a **syntax translation, not a rewrite**.
 
 ## What degrades / confirm before relying on it
 
-- **32 KiB instruction cap** (see step 1) — the single real constraint versus Claude Code.
+- **32 KiB instruction cap** (see step 1), the single real constraint versus Claude Code.
 - **Tool-name matchers.** `hooks.json.example` matches `Bash`, `Read|Edit|Write`, `Write|Edit|MultiEdit`.
   Confirm Codex uses the same tool names; if it renames tools, update the `matcher` regexes.
 - **Multiple hooks per event.** Codex runs an array per event, so both `UserPromptSubmit` hooks port;

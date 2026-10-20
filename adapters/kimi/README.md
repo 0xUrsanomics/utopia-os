@@ -37,7 +37,7 @@ docs on 2026-07-23. See [`docs/adapters.md`](../../docs/adapters.md) for the mod
 
 ## What degrades / confirm
 
-- **`[[hooks]]` allows only four fields** (`event`, `matcher`, `command`, `timeout`) — any extra field
+- **`[[hooks]]` allows only four fields** (`event`, `matcher`, `command`, `timeout`), any extra field
   fails the config load. Keep entries minimal.
 - **Scheduler / headless.** Re-point any headless `claude -p` calls to `kimi -p`.
 - **Tool-name matchers** (`Bash`, `Read|Edit|Write`, ...) assume Kimi's tool names match CC's; confirm and

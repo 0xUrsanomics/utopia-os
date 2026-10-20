@@ -100,7 +100,7 @@ Reference agents run for days with NO watchdog. If you add one (boot-start + rar
 - ❌ Blaming the OAuth account / API-key escalation before diffing the launcher against a working tenant. Diff against a working peer first.
 
 ## References
-- a host/user provisioner script (OS-isolation provisioner — write your own)
+- a host/user provisioner script (OS-isolation provisioner, write your own)
 - a working agent's PATH-fixed `run.sh` (the launcher pattern)
 - a multi-bot dossier (full tenant history + the PATH root cause)
 - diff against a working peer first (the meta-lesson)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# reality_feedback_create.py — Stop-hook that logs high-stake outputs to a reality-feedback ledger.
+# reality_feedback_create.py, Stop-hook that logs high-stake outputs to a reality-feedback ledger.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Reality-feedback auto-create.
 

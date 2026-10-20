@@ -77,7 +77,7 @@ for i, sid in enumerate(story_ids):
 - `<tr class="athing submission" id="...">`: the class is `athing submission`, not just `athing`. The `athing comtr` class is for comment rows.
 - Job/hiring posts (YC ads) appear in the list but have no score or author. `scores_by_id.get(sid)` returns `None` for them. check before comparing.
 - `re.DOTALL` multi-line patterns can cross story boundaries. Use ID-anchored patterns (as above) instead of positional zip for score/author.
-- The page only serves page 1 (30 items). Pages 2–4 exist at `?p=2` etc. but require a login cookie for page 3+.
+- The page only serves page 1 (30 items). Pages 2-4 exist at `?p=2` etc. but require a login cookie for page 3+.
 
 ---
 
@@ -240,4 +240,4 @@ For structured comment access prefer Algolia items API. it returns a proper nest
 
 ## Do NOT use a browser for HN
 
-All data is in plain HTML or JSON APIs. `goto_url()` + `wait_for_load()` takes 3–8 seconds; `http_get` takes 170–400ms. The JS `querySelectorAll` approach works (tested, returns correct data) but is 20–50x slower with no benefit.
+All data is in plain HTML or JSON APIs. `goto_url()` + `wait_for_load()` takes 3-8 seconds; `http_get` takes 170-400ms. The JS `querySelectorAll` approach works (tested, returns correct data) but is 20-50x slower with no benefit.

@@ -35,7 +35,7 @@ Log:
   on miss: {"event":"reply_tool_miss","skill":"telegram-reply-tool","context":"<what was missed>"}
 ```
 
-**Policy note**: the daemon fallback (`mcp__telegram__telegram_send_message`) is removed from interactive sessions. Using it respawns the chat poller and causes a token leak. A residual ~10% miss rate is the accepted ceiling. The stop-hook catches and logs misses — that IS the mitigation.
+**Policy note**: the daemon fallback (`mcp__telegram__telegram_send_message`) is removed from interactive sessions. Using it respawns the chat poller and causes a token leak. A residual ~10% miss rate is the accepted ceiling. The stop-hook catches and logs misses, that IS the mitigation.
 
 ## Core Rule (CLAUDE.md Rule #1)
 Every turn that produces output in a chat session MUST end with a reply tool call.
@@ -56,7 +56,7 @@ No exceptions. Bare text responses are invisible to the operator (terminal outpu
 5. **Session-start miss**: the first turn in a new chat session (context not fully loaded yet) ends without a reply. The stop-hook catches it. Rule applies from turn 1, no grace period.
 6. **Multi-turn completion drift**: in tasks spanning 5+ tool calls, the final wrap-up reply gets dropped when the last tool call returns control. Explicit pattern: if you ran 5+ tools this turn, the reply tool is NOT optional regardless of perceived output volume.
 7. **Post-reply tool call**: the reply tool fires but then another write (log, report save, session.jsonl append) runs AFTER it. The reply tool must be ABSOLUTE LAST. If you need to log, log BEFORE calling reply.
-8. **Security/research chain completion gap**: after any turn involving a security audit, a stand-down write, or a multi-file research chain (5+ Bash+Read+Write tools), the final wrap-up reply is the most-dropped call. Root cause: the agent treats the session.jsonl log write as the "completion signal" and exits. Rule: if this turn touched `sandbox/`, `standdowns.json`, `outputs/raw/`, or ran 3+ security checks — call the reply tool BEFORE logging to session.jsonl, not after.
+8. **Security/research chain completion gap**: after any turn involving a security audit, a stand-down write, or a multi-file research chain (5+ Bash+Read+Write tools), the final wrap-up reply is the most-dropped call. Root cause: the agent treats the session.jsonl log write as the "completion signal" and exits. Rule: if this turn touched `sandbox/`, `standdowns.json`, `outputs/raw/`, or ran 3+ security checks, call the reply tool BEFORE logging to session.jsonl, not after.
 
 ## HARD ORDERING RULE
 The reply tool call MUST be the absolute LAST tool call in the turn. No tools after it. If you realize you need to run another tool (read, write, search), do it FIRST, then call the reply tool. The turn is not complete until the reply tool fires. The stop-hook is a safety net, not the primary guard. don't rely on it to catch the miss.

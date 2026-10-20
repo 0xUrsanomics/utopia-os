@@ -1,4 +1,4 @@
-// utopia-guards.ts — Utopia OS guardrail hooks re-expressed as ONE pi extension.
+// utopia-guards.ts, Utopia OS guardrail hooks re-expressed as ONE pi extension.
 //
 // pi has no settings.json "hooks" block (that is what makes Codex/Kimi/grok low-tier).
 // Its hook layer is code: TypeScript extensions that subscribe to lifecycle events. So the
@@ -6,15 +6,15 @@
 //
 // STRATEGY: shell-out shim. The audited portable-core gate scripts (check_standdown.py,
 // skill_linter.py, auto_compound_counter.py, verify_after_write.py, session_bootstrap.sh,
-// reply_guard.sh) are NOT rewritten — their logic stays in one place, shared with the Claude
+// reply_guard.sh) are NOT rewritten, their logic stays in one place, shared with the Claude
 // Code deployment. This extension only (a) subscribes to pi's events, (b) builds the CC-shaped
 // stdin JSON the scripts expect, (c) maps the script's exit code back to pi's control shape.
 // For the hot path (tool_call fires on every bash/read/edit/write) you may instead port the
-// stand-down match + lint scan into TS to avoid a subprocess per call — see README.
+// stand-down match + lint scan into TS to avoid a subprocess per call, see README.
 //
 // INSTALL: drop this file at ~/.pi/agent/extensions/utopia-guards.ts (global) or
 // .pi/extensions/utopia-guards.ts (project; loads only after project-trust approval).
-// Runs with pi's full permissions (pi has no sandbox) — same trust surface as the gates.
+// Runs with pi's full permissions (pi has no sandbox), same trust surface as the gates.
 // jiti loads it directly, no build step. Erasable-TS syntax only (no enums / param-properties),
 // per pi's own AGENTS.md contract.
 //

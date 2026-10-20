@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# bus_feed.py — one-way notifier: pipe new fleet-bus traffic to a chat topic to watch live.
+# bus_feed.py, one-way notifier: pipe new fleet-bus traffic to a chat topic to watch live.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Pipe NEW fleet-bus traffic to a chat topic so the operator can WATCH the agents talk in
 real-time from a phone.
@@ -10,11 +10,11 @@ fire-and-forget Bot API call. There is no poller in that group, so it does not r
 the shared-bot transcript pollution that comes from running a full agent poller inside a
 team/client group. Intended to run on the same short-interval cron as the dispatcher.
 
-Point it at a PRIVATE relay group (its own bot, its own topic) — internal agent chatter must
+Point it at a PRIVATE relay group (its own bot, its own topic), internal agent chatter must
 never land in a group shared with team or clients.
 
 Cursor = a created_at watermark (ISO 8601 sorts chronologically). First run SEEDS the cursor to
-the current max so we don't dump the whole backlog — the feed only shows activity from now
+the current max so we don't dump the whole backlog: the feed only shows activity from now
 forward. Kill-switch: touch $AGENT_FLEET_HOME/bus_feed.disabled. Per-run cap so a burst can't
 flood the topic.
 

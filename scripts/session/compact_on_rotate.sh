@@ -1,5 +1,5 @@
 #!/bin/bash
-# compact_on_rotate.sh — the session-bootstrap parachute mechanism.
+# compact_on_rotate.sh, the session-bootstrap parachute mechanism.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 # Compacts the active Claude Code session into memory/session-bootstrap.md
 # so fresh sessions can resume context without a full transcript replay.

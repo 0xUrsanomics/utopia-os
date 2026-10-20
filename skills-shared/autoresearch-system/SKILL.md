@@ -23,7 +23,7 @@ Simulate these end-to-end workflows against the current config:
 
 ### Scenario 2: Intent routing
 - A message contains signal-related keywords ("just saw this alpha on a protocol")
-- Expected: routes to `knowledge/research.md`, invokes the signal-scorer skill logic
+- Expected: routes to your research notes file, invokes the signal-scorer skill logic
 
 ### Scenario 3: Persona switch + briefing
 - The user sends "/persona coach"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# file_intake.py — classify, place and INDEX received artifacts so recall can reach them.
+# file_intake.py, classify, place and INDEX received artifacts so recall can reach them.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Classify, place and INDEX received artifacts so recall can reach them.
 

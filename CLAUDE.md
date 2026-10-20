@@ -81,7 +81,7 @@ overrides convenience. Slower and safe beats fast and risky, always.
 5. **Credentials**: never store in plaintext, never log or echo to the channel. Use gitignored `.env`.
 6. **When unsure**: ask the operator.
 7. **Stand-down registry check** (before any install / MCP add / settings-allowlist edit / scheduler
-   entry): run the check against `memory/state/standdowns.json` first. Respect the verdict: `block` ->
+   entry): run the check against `memory/state/standdowns.json` (copy it from `memory/state/standdowns.example.json`) first. Respect the verdict: `block` ->
    refuse and surface the reason; `warn` -> proceed only with explicit re-confirmation; `clear` ->
    proceed; `expired` -> surface as needs-review. Append a new entry there whenever the operator makes
    a new "don't install X" decision.

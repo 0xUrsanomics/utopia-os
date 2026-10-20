@@ -117,7 +117,7 @@ If `ageGate` is true and you are logged in but haven't opted into NSFW content, 
 - **`depth="0"` is a string attribute.** `[depth="0"]` in a CSS selector works; `depth=0` (no quotes) also works in the newer parser, but the quoted form is safest.
 - **Collapsed comments render with body still in the DOM, but behind `expando-button`.** The `.md` selector still grabs the text. you don't need to expand.
 - **Post body can be empty.** For link posts or image posts, `[slot="text-body"]` doesn't exist; null-check before reading `.innerText`.
-- **`wait_for_load()` is not enough.** Reddit sometimes paints the post skeleton before the content hydrates. Add `wait(2.0)`–`wait(3.0)` after `wait_for_load()` or retry reads on null `shreddit-post`.
+- **`wait_for_load()` is not enough.** Reddit sometimes paints the post skeleton before the content hydrates. Add `wait(2.0)`, `wait(3.0)` after `wait_for_load()` or retry reads on null `shreddit-post`.
 - **Share URLs (`/s/<hash>`) can't be deep-linked into a comment.** They always land at the post top. If the original raindrop captured `/s/...`, the in-DOM permalink (read from `location.href` after load) is the canonical URL worth storing.
 - **Old Reddit (`old.reddit.com`) is a separate DOM**: no `shreddit-*` elements, no `faceplate-*`. If your login session was established on new Reddit, `old.reddit.com` will still honor the cookie.
 - **For NSFW or quarantined subs**, the browser path requires your account to have opted in. The JSON API requires OAuth with appropriate scope.

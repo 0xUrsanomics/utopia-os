@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# reply_obligations.py — persist + redeliver owed Telegram replies across sessions.
+# reply_obligations.py, persist + redeliver owed Telegram replies across sessions.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Reply delivery-obligation ledger.
 

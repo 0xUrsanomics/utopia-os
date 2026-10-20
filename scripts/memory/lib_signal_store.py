@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# lib_signal_store.py — crash- and concurrency-safe JSON list/envelope append for shared harvest files.
+# lib_signal_store.py, crash- and concurrency-safe JSON list/envelope append for shared harvest files.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
-"""lib_signal_store.py — crash- and concurrency-safe JSON list append.
+"""lib_signal_store.py: crash- and concurrency-safe JSON list append.
 
 Multiple harvesters (e.g. a telegram / email / rss / job / social harvester) read-modify-write
 the SAME shared today-signals.json. The naive hand-rolled pattern everywhere is:

@@ -1,5 +1,5 @@
 #!/bin/bash
-# save_handler.sh — the /save dispatch half of the Stop-hook save mechanism.
+# save_handler.sh, the /save dispatch half of the Stop-hook save mechanism.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 #
 # Mirrors the compact-on-rotate pattern. Runs from cron every 60s. Watches for a

@@ -120,7 +120,7 @@ Use this only when the API path is unavailable, blocked, or you need exactly-wha
 
 Polymarket's event page renders every outcome row inside nested `<div>`s with **CSS-module class names that change every deploy**. There are **no stable selectors**: no `data-testid`, no `role`, no semantic classes. Three naive approaches that look fine and are actually broken:
 
-1. `document.querySelectorAll('div')` + `innerText` pattern-match. **produces duplicates.** Every ancestor div's `innerText` contains the concatenation of its descendants' text, so "$45,718,857 Vol. · 100% · 99.9¢ · 0.1¢" matches at 4–6 ancestor levels for the same outcome row.
+1. `document.querySelectorAll('div')` + `innerText` pattern-match. **produces duplicates.** Every ancestor div's `innerText` contains the concatenation of its descendants' text, so "$45,718,857 Vol. · 100% · 99.9¢ · 0.1¢" matches at 4-6 ancestor levels for the same outcome row.
 2. Regex on `document.body.innerText`: loses positional structure. You get flat lists of `['99.9¢', '0.1¢', '99.9¢', ...]` and `['April 7', 'April 15', ...]` and can't join them into rows.
 3. Picking the first N elements of each list. fragile to header/footer noise (the sidebar also has YES/NO cents for related markets).
 
@@ -224,8 +224,8 @@ Note the first `vol-leaf` is the **event-level total** ($96.5M), while the next 
 - **Deleted comments have no `body` field.** The envelope still ships (with `id`, `createdAt`, `profile`, `media`, `parentCommentID`, etc.) but `body` is absent. Always `if "body" not in c: continue` before indexing. `c["body"]` will `KeyError` otherwise.
 - **`profile.pseudonym` is the handle.** `profile.name` is an opaque username. Always prefer `pseudonym` for display.
 - **Grouped vs single markets.** An event with `ev["markets"]` of length N > 1 is a grouped event. each sub-market is one outcome slot. Length 1 is a traditional binary market; the `question` holds the Yes/No framing.
-- **Naive `querySelectorAll('div') + innerText`-match duplicates every row 4–6 times** because ancestor divs' innerText contains their descendants' concatenated text. Always filter to DOM leaves (`children.length === 0`) and group by nearest common ancestor.
-- **Hydration wait.** `wait_for_load()` returns before the SPA paints the outcome table. Add `wait(2.5)`–`wait(3.5)` before reading DOM. Irrelevant for the API path.
+- **Naive `querySelectorAll('div') + innerText`-match duplicates every row 4-6 times** because ancestor divs' innerText contains their descendants' concatenated text. Always filter to DOM leaves (`children.length === 0`) and group by nearest common ancestor.
+- **Hydration wait.** `wait_for_load()` returns before the SPA paints the outcome table. Add `wait(2.5)`, `wait(3.5)` before reading DOM. Irrelevant for the API path.
 - **Use a clean browser profile.** Polymarket may trigger the wallet-connect modal if a previous session left a wallet linked. A profile with no wallet linked is the reliable default for read-only scraping.
 - **Sidebar sub-markets share the same fingerprints.** Any `vol-leaf` / `pct-leaf` / `price-leaf` outside the main event container is noise. The leaf-disambiguation pattern above filters this by requiring a nearest-ancestor containing ≥2 fingerprint kinds. sidebar related-market cards hold only `pct-leaves`, so they're excluded.
 

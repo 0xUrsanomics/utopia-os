@@ -21,7 +21,7 @@ You are the agent that a person just asked to set up Utopia OS. Run this once, e
 
 Ask these in blocks, conversationally, not as a numbered form dump. Follow up where an answer is thin. Aim for enough to write a dense file, not an exhaustive intake.
 
-### Block 1 — IDENTITY (fills `USER.md`)
+### Block 1: IDENTITY (fills `USER.md`)
 - Name or handle, and any pseudonym they operate under publicly.
 - Location and timezone (the agent needs this for every scheduled thing).
 - Primary venture / role, and what they actually spend their days doing.
@@ -30,28 +30,28 @@ Ask these in blocks, conversationally, not as a numbered form dump. Follow up wh
 - Current state: what they are heads-down on right now, what is stressing them, what "a good week" looks like.
 - Temperament + triggers: what earns their trust, what makes them disengage, how blunt they want you.
 
-### Block 2 — VOICE (fills `SOUL.md`)
+### Block 2: VOICE (fills `SOUL.md`)
 - What is this agent TO them: a peer with taste, a tool, a presence? Name the relationship (peer vs servant), everything downstream inherits it.
 - How should it talk: sentence length, formality, emoji, swearing, humor.
 - Language: English only, or a code-switch mix? Capture the exact mix and any recurring words.
 - What should it NEVER sound like (the anti-patterns that make them cringe).
 - Give it a name.
 
-### Block 3 — AUTONOMY (fills the `CLAUDE.md` operating rules + Autonomy Modes table)
+### Block 3: AUTONOMY (fills the `CLAUDE.md` operating rules + Autonomy Modes table)
 - Default posture: mostly act-then-tell (AUTO/INFORM), or mostly ask-first (CONFIRM)?
 - The CONFIRM list: what must it ALWAYS ask before doing (spend money, send anything outbound, touch a specific system, publish)?
 - The hard-blocked list: what must it NEVER do, even when told to in the moment (e.g. send email directly, force-push, anything irreversible-and-external).
 - Their "just do it" override words, if any (so a green light is unambiguous).
 
-### Block 4 — DOMAINS + SURFACES
+### Block 4: DOMAINS + SURFACES
 - The lanes it works in (their projects, the recurring kinds of work).
 - The Telegram/Discord surfaces they want (see `docs/bot-setup.md` and the topic-group flow there): at minimum an **Ops** surface (live chat) and a **Cron Reports** surface (scheduled output). Ask if they want more topics (signals, briefings, pipeline).
 
-### Block 5 — SECURITY POSTURE (fills the `CLAUDE.md` security section)
+### Block 5: SECURITY POSTURE (fills the `CLAUDE.md` security section)
 - Confirm the fleet floor holds (email is draft-only, no `curl | bash`, 7-day-age + stand-down before installing anything). These are defaults, not up for negotiation; you are confirming they understand them, not asking permission to weaken them.
 - Any extra hard rules specific to their work (a regulated domain, a client-confidentiality line, a service they must never touch).
 
-### Block 6 — SEED (fills `MEMORY.md` + a first `Context/` note)
+### Block 6: SEED (fills `MEMORY.md` + a first `Context/` note)
 - Any existing facts, decisions, or context worth seeding so the agent does not start blind. A few key project facts, active goals, people it should know.
 
 ## Writing the files

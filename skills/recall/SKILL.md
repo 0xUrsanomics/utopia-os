@@ -79,7 +79,7 @@ Rerank is **default-ON** for this CLI/recall path. Add `--no-rerank` to opt out 
 
 ## Rerank is default-ON. when to add `--no-rerank` (opt out)
 
-A cross-encoder reranker (e.g. `BAAI/bge-reranker-v2-m3`) rescores the top-20 RRF candidates and keeps the top-k by cross-encoder score. It reorders the #1 result a large fraction of the time — the biggest quality-per-keystroke win — and self-reflection-free relevance is exactly what recall needs. Adds ~100-300ms latency. Programmatic `vector_brain.search()` callers are unaffected (the function default stays `rerank_enable=False`); only the CLI/recall path defaults on.
+A cross-encoder reranker (e.g. `BAAI/bge-reranker-v2-m3`) rescores the top-20 RRF candidates and keeps the top-k by cross-encoder score. It reorders the #1 result a large fraction of the time, the biggest quality-per-keystroke win, and self-reflection-free relevance is exactly what recall needs. Adds ~100-300ms latency. Programmatic `vector_brain.search()` callers are unaffected (the function default stays `rerank_enable=False`); only the CLI/recall path defaults on.
 
 **Keep rerank (default, do nothing) when:**
 - The query is short or ambiguous. `"project status"`, `"partner update"`, `"candidate interview"`

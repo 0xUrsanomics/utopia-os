@@ -32,10 +32,10 @@ centaur adds three things **around** the CC harness: a Kubernetes sandbox pod (i
    `skills/` + `settings.json`, so a CC pod boots with Utopia OS already wired. centaur's "bring your own
    harness" path runs the CC CLI against this workspace.
 2. **MCP:** declare the daemon's servers to the pod's CC as usual (`.mcp.json`).
-3. **Secrets — use centaur's model, not `.env`:** declare each credential to centaur as a tool secret. The
+3. **Secrets, use centaur's model, not `.env`:** declare each credential to centaur as a tool secret. The
    agent then sees only a **placeholder**; centaur's egress proxy injects the real value on the outbound
    request, bound to specific hosts + header/query/path locations. This is a security **upgrade** over a
-   local `.env` (the agent never holds the plaintext) — adopt it.
+   local `.env` (the agent never holds the plaintext), adopt it.
 4. Let centaur own the sandbox + coordination; Utopia OS's own guardrail hooks still run in-pod.
 
 ## What centaur gives you (keep) vs what to drop
@@ -50,7 +50,7 @@ centaur adds three things **around** the CC harness: a Kubernetes sandbox pod (i
 - **Heavy deployment:** self-hosted Kubernetes + Postgres + a Rust control plane. Team-scale infra, not a
   local CLI. A solo/local setup is far better served by the lighter adapters or plain Claude Code.
 - **Pre-1.0 (0.1.x):** expect churn.
-- **Ephemeral pods:** per-thread sandbox pods are short-lived — persist Utopia OS's `memory/` + state on a
+- **Ephemeral pods:** per-thread sandbox pods are short-lived, persist Utopia OS's `memory/` + state on a
   mounted volume, or the 3-tier memory resets per pod.
 - **Multiplayer:** centaur is team-oriented; its capability-scoped permissioning maps onto Utopia OS's
   per-tenant model but is more than a solo operator needs.

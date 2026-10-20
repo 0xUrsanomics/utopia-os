@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# skill_failure_tracker.py — log skill failures, flag rewrite thresholds, recommend model-tier bumps.
+# skill_failure_tracker.py, log skill failures, flag rewrite thresholds, recommend model-tier bumps.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """
 Skill Failure Tracker. Logs failures, checks rewrite thresholds, prunes stale entries.

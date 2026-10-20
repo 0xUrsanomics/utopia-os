@@ -6,7 +6,7 @@ attribution: Original work © Anthropic + Warp Inc. Ported 2026-05-06.
 purpose: Reference docs for building/extending MCP servers when adding or wiring new MCP capabilities.
 ---
 
-# MCP Builder — Reference Materials
+# MCP Builder: Reference Materials
 
 Ported from `warpdotdev/oz-skills` (Apache-2.0). These are Anthropic's published `mcp-builder` skill
 docs, redistributed by Warp under Apache-2.0, ported here with full attribution.

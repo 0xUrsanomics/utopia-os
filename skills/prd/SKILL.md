@@ -51,7 +51,7 @@ This is the load-bearing question. If the user can't name a failure mode, the sp
 
 "What does this touch? Settings, scheduler, a hot path, hooks, shared state, external comms?"
 
-Map the blast radius to an autonomy mode: AUTO (low blast) / INFORM (moderate) / CONFIRM (high or external-facing). Reference: `memory/Infra/permissions-schema.json`.
+Map the blast radius to an autonomy mode: AUTO (low blast) / INFORM (moderate) / CONFIRM (high or external-facing). Reference: the Autonomy Modes table in `CLAUDE.md`.
 
 #### Slot 2.4: Existing equivalents
 
@@ -163,7 +163,7 @@ After the PRD draft is written:
 ## Pairs with
 
 - **`/scope`** (auto-invoke before CONFIRM-gate actions): /scope is the inline scope restate. /prd is the structured-doc version for substantive builds.
-- **`memory/Infra/permissions-schema.json`**: the blast-radius → autonomy-mode mapping reference.
+- **the Autonomy Modes table in `CLAUDE.md`**: the blast-radius → autonomy-mode mapping reference.
 - **the helicopter-check discipline**: the 3-ripple check that Slot 2.3 surfaces.
 - **the pattern-lift discipline**: the alternatives audit happens at the Slot 2.4 dedup check.
 - **`skill-creator.md` 9-element quality gate**: when the PRD is FOR a new skill, the resulting skill body should pass that 9-element checklist.

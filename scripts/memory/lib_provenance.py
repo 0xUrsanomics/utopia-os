@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# lib_provenance.py — provenance + corroboration stamps for durable memory entries.
+# lib_provenance.py, provenance + corroboration stamps for durable memory entries.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Provenance and corroboration stamps for durable memory entries.
 
@@ -221,7 +221,7 @@ EVID = re.compile(r"^evidence::\s*\[([^\]]*)\]\s*$", re.M)
 
 # Phrases in an evidence:: note that betray a SINGLE origin behind a multi-count claim.
 # The convention is that confidence rises on "each independent re-confirmation in a LATER
-# session" — these phrases say the opposite out loud.
+# session", these phrases say the opposite out loud.
 SAME_ORIGIN = re.compile(
     r"same-day|same day|one-audit|one audit|single-session|co-occurring|in-one-|"
     r"same-session|one-session|same-run|one-run", re.I)

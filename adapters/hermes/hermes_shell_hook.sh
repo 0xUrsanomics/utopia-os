@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# hermes_shell_hook.sh — bridge a Utopia OS exit-2 guard into a Hermes shell hook.
+# hermes_shell_hook.sh, bridge a Utopia OS exit-2 guard into a Hermes shell hook.
 #
 # WHY THIS EXISTS. Utopia OS guard scripts follow the Claude Code contract:
 # "exit code 2 = block" (see settings.example.json). Hermes shell hooks do NOT honor
-# exit codes for blocking — a non-zero exit only logs a warning and the tool still
+# exit codes for blocking, a non-zero exit only logs a warning and the tool still
 # runs. On Hermes a hook blocks by printing JSON to STDOUT:
 #     {"decision":"block","reason":"..."}   (Claude-Code shape, accepted)
 #     {"action":"block","message":"..."}    (Hermes-canonical)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# check_always_loaded_budget.py — guard the per-session always-loaded context footprint.
+# check_always_loaded_budget.py, guard the per-session always-loaded context footprint.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Always-loaded context budget guard.
 

@@ -33,9 +33,9 @@ The system splits cleanly into a **portable substrate** that runs on any harness
 4. Reimplement the `settings.example.json` hooks on your harness's event system. Until then the guardrails do not fire automatically, so run the critical ones (stand-down, send guards) by hand.
 
 The adapter model (portable core vs harness shim, the four dimensions, per-harness mapping) is in
-[`docs/adapters.md`](docs/adapters.md). Adapters shipped: low-cost (near 1:1) —
+[`docs/adapters.md`](docs/adapters.md). Adapters shipped: low-cost (near 1:1), 
 [`codex`](adapters/codex/) (reference), [`kimi`](adapters/kimi/), [`grok`](adapters/grok/); medium
-(guardrails become in-process plugins, each ships a plugin scaffold) — [`hermes`](adapters/hermes/),
+(guardrails become in-process plugins, each ships a plugin scaffold), [`hermes`](adapters/hermes/),
 [`openclaw`](adapters/openclaw/), [`opencode`](adapters/opencode/), [`pi`](adapters/pi/). Kilo is parked
-(no lifecycle hook layer). One HOST adapter — [`centaur`](adapters/centaur/) — is a deploy guide for
+(no lifecycle hook layer). One HOST adapter, [`centaur`](adapters/centaur/), is a deploy guide for
 running Utopia OS as the Claude Code harness inside a centaur sandbox pod (not a config mapping).

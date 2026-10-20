@@ -74,7 +74,7 @@ targeted call over many; Glob+single-Read beats multi-Grep.
    doc_type). If you find substantive evidence the draft ignores, flag it.
 
 3. **Coherence check (content drafts ONLY: post / thread / article).** If doc_type is a
-   post/thread/content article, Read `knowledge/content-structure-reference.md` and apply
+   post/thread/content article, Read your own content-structure reference (optional, not bundled) and apply
    its coherence gate. This exists because a fact-clean draft can still be structurally
    broken (a real miss: a draft passed fact-grounding but stapled two arguments together):
    (a) SPINE. read T1->T2->T3->T4: does every unit advance the SAME single argument,
@@ -85,7 +85,7 @@ targeted call over many; Glob+single-Read beats multi-Grep.
        rhetorical question you then answer (the top AI-tell)?
    (d) AI-TELLS. scan the kill-list (in-conclusion close, Moreover/Furthermore,
        adjective tricolons, uniform paragraphs, roadmap preamble).
-   (e) WORD-LEVEL tells. spot-check against `knowledge/content-lexicon-diction-reference.md`
+   (e) WORD-LEVEL tells. spot-check against your own word-choice reference (optional, not bundled)
        swap-table: Latinate verbs where a concrete one fits (utilize/leverage/facilitate),
        "seamless/robust/crucial/delve/boasts", floating intensifiers where a number belongs,
        a hype-without-a-confidence-cap forward claim. Flag as SHIP_WITH_FIXES (word swaps are

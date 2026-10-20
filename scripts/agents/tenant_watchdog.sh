@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tenant_watchdog.sh — keepalive for the fleet worker tenants.
+# tenant_watchdog.sh, keepalive for the fleet worker tenants.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 #
 # Runs every 2min via crontab. For each fleet tenant in FLEET_TENANTS:

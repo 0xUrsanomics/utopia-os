@@ -1,4 +1,4 @@
-# Taste Skill — distilled anti-slop frontend rules (doc-mine)
+# Taste Skill: distilled anti-slop frontend rules (doc-mine)
 
 PROVENANCE: doc-mined (read-only, NO install) from github.com/Leonxlnx/taste-skill (MIT, by Leonxlnx).
 "The Anti-Slop Frontend Framework for AI Agents." The repo ships a `skill.sh` installer; this file

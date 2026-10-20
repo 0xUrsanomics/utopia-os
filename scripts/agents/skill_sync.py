@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# skill_sync.py — fleet skill-sync / drift monitor: propagate canonical skills across tenants.
+# skill_sync.py, fleet skill-sync / drift monitor: propagate canonical skills across tenants.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Fleet skill-sync / drift monitor.
 
@@ -9,7 +9,7 @@ tool detects that drift and, for skills explicitly marked canonical-tracking, sy
 canonical version back.
 
 SAFE BY DEFAULT: dry-run unless `--apply`. A DRIFTED skill is NEVER overwritten unless it is
-classed `canonical` — because drift is often an INTENTIONAL tenant adaptation (e.g. a
+classed `canonical`: because drift is often an INTENTIONAL tenant adaptation (e.g. a
 sycophancy-guard adapted to the fleet-bus escalation flow, hundreds of lines different on
 purpose). Unexplained drift defaults to REPORT-ONLY.
 

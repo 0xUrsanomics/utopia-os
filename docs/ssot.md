@@ -1,17 +1,17 @@
-# SSOT — one write path for operational state
+# SSOT: one write path for operational state
 
 Operational state is the small set of fast-changing facts the whole system reads to decide what to do:
 which persona is active, what the current project is, how much of a rate-limited budget is left, which
 autonomy mode is set, whether a background watchdog is healthy. In a single-process script this is a
-variable. In a real system — cron jobs, a fleet of agent processes, an interactive session, all running
-at once — it is scattered across a dozen little files, each written by a different script, and it
+variable. In a real system, cron jobs, a fleet of agent processes, an interactive session, all running
+at once, it is scattered across a dozen little files, each written by a different script, and it
 **drifts**. Ask two processes "what mode are we in" and get two answers.
 
 The single source of truth (SSOT) fixes that with three commitments:
 
 1. **One store.** All operational state lives in one embedded database.
 2. **One mutator.** A single `set()` function is the only thing allowed to change state.
-3. **Every write is logged** — old value → new value, with an author and an optional reason.
+3. **Every write is logged**, old value → new value, with an author and an optional reason.
 
 That's the whole design. Everything else is discipline about *what belongs in it*.
 
@@ -43,7 +43,7 @@ Rules the store enforces, not merely documents:
 
 ### The change log is the feature
 
-The `state_log` is not bookkeeping you tolerate — it is the reason the store is trustworthy. It answers
+The `state_log` is not bookkeeping you tolerate, it is the reason the store is trustworthy. It answers
 "who set this, to what, when, and why" for every value in the system, and it has a habit of paying for
 itself: the first time a test run clobbers a real counter, you restore the pre-test value straight from
 the log instead of guessing.
@@ -56,7 +56,7 @@ state_log
   2026-…T10:02:11Z      persona.active ranger   coach    persona-switch    keyword + confirm
 ```
 
-## Legacy-mirror — migrating a live system without a big bang
+## Legacy-mirror: migrating a live system without a big bang
 
 You almost never get to build the SSOT before the scattered files exist. You build it *into* a running
 system that already has thirty writers pointed at thirty files. Rewriting all of them at once is how you
@@ -64,7 +64,7 @@ break production. The migration is incremental, and one primitive makes it safe:
 
 **On every `set()`, the store also writes the value back to the legacy file it's replacing.** So a reader
 that hasn't been migrated yet still finds a current value in the old place. The store becomes authoritative
-while nothing downstream breaks. The cost is one extra file write per `set()` — cheap, and for keys with
+while nothing downstream breaks. The cost is one extra file write per `set()`, cheap, and for keys with
 crash-safety requirements the mirror uses an atomic write (write-temp-then-rename) so a mirrored counter
 never tears.
 
@@ -84,10 +84,10 @@ The discipline that makes this work: **do not rush a live migration**. A large r
 time pressure is exactly when a working behavior gets silently broken. Migrate the hottest keys first,
 verify each, and let the long tail move on demand rather than pre-emptively.
 
-## Scope — what the SSOT owns, and what it must never absorb
+## Scope: what the SSOT owns, and what it must never absorb
 
 The SSOT owns **current-value operational state** and nothing else. This boundary is the most important
-part of the design, because a single canonical store is seductive — the temptation is to put *everything*
+part of the design, because a single canonical store is seductive, the temptation is to put *everything*
 in it, which quietly recreates the coupling the store was meant to remove.
 
 | Belongs in the SSOT | Belongs elsewhere | Why |
@@ -95,8 +95,8 @@ in it, which quietly recreates the coupling the store was meant to remove.
 | Active persona, active project | The knowledge corpus (`memory/*.md`) | Prose knowledge is versioned text, not a keyed value. |
 | Budgets, usage counters, mode flags | Embeddings / the vector index | A derived index rebuilds from source; it isn't state of record. |
 | Watchdog health, session bookkeeping | Message/event streams (append-logs) | Streams are history, not current value. |
-| — | Scheduler / cron definitions | Their own store with its own schema. |
-| — | Domain data (a namespaced prefix at most) | Partition it (`domain.*`) if it must be co-located; never merge it into ops. |
+|, | Scheduler / cron definitions | Their own store with its own schema. |
+|, | Domain data (a namespaced prefix at most) | Partition it (`domain.*`) if it must be co-located; never merge it into ops. |
 
 Two exclusion rules earn special mention because they run against the "one tree" instinct:
 
@@ -105,13 +105,13 @@ Two exclusion rules earn special mention because they run against the "one tree"
   onto data that has a different shape.
 
 - **A mandatory change-log is itself a reason to *exclude* zero-trace state.** Some state is contractually
-  supposed to leave no trace — an incognito / "off the record" mode whose entire promise is that nothing
+  supposed to leave no trace, an incognito / "off the record" mode whose entire promise is that nothing
   persists. That flag **cannot** live in the SSOT, because the SSOT logs every write forever. Putting a
   zero-trace flag into a store that records `mode.incognito → on` at a timestamp would silently break the
   guarantee it represents. It stays a direct-write flag, outside the canonical store, for the same reason
   the append-logs do: the store's own invariant disqualifies it.
 
-That second rule is the subtle one. The SSOT's strength — total auditability — is precisely what makes it
+That second rule is the subtle one. The SSOT's strength, total auditability, is precisely what makes it
 the wrong home for anything whose correctness depends on *not* being auditable. The boundary isn't drawn by
 what's convenient to centralize; it's drawn by which invariants each piece of state actually needs.
 

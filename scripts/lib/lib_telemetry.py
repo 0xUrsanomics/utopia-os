@@ -1,7 +1,7 @@
-# lib_telemetry.py — graceful no-op metric layer (counters/histograms) with optional OTEL backend.
+# lib_telemetry.py, graceful no-op metric layer (counters/histograms) with optional OTEL backend.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """
-lib_telemetry.py — graceful no-op metric layer.
+lib_telemetry.py, graceful no-op metric layer.
 
 Pattern from rohitg00/agentmemory `src/telemetry/setup.ts` (Apache-2.0).
 

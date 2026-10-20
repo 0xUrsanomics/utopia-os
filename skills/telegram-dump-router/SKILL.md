@@ -16,7 +16,7 @@ Classification skill. output is structured routing decisions, not prose. Match t
 ## Source & Pairs with
 
 - Telegram MCPs: `mcp__plugin_telegram_telegram__*` (live message stream) + `mcp__telegram__telegram_read_inbox` (stored history) + topic registry (general/team-inbox/signals/pipeline/actions/meetings/content/botlogs)
-- Downstream extractors (sister skills, examples — supply your own): a contact-extractor, a meeting-note-extractor, `skills-shared/task-extractor/SKILL.md`, `skills/intel-analyzer/SKILL.md`, a training-log-parser, a nutrition-log-parser, a CRM-memory operator
+- Downstream extractors (sister skills, examples, supply your own): a contact-extractor, a meeting-note-extractor, `skills-shared/task-extractor/SKILL.md`, `skills/intel-analyzer/SKILL.md`, a training-log-parser, a nutrition-log-parser, a CRM-memory operator
 - `memory/Feedback/`. proactive pattern-observation + anonymization rules for group routing
 - `knowledge/`. persona-domain mapping for routing decisions
 

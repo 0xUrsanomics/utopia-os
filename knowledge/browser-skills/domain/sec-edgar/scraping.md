@@ -356,6 +356,6 @@ SEC documents a **10 requests/second** limit. In practice:
 
 - **`company_tickers.json` covers only exchange-listed companies**: ~10,391 entries. Many SEC filers (private companies, bond issuers, FHLBs) have CIKs but no ticker. Find them via the full-text search aggregations or `submissions` lookup if you have the CIK.
 
-- **Filing document is XBRL-tagged HTML, 1–2MB**: Retrieving the actual 10-K HTML works but is large. For financial data extraction, always prefer the XBRL API endpoints over parsing the document.
+- **Filing document is XBRL-tagged HTML, 1-2MB**: Retrieving the actual 10-K HTML works but is large. For financial data extraction, always prefer the XBRL API endpoints over parsing the document.
 
 - **CIK format gotcha**: `company_tickers.json` returns `cik_str` as an int (`320193`). The submissions and xbrl APIs require a 10-digit zero-padded string in the filename (`CIK0000320193`). Always use `str(cik).zfill(10)` when building URLs.

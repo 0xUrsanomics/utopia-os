@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# ssot.py — the single source of truth for OPERATIONAL state: one store, one reducer, one change log.
+# ssot.py, the single source of truth for OPERATIONAL state: one store, one reducer, one change log.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """SSOT: the single source of truth for OPERATIONAL state.
 

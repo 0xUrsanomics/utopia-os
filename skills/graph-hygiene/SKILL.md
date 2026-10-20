@@ -172,7 +172,7 @@ After generating report, send summary to Telegram. Mobile-first, no preamble, fr
 - All fixes require the operator's approval via /review.
 
 ### 11. Doc Conflict Detection. `severity: warning` / `critical` (Doc-Conflict port, 2026-04-28)
-Detect contradictions between memory/knowledge files using the doc-precedence ladder defined in `knowledge/workspace-routing.md`. Bucket each conflict:
+Detect contradictions between memory/knowledge files using the doc-precedence ladder defined in your doc-precedence notes (which file wins when two disagree). Bucket each conflict:
 - **auto-resolved** (info): newer same-tier supersedes older, or higher-tier wins over lower-tier. log + continue with winner.
 - **competing-variants** (warning): two equal-precedence files contradict (e.g. two Context/ dossiers on same subject with conflicting facts). Surface for /review.
 - **unresolved-blocker** (critical): locked Decisions.md entry contradicts another locked Decisions.md entry, or active Feedback rule. HARD BLOCK on derived content (quotations, deck regen, etc.) until reconciled.

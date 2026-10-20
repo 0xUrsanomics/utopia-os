@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# dossier_hygiene.py — scan memory dossiers for single-project inline candidates + staleness.
+# dossier_hygiene.py, scan memory dossiers for single-project inline candidates + staleness.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Dossier hygiene. Scan memory/Context/ + memory/Infra/ for dossiers that
 should migrate into project files (single-project tags) or are stale.

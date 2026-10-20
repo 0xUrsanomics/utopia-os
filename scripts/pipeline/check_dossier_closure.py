@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# check_dossier_closure.py — gate: is a symptom dossier already CLOSED before re-escalating it?
+# check_dossier_closure.py, gate: is a symptom dossier already CLOSED before re-escalating it?
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """check_dossier_closure.py: decision-cross-check gate for the dreaming/consolidation write-path.
 

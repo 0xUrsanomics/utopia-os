@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# goal_drift_audit.py — weekly audit of active goals for drift / overdue / review-due.
+# goal_drift_audit.py, weekly audit of active goals for drift / overdue / review-due.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """
 goal_drift_audit.py. Weekly audit of memory/state/active_goals.json.

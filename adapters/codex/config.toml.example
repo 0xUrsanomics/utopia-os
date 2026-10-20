@@ -2,7 +2,7 @@
 # Copy into ~/.codex/config.toml, or merge these [mcp_servers.*] tables into an existing one.
 # stdio servers launch a local process; HTTP servers point at a running daemon endpoint.
 # Set every referenced env var before launch. NEVER inline a secret in this file.
-# All /path/to/... values are placeholders — replace with your checkout / daemon paths.
+# All /path/to/... values are placeholders, replace with your checkout / daemon paths.
 
 # --- local-only servers (no external secret) ---
 

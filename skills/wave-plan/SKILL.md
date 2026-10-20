@@ -17,7 +17,7 @@ Orchestrator skill. output is a structured plan, not prose. Match the lean regis
 ## Source & Pairs with
 
 - Session-ops delegation threshold + max-depth-2 rule + cache-discipline
-- `memory/Infra/agent-protocols-v1.md`. subagent briefing schema v1 (4 dimensions per dispatch)
+- `docs/agent-protocols.md`. subagent briefing schema v1 (4 dimensions per dispatch)
 - Sister skills: `skills/agent-dispatch/SKILL.md` (sends individual subagent briefings within waves), `skills/scope/SKILL.md` (precedes wave-plan when the ask is ambiguous), `skills/subagent-delegation/SKILL.md` (briefing template)
 - Your anti-slop constraints, applied in every subagent dispatch
 

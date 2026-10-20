@@ -16,7 +16,7 @@
 #   BWRAP_ENV_ROOT      root to sweep for .env files (default: $WORKSPACE or ~/projects)
 #
 # FAILS CLOSED: if bwrap is missing it REFUSES to run (does not fall back to an
-# unsandboxed run) — the guarantee is the whole point.
+# unsandboxed run), the guarantee is the whole point.
 set -uo pipefail
 
 command -v bwrap >/dev/null 2>&1 || {

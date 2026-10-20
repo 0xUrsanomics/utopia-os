@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-# fleet_blocked_probe.py — detect a blocked agent by reading its tmux pane, don't guess.
+# fleet_blocked_probe.py, detect a blocked agent by reading its tmux pane, don't guess.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Detect agent tenants that are WAITING FOR A HUMAN who cannot see them.
 
 WHY THIS EXISTS. Consider a multi-day output outage. Several agents investigate it across
-logs, scrapes and cron config and produce competing hypotheses — while the actual cause is
+logs, scrapes and cron config and produce competing hypotheses, while the actual cause is
 found in one move by opening the tmux pane: an interactive permission request that never
 reached the operator. (A separate fleet-wide silence once turned out to be expired
 credentials on several tenants.)

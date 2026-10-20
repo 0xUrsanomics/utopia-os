@@ -1,5 +1,5 @@
 #!/bin/bash
-# redeliver_reply_obligations.sh — SessionStart hook: redeliver any owed Telegram
+# redeliver_reply_obligations.sh, SessionStart hook: redeliver any owed Telegram
 # replies left pending by a dead PRIOR session, via a direct Bot API call
 # (independent of the plugin). Closes the crash-loss tail of the reply-miss rate.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.

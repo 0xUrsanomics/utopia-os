@@ -39,13 +39,13 @@ in-repo docs on 2026-07-23. See [`docs/adapters.md`](../../docs/adapters.md) for
 
 - **grok does NOT read `~/.claude/skills` or `CLAUDE.md`** (corrects an earlier assumption). Skills must
   live under `.grok/` (still `SKILL.md` format); the instruction file must be `AGENTS.md`, not `CLAUDE.md`.
-  It DOES read `~/.claude/settings.json` for hooks in compat mode — that's the only `~/.claude` path it honors.
+  It DOES read `~/.claude/settings.json` for hooks in compat mode, that's the only `~/.claude` path it honors.
 - **Stdin field names are camelCase** (`hookEventName`, `toolName`, `toolInput`) where CC uses snake_case
   (`hook_event_name`, `tool_name`, `tool_input`). Guardrail scripts that PARSE stdin fields must accept
   both; scripts that only branch on exit code / stderr are unaffected.
 - **Tool-name matchers** assume grok's tool names match CC's (grok's is e.g. `run_terminal_command`);
   confirm and adjust the `matcher` regexes.
-- **Secrets:** grok's `[mcp_servers.*]` `env = { ... }` table is inline TOML — do not put real tokens
+- **Secrets:** grok's `[mcp_servers.*]` `env = { ... }` table is inline TOML, do not put real tokens
   there; source them from the environment.
 
 ## Verified sources (2026-07-23)

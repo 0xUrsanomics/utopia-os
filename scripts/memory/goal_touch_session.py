@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# goal_touch_session.py — bump goals referenced by recent output frontmatter.
+# goal_touch_session.py, bump goals referenced by recent output frontmatter.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """
 goal_touch_session.py. Scan recent outputs for frontmatter `goal: g-XXX` tags and

@@ -57,5 +57,5 @@ extends, pushing writes out of range.">`
 > recurrences is the signal that the fix was a bandaid and the real root cause is still live, stop
 > patching and re-diagnose.
 
-- **2026-01-15** — first observed and fixed per above.
+- **2026-01-15**, first observed and fixed per above.
 - `<YYYY-MM-DD — recurrence: what fired it again, whether the prior fix held>`

@@ -53,7 +53,7 @@ print(v.get('homepage'))                     # 'https://react.dev/'
 print(len(data['versions']))                 # 2785. all published versions
 ```
 
-**Single version endpoint**: 1–2KB instead of megabytes. Use when you only need one version's data.
+**Single version endpoint**: 1-2KB instead of megabytes. Use when you only need one version's data.
 
 ```python
 import json
@@ -201,7 +201,7 @@ for obj in data['objects']:
 # nightmare     3.0.2  306.64 A high-level browser automation library.
 ```
 
-Score breakdown (all three are 0–1 floats):
+Score breakdown (all three are 0-1 floats):
 - `quality`: code quality signals (tests, lint, TypeScript types)
 - `popularity`: download counts normalized
 - `maintenance`: release frequency, open issues
@@ -475,4 +475,4 @@ npm's official documentation mentions soft rate limits at very high volumes, but
 
 - **`http_get` handles gzip transparently**: The helper already decompresses gzip responses. No manual decompression needed.
 
-- **Never use a browser for either registry**: All data is JSON over HTTP. `http_get` calls take 80–480ms; a browser navigation would take 3–8 seconds with no benefit.
+- **Never use a browser for either registry**: All data is JSON over HTTP. `http_get` calls take 80-480ms; a browser navigation would take 3-8 seconds with no benefit.

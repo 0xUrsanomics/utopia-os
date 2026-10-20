@@ -59,7 +59,7 @@ Subagents are amnesiac. They see nothing except the prompt you hand them. Brief 
 - **Context**: what's relevant from the session (file paths, prior decisions, constraints)
 - **Boundaries**: what NOT to do (don't edit files, don't install, read-only, etc.)
 - **Output format**: structured sections, word limit, no fluff
-- **Return contract** (mandatory): structured JSON matching the `subagent_return_v1` schema. See `memory/Infra/agent-protocols-v1.md` Surface 2 for full schema. Append the dispatch prompt template at the end of every brief.
+- **Return contract** (mandatory): structured JSON matching the `subagent_return_v1` schema. See `docs/agent-protocols.md` Surface 2 for full schema. Append the dispatch prompt template at the end of every brief.
 - **Anti-slop**: include "no em-dashes, no AI-slop wordlist (leverage/delve/navigate/holistic/seamless/foster/streamlin/unleash), no AI-cliche openers". subagents don't inherit CLAUDE.md (per your anti-slop brief).
 
 Terse command-style prompts produce shallow work. Over-briefed prompts burn tokens. Aim for 150-400 words, precise.

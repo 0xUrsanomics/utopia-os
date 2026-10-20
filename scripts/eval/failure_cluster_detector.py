@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# failure_cluster_detector.py — group errors.jsonl by category and flag NEW/growing failure clusters.
+# failure_cluster_detector.py, group errors.jsonl by category and flag NEW/growing failure clusters.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Failure-cluster detector: auto-convene a review when a failure cluster emerges.
 

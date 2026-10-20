@@ -1,7 +1,7 @@
-# lib_path_guard.py — path-traversal confinement guard for anything that touches dynamic paths.
+# lib_path_guard.py, path-traversal confinement guard for anything that touches dynamic paths.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """
-lib_path_guard.py — path-traversal confinement guard for scripts touching user paths.
+lib_path_guard.py, path-traversal confinement guard for scripts touching user paths.
 
 Pattern from VectifyAI/OpenKB (Apache-2.0): every read/write tool checks
 `path.is_relative_to(allowed_root)` before operating. Prevents path-traversal attacks

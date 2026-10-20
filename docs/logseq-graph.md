@@ -1,4 +1,4 @@
-# The Knowledge Graph — namespace taxonomy & page conventions
+# The Knowledge Graph: namespace taxonomy & page conventions
 
 The **GRAPH** layer of the [knowledge pipeline](knowledge-pipeline.md) is a
 [Logseq](https://logseq.com) graph: a folder of plain-markdown pages, one file per entity, organised by
@@ -7,10 +7,10 @@ doc is the taxonomy and the page conventions. It carries no real content; every 
 
 Two things make a Logseq graph more than a pile of markdown files, and both are load-bearing here:
 
-1. **Namespaces** — a page named `Prospect/Acme-Labs` is not a folder path, it's a typed node. The `/`
+1. **Namespaces**, a page named `Prospect/Acme-Labs` is not a folder path, it's a typed node. The `/`
    separates the *type* (`Prospect`) from the *instance* (`Acme-Labs`). Type-level queries ("every active
    prospect", "every meeting this month") fall out of the naming scheme for free.
-2. **Properties + backlinks** — `key:: value` lines at the top of a page are queryable fields, and any
+2. **Properties + backlinks**, `key:: value` lines at the top of a page are queryable fields, and any
    `[[Other-Page]]` reference is a bidirectional link. The graph is a database that happens to be readable
    as text.
 
@@ -27,10 +27,10 @@ business, and the memory system refuses to pretend otherwise.
 
 | Domain | Covers | Example namespaces |
 |--------|--------|--------------------|
-| **A — Business / BD** | pipeline, network, market signals, regulation | `Prospect`, `Network/Person`, `Signal`, `Regulation` |
-| **B — Personal** | training, nutrition, health | `Training`, `Nutrition`, `Health` |
-| **C — Life OS** | projects, goals, learning, daily logs | `Project`, `Goal`, `Learning`, `Daily` |
-| **D — AI Infra** | the agent's own memory + tooling notes | `Claude-Memory` |
+| **A, Business / BD** | pipeline, network, market signals, regulation | `Prospect`, `Network/Person`, `Signal`, `Regulation` |
+| **B, Personal** | training, nutrition, health | `Training`, `Nutrition`, `Health` |
+| **C, Life OS** | projects, goals, learning, daily logs | `Project`, `Goal`, `Learning`, `Daily` |
+| **D, AI Infra** | the agent's own memory + tooling notes | `Claude-Memory` |
 
 Domain A is the operational core, but a page in `Training` or `Goal` is a first-class citizen of the same
 graph and surfaces on the same recall. One brain, not four.
@@ -45,26 +45,26 @@ without explicit human action (they hold ground truth that should never be casua
 
 | Namespace | Domain | Template | Protected |
 |-----------|--------|----------|-----------|
-| `Prospect` | A | Prospect Profiler | — |
-| `Network/Person` | A | Network Person | — |
-| `Network/Partner` | A | Network Partner | — |
-| `Meeting` | A | Meeting Node | — |
-| `Signal` | A | Signal Node | — |
-| `Regulation` | A | — | **yes** |
-| `Content` | A | Content Node | — |
-| `Concept` | A | Concept Node | — |
-| `Prompt` | A | Prompt Node | — |
-| `Training` | B | Training Log | — |
-| `Nutrition` | B | Nutrition Log | — |
-| `Health` | B | Health Check | — |
-| `Project` | C | Project Card | — |
-| `Goal` | C | Goal Card | — |
-| `Learning` | C | Learning Entry | — |
-| `Daily` | C | Daily Log | — |
-| `Routine` | C | Routine | — |
-| `Idea` | C | Idea Node | — |
-| `Intel` | C | Intel Brief | — |
-| `Claude-Memory` | D | — | — |
+| `Prospect` | A | Prospect Profiler |, |
+| `Network/Person` | A | Network Person |, |
+| `Network/Partner` | A | Network Partner |, |
+| `Meeting` | A | Meeting Node |, |
+| `Signal` | A | Signal Node |, |
+| `Regulation` | A |, | **yes** |
+| `Content` | A | Content Node |, |
+| `Concept` | A | Concept Node |, |
+| `Prompt` | A | Prompt Node |, |
+| `Training` | B | Training Log |, |
+| `Nutrition` | B | Nutrition Log |, |
+| `Health` | B | Health Check |, |
+| `Project` | C | Project Card |, |
+| `Goal` | C | Goal Card |, |
+| `Learning` | C | Learning Entry |, |
+| `Daily` | C | Daily Log |, |
+| `Routine` | C | Routine |, |
+| `Idea` | C | Idea Node |, |
+| `Intel` | C | Intel Brief |, |
+| `Claude-Memory` | D |, |, |
 
 ### Naming rules
 
@@ -89,7 +89,7 @@ Prospect/Acme-Labs
 Why two zones instead of one running log:
 
 - **Compiled truth** answers *"what is true right now?"* in a few lines. It is overwritten as the situation
-  changes, so reading it is O(1) — you never reconstruct the present by replaying history.
+  changes, so reading it is O(1), you never reconstruct the present by replaying history.
 - **Timeline** answers *"how did we get here?"* It is append-only and dated, so provenance is never lost to
   a rewrite.
 
@@ -123,16 +123,16 @@ links the two nodes bidirectionally, so the person's page shows this deal as a b
 
 ## How it plugs into the rest of the system
 
-- **Upstream** — nothing writes here directly. Substantive output is staged raw, reviewed, and only then
+- **Upstream**, nothing writes here directly. Substantive output is staged raw, reviewed, and only then
   promoted into the graph. That one-way valve is the whole point of the [knowledge pipeline](knowledge-pipeline.md);
   raw drafts hitting the canonical graph is the failure mode it exists to prevent.
-- **Downstream** — the graph is embedded into the archival vector index, so `recall` retrieves graph pages
+- **Downstream**, the graph is embedded into the archival vector index, so `recall` retrieves graph pages
   by meaning, not just by exact page name. See [memory-system.md](memory-system.md) for the tiering.
-- **Provenance** — promoted entries are tagged with their source (`[[source/<persona>]]`) so a later recall
+- **Provenance**, promoted entries are tagged with their source (`[[source/<persona>]]`) so a later recall
   hit tells you whether it came from a vetted memo or an unreviewed dump.
-- **Maintenance** — the [`graph-hygiene`](../skills/graph-hygiene/SKILL.md) skill lints the graph on a
+- **Maintenance**, the [`graph-hygiene`](../skills/graph-hygiene/SKILL.md) skill lints the graph on a
   schedule across seven categories (stale pages, orphans, missing properties, dead links, missing
-  compiled-truth/timeline structure, tag inconsistency, near-duplicate names). It **never auto-deletes** —
+  compiled-truth/timeline structure, tag inconsistency, near-duplicate names). It **never auto-deletes**, 
   it emits severity-tagged findings and flags them for human review.
 
 ---

@@ -12,8 +12,8 @@ Internal infrastructure skill. output is a tool call, not prose. Keep prompts te
 
 ## Source & Pairs with
 
-- `knowledge/scheduled-tasks.md`. model selection rule (haiku/sonnet/opus tiering) + `task_config` schema. **Read this BEFORE drafting any claude_code-type task.**
-- `memory/Infra/permissions-schema.json`. autonomy-mode mapping (which task types need CONFIRM)
+- your scheduled-task notes (model tier per task). model selection rule (haiku/sonnet/opus tiering) + `task_config` schema. **Read this BEFORE drafting any claude_code-type task.**
+- the Autonomy Modes table in `CLAUDE.md`. autonomy-mode mapping (which task types need CONFIRM)
 - Your daemon scheduler's database, table `schedules` (destination)
 - Sister tool: `mcp__scheduler__schedule_create` (the actual tool call this skill ends with)
 
@@ -64,7 +64,7 @@ Finally, call the "create_scheduled_task" tool.
 
 User: "every weekday at 8am, run my morning briefing"
 
-Drafted prompt: "Run the morning briefing flow per `knowledge/session-ops.md`: fetch overnight email, today's calendar, today's schedule. Output to `outputs/raw/agent/YYYY-MM-DD-morning-briefing.md`. Send a concise chat summary."
+Drafted prompt: "Run the morning briefing flow per your session-ops notes: fetch overnight email, today's calendar, today's schedule. Output to `outputs/raw/agent/YYYY-MM-DD-morning-briefing.md`. Send a concise chat summary."
 
 taskName: `morning-briefing`
 cronExpression: `0 8 * * 1-5`
@@ -76,4 +76,4 @@ The skill ends with a single tool call to `create_scheduled_task` (or `mcp__sche
 - `taskName` (kebab-case)
 - `prompt` (self-contained, second-person)
 - `cronExpression` OR `fireAt` (mutually exclusive; omit both for ad-hoc)
-- `model` (haiku / sonnet / opus per `knowledge/scheduled-tasks.md` tiering)
+- `model` (haiku / sonnet / opus per your scheduled-task notes (model tier per task) tiering)

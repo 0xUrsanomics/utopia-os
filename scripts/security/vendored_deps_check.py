@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# vendored_deps_check.py — flag manually-installed GitHub deps whose upstream has moved.
+# vendored_deps_check.py, flag manually-installed GitHub deps whose upstream has moved.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Vendored-dependency update checker.
 

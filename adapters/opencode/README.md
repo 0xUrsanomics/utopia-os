@@ -2,7 +2,7 @@
 
 opencode is a **medium-tier** adapter: the portable substrate (MCP daemon, Markdown memory,
 `SKILL.md` content) ports cleanly, but the guardrail hooks must be **re-implemented as an in-process
-opencode plugin** — opencode has no shell-hook block — and skill auto-trigger degrades to a native
+opencode plugin**, opencode has no shell-hook block, and skill auto-trigger degrades to a native
 `skill` tool the model calls. Verified against opencode docs + the `@opencode-ai/plugin` types on
 2026-07-23. See [`../../docs/adapters.md`](../../docs/adapters.md) for the model and
 [`../../AGENTS.md`](../../AGENTS.md) for the portable-core boundary.
@@ -25,7 +25,7 @@ opencode plugin** — opencode has no shell-hook block — and skill auto-trigge
 - **Skills: degraded.** `SKILL.md` content ports, but there is **no keyword / frontmatter / semantic
   auto-fire**. opencode exposes a native `skill` tool; the model self-selects from the catalog
   (name + description) by calling `skill({ name })`. Utopia OS's deterministic routing
-  (`trigger:` frontmatter, `routing.json`, vector recall) has no equivalent — **this is the sharpest
+  (`trigger:` frontmatter, `routing.json`, vector recall) has no equivalent, **this is the sharpest
   degradation**.
 
 ## The four-dimension mapping
@@ -43,16 +43,16 @@ opencode plugin** — opencode has no shell-hook block — and skill auto-trigge
 |---|---|---|
 | `SessionStart` | `event` bus → `session.created` | no (side-effect) |
 | `UserPromptSubmit` | `chat.message` hook (fires per operator message) | no (advisory) |
-| `PreToolUse` [Bash] | `tool.execute.before` (filter `input.tool === "bash"`) | **yes — `throw` aborts the tool** |
-| `PreToolUse` [Read/Edit/Write] | `tool.execute.before` (`read`/`edit`/`write`) | **yes — `throw`** |
+| `PreToolUse` [Bash] | `tool.execute.before` (filter `input.tool === "bash"`) | **yes, `throw` aborts the tool** |
+| `PreToolUse` [Read/Edit/Write] | `tool.execute.before` (`read`/`edit`/`write`) | **yes, `throw`** |
 | `PostToolUse` [Write/Edit] | `tool.execute.after` | no (post-hoc) |
 | `Stop` | `event` bus → `session.idle` | no (side-effect) |
-| (`PermissionRequest`) | `permission.ask` hook (set `output.status`) | **yes — `"deny"`** |
+| (`PermissionRequest`) | `permission.ask` hook (set `output.status`) | **yes, `"deny"`** |
 | (`PreCompact`) | `experimental.session.compacting` | n/a (mutates context) |
 
 ## Steps
 
-1. **Instruction file.** Nothing to do — [`AGENTS.md`](../../AGENTS.md) is at the repo root and points
+1. **Instruction file.** Nothing to do, [`AGENTS.md`](../../AGENTS.md) is at the repo root and points
    at `CLAUDE.md`, which opencode reads in compat mode. Optionally pin extra files via the
    `"instructions"` array (see the config example).
 2. **MCP.** Copy [`opencode.jsonc.example`](opencode.jsonc.example) to `opencode.jsonc` (or merge the
@@ -64,7 +64,7 @@ opencode plugin** — opencode has no shell-hook block — and skill auto-trigge
    guardrails onto opencode hooks, shelling out to the unchanged guard scripts. Set `UTOPIA_OS_ROOT`
    (or edit the `/path/to/utopia-os` default). See the next section for what it does and its limits.
 4. **Skills.** Copy the skill folders into opencode's skills directory. They work, but auto-trigger is
-   **lost** — the model invokes each via `skill({ name })`. See "What degrades".
+   **lost**, the model invokes each via `skill({ name })`. See "What degrades".
 
 ## What needs a plugin rewrite (and how)
 
@@ -72,7 +72,7 @@ The other adapters (Codex, Kimi, grok) are syntax translations: the harness acce
 block, so the same `session_bootstrap.sh` / `check_standdown.py` / … run untouched behind a JSON or
 TOML wrapper. **opencode has no such block.** Its only extension point for lifecycle events is a
 plugin: a JS/TS module in `.opencode/plugins/` that `export`s an async function returning a `Hooks`
-object. So the guardrail *wiring* — not the guard *logic* — must be rewritten in **TypeScript/JavaScript
+object. So the guardrail *wiring*, not the guard *logic*, must be rewritten in **TypeScript/JavaScript
 (Bun runtime)**.
 
 The good news: it's a **thin shim, not a port of the logic**. Every guard script stays in Python/bash.
@@ -82,19 +82,19 @@ contract, using Bun's `$` shell (injected into the plugin as `$`). The shipped
 right, guard by guard:
 
 - **`session_bootstrap.sh` (SessionStart).** No dedicated hook; subscribe to the `event` bus and match
-  `event.type === "session.created"`. Side-effect only — it loads the parachute, it can't gate the turn.
+  `event.type === "session.created"`. Side-effect only, it loads the parachute, it can't gate the turn.
 - **`auto_compound_counter.py --reset` + `bus_turn_poll.py` (UserPromptSubmit).** Map to the
   `chat.message` hook, which fires on each operator message. Advisory: opencode has no stdout-injection
   contract like CC's `UserPromptSubmit`, so surface results, don't expect a hard pre-prompt block.
 - **`check_standdown.py` (PreToolUse[Bash]).** In `tool.execute.before`, filter `input.tool === "bash"`,
   read the command off `output.args.command`, run `check_standdown.py --pattern <cmd>`, and **`throw` on
-  exit 2** — throwing in `tool.execute.before` aborts the tool (opencode's documented `.env`-block
+  exit 2**, throwing in `tool.execute.before` aborts the tool (opencode's documented `.env`-block
   pattern). Warn (exit 1) / expired (exit 3) are surfaced, not thrown.
 - **`skill_linter.py` (PreToolUse[Read|Edit|Write]).** Same hook, filter `read`/`edit`/`write`, take the
   path off `output.args.filePath`, run the linter, `throw` on the fail tier (`verdict_exit`: fail/error
   = 2). This is a real, enforced block.
 - **`verify_after_write.py` (PostToolUse).** Map to `tool.execute.after` for `write`/`edit`. The write
-  already landed, so this is verification only — it **cannot block**. The script reads a hook payload on
+  already landed, so this is verification only, it **cannot block**. The script reads a hook payload on
   stdin, so the shim pipes a small JSON in (`< ${Buffer.from(...)}`).
 - **`reply_guard.sh` (Stop).** Subscribe to `event.type === "session.idle"` (opencode's documented
   end-of-turn signal). Best-effort nudge; it can't re-open a finished turn.
@@ -102,7 +102,7 @@ right, guard by guard:
 Two contract details the rewrite must honor, both different from Claude Code:
 
 - **Tool names are lowercase** (`bash`, `read`, `edit`, `write`) and arguments live on `output.args`
-  (`output.args.command`, `output.args.filePath`) — not CC's capitalized `Bash`/`Read` and
+  (`output.args.command`, `output.args.filePath`), not CC's capitalized `Bash`/`Read` and
   `tool_input`. Matchers that assume CC names silently never fire.
 - **Blocking is `throw`, not exit-2-on-stdin.** A guard's exit code has no meaning to opencode; the
   plugin reads it (via Bun `$`'s `.nothrow().exitCode`) and decides whether to `throw`. For
@@ -116,11 +116,11 @@ The plugin exists so they fire automatically.
 
 - **Skill auto-trigger is gone (sharpest).** No `trigger:` frontmatter, no `routing.json`, no semantic
   recall routing. The model must pick from the `skill` tool's description catalog and call
-  `skill({ name })`. Keep skill `description` fields sharp — they are now the *only* selection signal.
+  `skill({ name })`. Keep skill `description` fields sharp, they are now the *only* selection signal.
 - **UserPromptSubmit / Stop can't block.** `chat.message`, `session.created`, and `session.idle` are
   advisory. Only `tool.execute.before` (throw) and `permission.ask` (`output.status`) are hard gates.
 - **`permission.ask` vs `permission.asked`.** The veto hook is `permission.ask` (singular). The
-  `permission.asked` *event* is read-only and fires after — do not wire a gate to it.
+  `permission.asked` *event* is read-only and fires after, do not wire a gate to it.
 - **`permission.ask` is under-documented.** Its `output.status` control comes from the plugin `Hooks`
   type, not the prose docs; smoke-test a deny before relying on it.
 - **MCP schema differs from CC.** `command` is one array; env is `"environment"`; per-server `type` is

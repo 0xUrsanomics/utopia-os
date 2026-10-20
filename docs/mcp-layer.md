@@ -1,4 +1,4 @@
-# The MCP Layer — how the agent reaches the outside world, without holding the keys
+# The MCP Layer: how the agent reaches the outside world, without holding the keys
 
 The agent is a reasoning loop. On its own it cannot send a message, read a calendar, post to a social
 account, write to the knowledge graph, or fire a job tomorrow morning. Every one of those capabilities is
@@ -22,15 +22,15 @@ seriousness:
    between conversations; the channel reader ingests continuously. A capability that only exists while the
    agent is "awake" can't do either. The daemon is the always-on process those live in.
 
-2. **Separation of concerns.** The agent decides *what* to do; the server decides *how* — which endpoint,
+2. **Separation of concerns.** The agent decides *what* to do; the server decides *how*, which endpoint,
    which retry policy, which rate limit. Keeping the "how" behind a typed tool means the reasoning loop
    stays about reasoning, and a change to an external API is a one-file server change, not a prompt rewrite.
 
-3. **Secrets isolation — the real reason.** Every outward capability needs a credential: a bot token, an
+3. **Secrets isolation, the real reason.** Every outward capability needs a credential: a bot token, an
    OAuth refresh token, a third-party API key. If those sat in the agent's context, or in a shared `.env`
    the agent could read, then a single prompt injection, a leaked transcript, or an over-broad file read
    would exfiltrate them. So the daemon holds the credentials and exposes only *tools*. The agent asks
-   "send this message" and gets back "sent" — it never sees the token. The credential's blast radius stops
+   "send this message" and gets back "sent", it never sees the token. The credential's blast radius stops
    at the daemon boundary.
 
 > The agent is treated as a potentially-compromised component. The MCP boundary is the airlock: reasoning
@@ -41,7 +41,7 @@ seriousness:
 ## The server catalog
 
 The self-hosted servers group into four functions. "Secret class" is what the server needs to authenticate;
-note that several servers touch only local files and need **no external credential at all** — those are the
+note that several servers touch only local files and need **no external credential at all**, those are the
 cheapest to trust and the first ones anyone rebuilding this stack should stand up.
 
 | Server | Function | Representative tools | Secret class |
@@ -59,15 +59,15 @@ cheapest to trust and the first ones anyone rebuilding this stack should stand u
 Two things worth reading off this table:
 
 - **Local-only servers (memory, logseq, scheduler) carry no external secret.** They read and write files on
-  the same machine. They still sit behind the autonomy gates — writing to the graph is a `CONFIRM` action —
+  the same machine. They still sit behind the autonomy gates, writing to the graph is a `CONFIRM` action, 
   but there is no credential to leak, so they are the safe core.
 - **The credentialed servers are all *outbound*.** Sending a message, writing a row, posting, generating
   media. That is not a coincidence: reaching *out* is exactly where a real key is required, and therefore
   exactly where the secret broker (below) and the confirmation gate earn their keep.
 
 Beyond these self-hosted servers, the same agent also connects to **remote/cloud MCP servers** (web search,
-maps, a workspace suite, a browser). Those follow the identical contract — typed tools, credentials held
-server-side — but are operated by third parties rather than this daemon. The architecture is the same; only
+maps, a workspace suite, a browser). Those follow the identical contract, typed tools, credentials held
+server-side, but are operated by third parties rather than this daemon. The architecture is the same; only
 the operator changes.
 
 ---
@@ -93,12 +93,12 @@ what. The broker replaces it with an encrypted, scoped, audited vault.
 1. **Encrypted at rest.** The vault is Fernet-encrypted; the only plaintext on disk is a single `600` key.
    One file to protect instead of N sprawling `.env`s.
 2. **Per-agent least privilege.** Every fetch requires an agent identity (a flag or an env var). The policy
-   maps each agent to the keys it may read. **No identity, or an unlisted key, is a hard deny** — the
+   maps each agent to the keys it may read. **No identity, or an unlisted key, is a hard deny**, the
    default answer is "no."
 3. **Audited.** Every access, allowed or denied, appends to the audit log. "Which agent read which key,
    when" is always answerable after the fact.
 4. **Instant revocation (killswitch).** Removing an agent from the policy cuts its access on the next fetch.
-   No key rotation, no restart — one policy edit.
+   No key rotation, no restart, one policy edit.
 5. **Fetch-at-use.** Secrets are pulled at the moment of the call, not loaded into a long-lived environment,
    so the in-memory window where a secret is exposed is as small as possible.
 
@@ -114,7 +114,7 @@ The fetch flow:
 ```
 
 **Honest limit of the v1 pattern.** This scopes access *by agent identity*, not by OS boundary. If the whole
-fleet runs under one Unix user, a determined same-UID process can still invoke the broker as another agent —
+fleet runs under one Unix user, a determined same-UID process can still invoke the broker as another agent, 
 the broker raises the cost and creates the audit trail, but it is not a kernel-enforced wall. True isolation
 is a separate tier: distinct Linux users or a sandbox per agent, adopted when the threat model warrants it
 (untrusted input at scale, or third-party secrets in play). What the broker *does* buy, unconditionally: no
@@ -125,14 +125,14 @@ rotation point. Documented honestly so nobody over-trusts it.
 
 ## How the agent connects, and what stops it
 
-The agent's client config lists each server and how to reach it — a local command for the self-hosted
+The agent's client config lists each server and how to reach it, a local command for the self-hosted
 servers (spoken over stdio), a URL for remote ones. Starting the client starts or attaches to each server;
 their tools then appear to the agent as ordinary callable tools.
 
 Two gates govern what those tools may do, both defined in [`security-gates.md`](security-gates.md):
 
 - **Write-capable MCP tools sit behind the `CONFIRM` gate.** Posting a tweet, writing a CRM row, editing the
-  knowledge graph — anything an outside party will see — stops for human approval first. Read and search
+  knowledge graph, anything an outside party will see, stops for human approval first. Read and search
   tools run freely.
 - **Sending mail is `BLOCKED` outright.** The mail path drafts only; a human taps send. No MCP tool auto-
   sends on the operator's behalf, by construction.
@@ -149,7 +149,7 @@ And the rule that sits above both, because an MCP result is *external data the a
 Everything above is architecture. The running servers themselves are not here, on purpose:
 
 - **They are credential-bearing and account-specific.** Each is wired to particular accounts, tokens, and
-  API endpoints. Shipping them safely would mean re-templatizing every server minus its auth — a large
+  API endpoints. Shipping them safely would mean re-templatizing every server minus its auth, a large
   surface where a single missed token is a real, permanent, public leak. The cost/benefit is wrong.
 - **The reusable part is the interface, not the wiring.** Someone rebuilding this stack implements their own
   servers against their own accounts. What transfers is the *shape*: the airlock boundary, the local-vs-
@@ -158,5 +158,5 @@ Everything above is architecture. The running servers themselves are not here, o
   for the memory server).
 
 So this layer is represented the same way every other subsystem in this repo is: the design is legible, the
-secrets and the account-specific wiring are not shipped. That is the whole doctrine — **document the
+secrets and the account-specific wiring are not shipped. That is the whole doctrine, **document the
 interface, never the credentials.**
