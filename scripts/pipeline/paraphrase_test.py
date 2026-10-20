@@ -45,7 +45,7 @@ USAGE
   paraphrase_test.py --selftest               # offline self-check, no file needed
   exit 0 = clean or advisory-only | 1 = findings under --enforce | 2 = usage/error
 """
-import sys, re, argparse, json, subprocess, shutil, os
+import sys, re, argparse, json, subprocess, shutil, os, tempfile
 
 # -- INSIGHT-SHAPED: sounds profound, means nothing. "naturally essenced profundity". --
 INSIGHT_SHAPED = [
@@ -161,7 +161,8 @@ def _llm_pass(body, timeout=180):
         exe = shutil.which(parts[0]) or parts[0]
         engines.append((os.path.basename(parts[0]), [exe] + parts[1:] + [prompt]))
     claude = shutil.which("claude") or os.path.expanduser("~/.local/bin/claude")
-    engines.append(("claude", [claude, "--print", prompt]))
+    # untrusted text goes into this prompt: no tools, no MCP, no saved session, run from a neutral cwd
+    engines.append(("claude", [claude, "--print", "--tools", "", "--strict-mcp-config", "--no-session-persistence", prompt]))
     try:
         sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "lib"))
         from lib_claude_child_env import child_env
@@ -172,7 +173,7 @@ def _llm_pass(body, timeout=180):
         if not (cmd[0] and os.path.exists(cmd[0])):
             continue
         try:
-            out = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, env=env)
+            out = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, cwd=tempfile.gettempdir(), env=env)
             txt = (out.stdout or "").strip()
             low = txt.lower()
             if txt and not any(s in low for s in

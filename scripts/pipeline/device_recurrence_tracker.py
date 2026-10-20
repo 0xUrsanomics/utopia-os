@@ -43,7 +43,7 @@ argument), else `claude --print` if on PATH. Fail-open: no engine = PASS with "n
 Ledger: $AGENT_ROOT/memory/state/device-recurrence-ledger.json (runtime state, gitignored).
 Dates: local calendar dates (AGENT_UTC_OFFSET_HOURS, default 0).
 """
-import sys, os, json, argparse, subprocess, shutil, datetime, re, shlex
+import sys, os, json, argparse, subprocess, shutil, datetime, re, shlex, tempfile
 
 REPO = os.environ.get("AGENT_ROOT") or os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LEDGER = os.environ.get("DEVICE_LEDGER") or os.path.join(REPO, "memory", "state", "device-recurrence-ledger.json")
@@ -98,7 +98,8 @@ def _classify_llm(text, timeout=150):
         parts = shlex.split(custom)
         engines.append((os.path.basename(parts[0]), [shutil.which(parts[0]) or parts[0]] + parts[1:] + [prompt]))
     claude = shutil.which("claude") or os.path.expanduser("~/.local/bin/claude")
-    engines.append(("claude", [claude, "--print", prompt]))
+    # untrusted text goes into this prompt: no tools, no MCP, no saved session, run from a neutral cwd
+    engines.append(("claude", [claude, "--print", "--tools", "", "--strict-mcp-config", "--no-session-persistence", prompt]))
     try:
         sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "lib"))
         from lib_claude_child_env import child_env
@@ -109,7 +110,7 @@ def _classify_llm(text, timeout=150):
         if not (cmd[0] and os.path.exists(cmd[0])):
             continue
         try:
-            out = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, env=env)
+            out = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, cwd=tempfile.gettempdir(), env=env)
             txt = (out.stdout or "").strip()
             low = txt.lower()
             if not txt or any(s in low for s in
