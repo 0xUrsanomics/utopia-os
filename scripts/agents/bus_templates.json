@@ -1,0 +1,9 @@
+{
+ "_doc": "Template registry for fleet_bus v2 instructions. An instruction of the form {\"template\": \"<id>\", \"args\": {...}} is accepted only when <id> is listed here and every arg is a number, bool, null or an id-shaped string (no whitespace, so no free text). Add your own ids; the description is for humans.",
+ "templates": {
+  "answer_query": {"description": "Answer a question from your own ground truth. args: topic"},
+  "review_artifact": {"description": "Review a file and report findings. args: path"},
+  "status_report": {"description": "Report the current status of a task. args: task_id"},
+  "run_skill": {"description": "Run a named skill on a named input. args: skill, input"}
+ }
+}

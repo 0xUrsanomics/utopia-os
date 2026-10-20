@@ -1,0 +1,24 @@
+{
+  "_why": "A correction recorded only as a text lesson has to be remembered at copy time, and an old draft copied forward does not remember it. scripts/pipeline/external_slop_gate.py HARD-blocks any row whose pattern matches in scope, so it does not matter which stale draft the text came from. Copy this file to knowledge/retracted-claims.json and replace the fabricated rows below.",
+  "_entry_rules": [
+    "Add a row when a correction retracts a claim that has already appeared in an outbound artifact (a CV, a pitch, a client doc, a post). skills/save/SKILL.md adds it at correction time.",
+    "id: short kebab-case slug naming the wrong claim.",
+    "pattern: a Python regex for the wrong wording. Bound gaps with {0,N} so a match cannot span unrelated sentences. Test it against the stale draft before saving.",
+    "retracted: YYYY-MM-DD the correction was made.",
+    "scope: 'cv' = checked only under --cv; 'all' = checked on every run.",
+    "replacement: the corrected wording, so the person fixing the draft does not have to look it up.",
+    "source: where the correction is recorded (a Decisions.md entry or a file path).",
+    "Never delete a row because the drafts look clean now. Old drafts get copied again."
+  ],
+  "claims": [
+    {"id": "acme-revenue-positive", "pattern": "revenue-positive\\s+(?:\\w+\\s+){0,2}deal", "retracted": "2026-01-15", "scope": "cv",
+     "replacement": "Walked away from a partnership with Example Corp when it would only pay success fees, after three alternative fee structures were rejected.",
+     "source": "Decisions.md 2026-01-15"},
+    {"id": "acme-walk-reason-compliance", "pattern": "compliance\\s+grounds", "retracted": "2026-01-15", "scope": "all",
+     "replacement": "The walk was over fee structure, not compliance.",
+     "source": "Decisions.md 2026-01-15"},
+    {"id": "widget-launch-year", "pattern": "\\blaunched\\b.{0,40}\\bwidget\\b.{0,20}\\b2023\\b", "retracted": "2026-02-02", "scope": "all",
+     "replacement": "The widget launched in 2024, not 2023.",
+     "source": "Decisions.md 2026-02-02"}
+  ]
+}

@@ -314,6 +314,53 @@ Provenance: the StoryScope take (arXiv 2604.03136), lifted into the content-auth
 
 ---
 
+## Insight-Shaped Tells (v3.2, the FOURTH axis)
+
+Below word choice, statistics and narrative construction sits one more failure: a sentence that sounds weighty and says nothing. Governing question: not "was this written by AI" but "is this sentence doing its job". These are old writing problems, and they apply to human prose as much as machine prose. Idea credit: a16z crypto, Steph Zinn, "The habits of AI writing" (2026-08-25). The rules below are our own restatement.
+
+Two tests, run on any sentence that feels off:
+1. **Paraphrase test.** Say the sentence plainly. If it collapses to "things are changing" or "this matters", it never meant anything. Cut it and check the piece still stands.
+2. **Transplant test.** Could someone paste this sentence into an essay on an unrelated topic and nobody would notice? Then it carries no specific content. Rewrite toward the specific ("the market is growing" becomes "three new lenders launched on the chain this quarter").
+
+### 42. No Weight Without Content
+Lines that signal significance with nothing behind them: "this is a turning point", "the stakes are high", "the implications are huge", "everything is about to change". **Fix:** state the specific thing, or delete the line.
+
+### 43. No Portable Connective Tissue
+Framing phrases that fit any piece: "one way to think about this is", "at its heart", "the truth is", "if you think about it". **Fix:** make the point directly.
+
+### 44. No Abstract-Noun Fog
+Long abstract nouns standing in for a concrete thing: efficiency, transformation, scalability, optimization, innovation. **Fix:** name what the abstraction refers to. `paraphrase_test.py` flags density at 2.5 or more per 100 words.
+
+### 45. No Unbacked Intensifiers
+"very important", "major impact", "a key role", with no number or example attached. **Fix:** the number is the intensifier ("cut review time in half", not "a big improvement").
+
+### 46. No Pointing-Near-It Nouns
+Words that gesture at the area around a thing: landscape, space, journey, realm, arena. **Fix:** name the thing. When one of these really is the only right word, use it, but not by reflex.
+
+### When structure and plain voice are correct
+These tells matter only when they get in the way of the job. Keep headers, lists and taxonomies in reference content people scan (docs, FAQs, runbooks). Keep a neutral voice in copy read by many strangers (error messages, support docs, terms). Keep load-bearing hedges and formal diction in regulated or formal register. That is also why the lexical gate keeps words like "comprehensive" on WARN rather than HARD.
+
+### Colon over-correction
+When dashes are banned, drafts tend to route the same rhythm through colons. A colon-heavy, uniformly clipped rhythm is its own tell. Our dash ban stays (it is an operator and outbound-guard rule, see `scripts/security/emdash_send_guard.py`), and rules 10 and 26 cover the colon side. Watch colon density on de-slopped drafts.
+
+---
+
+## Pre-Ship Enforcement (the scripted step)
+
+The rules above are prose. Before anything leaves for a human audience, run the scripts, so the check does not depend on memory:
+
+```bash
+python3 scripts/pipeline/external_slop_gate.py --file <draft>        # add --cv for CVs and cover letters
+python3 scripts/pipeline/paraphrase_test.py --file <draft>           # advisory; flags insight-shaped lines
+```
+
+- `external_slop_gate.py` exit 1 is a HARD hit (dash, unambiguous AI tell, a retracted claim from `knowledge/retracted-claims.json`). Fix and re-run. WARN lines never block.
+- `paraphrase_test.py` is advisory. Apply the two tests above to each flagged line.
+- Never inject typos, noise or awkwardness to pass a gate. A hit means a real tell; cut it and say the thing plainly.
+- Which surfaces run which gate (lexical for everything, voice only for owner-voiced pieces): `docs/content-gates.md`.
+
+---
+
 ## Secondary Rules
 
 ### Latinate Word Inflation

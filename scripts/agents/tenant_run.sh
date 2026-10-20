@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tenant_run.sh <agent> — launcher for a fleet WORKER tenant.
+# tenant_run.sh <agent>: launcher for a fleet WORKER tenant.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 #
 # A fleet worker is a headless coding-agent CLI session running in tmux that:
@@ -8,10 +8,14 @@
 #   - receives work by `tmux send-keys` (bus_dispatcher.py delivers bus tasks into its pane)
 #   - surfaces to the operator THROUGH the hub (hub-and-spoke), so NO chat plugin / channel poller
 #
-# Auth: creds are SEEDED once from the operator's own logged-in config so a fresh tenant needs NO
-# interactive /login. Each tenant then rotates its own token in its isolated CLAUDE_CONFIG_DIR. More
-# same-account tenants raise the refresh-race risk (an OAuth 401 class); a single-instance flock +
-# per-config sweep mitigate it.
+# Auth, preferred: a long-lived `claude setup-token` credential (install it once with
+# scripts/session/install_setup_auth.sh). The pane sources scripts/lib/lib_claude_setup_auth.sh
+# before launching the CLI. A setup credential has no refresh cycle, so same-account tenants have
+# nothing to race over. Per-agent override: ~/.claude/oauth-token.<agent>.env.
+# Auth, fallback (no setup credential installed): creds are SEEDED once from the operator's own
+# logged-in config so a fresh tenant needs NO interactive /login. Each tenant then rotates its own
+# copy in its isolated CLAUDE_CONFIG_DIR. More same-account tenants raise the refresh-race risk (an
+# OAuth 401 class); a single-instance flock + per-config sweep mitigate it.
 #
 # Usage: tenant_run.sh <agent-slug>     (watchdog/manual/provision calls this)
 set -euo pipefail
@@ -30,6 +34,7 @@ LOG_FILE="$HOME_DIR/session.log"
 RUN_DIR="$HOME_DIR/run"
 SESSION_NAME="tenant-$AGENT"
 SWEEP_TAG="utopia-fleet/$AGENT/cc-config"     # unique per tenant; never matches another tenant's config dir
+AUTH_LIB="$WORKSPACE/scripts/lib/lib_claude_setup_auth.sh"
 MCP_CONFIG="${AGENT_MCP_CONFIG:-}"            # optional shared MCP config; flag added only if the file exists
 SEED_CREDS="${CLAUDE_SEED_CREDS:-$HOME/.claude/.credentials.json}"
 SEED_CLAUDE_JSON="${CLAUDE_SEED_JSON:-$HOME/.claude.json}"
@@ -38,7 +43,8 @@ mkdir -p "$CONFIG_DIR" "$RUN_DIR" "$(dirname "$LOG_FILE")"
 chmod 700 "$CONFIG_DIR"
 export CLAUDE_CONFIG_DIR="$CONFIG_DIR"
 
-# Seed auth ONCE (no interactive login). Two parts are BOTH required:
+# Seed auth ONCE (no interactive login; the fallback path, harmless when a setup credential exists).
+# Two parts are BOTH required:
 #  (1) .credentials.json = the OAuth token (copied from the operator's ~/.claude)
 #  (2) oauthAccount record in .claude.json = WHICH account is logged in. Creds alone are NOT enough;
 #      without a populated oauthAccount the CLI shows the login-method picker and tries to open a
@@ -93,7 +99,7 @@ SETTINGS
 # Enforce the fleet-tenant design invariant: NO plugins. A coding-agent CLI's marketplace
 # auto-install can re-add a chat plugin into a seeded config -> a long-poller on the OPERATOR's bot
 # token -> stolen inbound from the operator session. Fleet workers are headless (bus + brain, no chat
-# plugin). Wiping installed_plugins.json is a RECORD wipe only — the CLI can re-install the plugin
+# plugin). Wiping installed_plugins.json is a RECORD wipe only: the CLI can re-install the plugin
 # from the registered marketplace AFTER the wipe, mid-startup, and the poller runs from the
 # marketplace/cache dir. Kill source + code + record: no source, no code, no record.
 mkdir -p "$CONFIG_DIR/plugins"
@@ -129,6 +135,10 @@ tmux new-session -d -s "$SESSION_NAME" -c "$HOME_DIR" -x 220 -y 50
 tmux pipe-pane -t "$SESSION_NAME" -o "cat >> $LOG_FILE"
 tmux send-keys -t "$SESSION_NAME" "export CLAUDE_CONFIG_DIR=$CONFIG_DIR" Enter
 tmux send-keys -t "$SESSION_NAME" 'export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"' Enter
+# Long-lived setup credential. Agent passed by ENV VAR, not positional: the pane shell may be dash,
+# which ignores arguments to `.`. Guarded: no lib or no credential file -> falls through to the
+# seeded .credentials.json above, never blocks launch.
+tmux send-keys -t "$SESSION_NAME" "CLAUDE_TOKEN_AGENT=$AGENT; [ -f '$AUTH_LIB' ] && . '$AUTH_LIB'" Enter
 
 # Conditional --continue: resume if a session exists, else cold-start fresh. `claude --continue`
 # exits non-zero when there's nothing to continue -> `|| claude` starts fresh. Add --mcp-config

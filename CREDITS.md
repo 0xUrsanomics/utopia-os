@@ -62,6 +62,14 @@ Running an operator agent all day is expensive; these tools keep the token spend
 - **fleet_board.py** (shared-editable-state agent coordination: board + event feed + optimistic CAS + capability tiers + suggest/accept) adapts the coordination model of workbench.md.
 - **egress_proxy.py** (an egress MITM proxy that injects credentials on the wire so a tool never holds the secret) + **principal_floor.sh** (a bubblewrap secret-masking session floor) adapt the credential-injection + sandboxing model of paradigmxyz/centaur (iron-proxy).
 
+## v2 additions (2026-10)
+- **[elvisun/newsjack](https://github.com/elvisun/newsjack)** (MIT, Copyright (c) 2026 Elvis Sun). Four skills and two doctrine files vendored unchanged at commit 3b7fb82 in `skills-shared/newsjack/`, wired into the breaking-news lane.
+- **[davidondrej/skills](https://github.com/davidondrej/skills)** (MIT). The skill-authoring principles in `knowledge/agent-skill-authoring-principles.md` (patterns, no code copied).
+- **[herdrdev/herdr](https://github.com/herdrdev/herdr)** (Apache-2.0). Agent lifecycle states and the identity-pinned claim in the bus (`knowledge/herdr-runtime-lifts.md`; patterns, no code copied).
+- **CaMeL** (Google DeepMind, "Defeating Prompt Injections by Design"). The taint-tracking idea behind `bus_taint_gate.py`.
+- **MemCut** (arXiv 2610.21405). The finding that deletion fails on missed related records, which shaped `forget.py`.
+- Rules 42 to 46 of `anti-ai-slop` restate an a16z article on empty-weight sentences in our own words; credit is in the skill.
+
 ---
 
 Where an upstream project ships a LICENSE, that license is preserved in the relevant subdirectory

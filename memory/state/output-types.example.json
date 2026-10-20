@@ -1,0 +1,35 @@
+{
+  "_doc": "SINGLE SOURCE for the frontmatter `type::` vocabulary of files under outputs/raw/. Do NOT duplicate this list elsewhere. A hallucination sampler can derive its sampling set from substantive:true here; a post-session audit can flag any recent raw output whose type is missing or absent from this registry. When a new type is first emitted, add it here in the same change: that classification is the decision, not a silent skip. Copy to memory/state/output-types.json and edit.",
+  "_substantive_means": "true = human-facing, decision-bearing, fact-checkable content that a daily fact-check sampler should cover. false = automated ingestion, synthesis, logs, digests, internal system reports, memory operations (not fact-checkable from a cold start).",
+  "types": {
+    "research-memo": {"substantive": true},
+    "research-synthesis": {"substantive": true},
+    "intel-report": {"substantive": true},
+    "proposal": {"substantive": true},
+    "deck-content": {"substantive": true},
+    "playbook": {"substantive": true},
+    "brief": {"substantive": true},
+    "long-form": {"substantive": true},
+    "content-draft": {"substantive": true},
+    "thread-draft": {"substantive": true},
+    "post-draft": {"substantive": true},
+    "outline": {"substantive": true},
+    "application": {"substantive": true, "note": "grant or job application draft: human-facing and fact-checkable"},
+    "resume": {"substantive": true},
+    "cover-letter": {"substantive": true},
+
+    "audit-report": {"substantive": false, "note": "internal system diagnostic; marking it true sweeps it into the fact-check sampler by mistake"},
+    "daily-forest": {"substantive": false, "note": "automated nightly synthesis"},
+    "hallucination-audit": {"substantive": false, "note": "the sampler's own output"},
+    "dream": {"substantive": false, "note": "memory consolidation"},
+    "reflection": {"substantive": false, "note": "internal reflection, not fact-checkable from a cold start"},
+    "cron-output": {"substantive": false, "note": "automated"},
+    "telemetry-digest": {"substantive": false, "note": "metrics digest"},
+    "task": {"substantive": false, "note": "task record"},
+    "summary": {"substantive": false, "note": "run summary"},
+    "needs-review": {"substantive": false, "note": "status marker, not content"},
+    "raw": {"substantive": false, "note": "unclassified placeholder, retype it"},
+    "self-audit": {"substantive": false, "note": "internal diagnostic"},
+    "meta-memory-review": {"substantive": false, "note": "internal diagnostic, re-measures its own claims"}
+  }
+}

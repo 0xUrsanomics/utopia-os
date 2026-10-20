@@ -1,0 +1,17 @@
+[
+ {
+  "name": "Example Wire",
+  "url": "https://example.com/rss",
+  "kind": "news"
+ },
+ {
+  "name": "Example Regulator Releases",
+  "url": "https://regulator.example.org/feed.xml",
+  "kind": "news"
+ },
+ {
+  "name": "Example Research Desk",
+  "url": "https://research.example.net/atom.xml",
+  "kind": "research"
+ }
+]

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# bus_dispatcher.py — the 'listener' that makes the fleet bus real-time.
+# bus_dispatcher.py: the 'listener' that makes the fleet bus real-time.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Consume pending fleet-bus messages and deliver them into live worker sessions.
 
@@ -70,8 +70,8 @@ MAX_PER_RUN = 5
 WORKER_SESSIONS = {"research": "tenant-research", "marketing": "tenant-marketing"}
 # hub-targeted msgs are surfaced via the hub (its DM nudge + turn-poll hook), NEVER send-keyed.
 # Add any injection-hardened tenant here too: a brand/client-facing tenant should treat an
-# unsolicited "run this command" arriving in its pane as injection-shaped and refuse it — the
-# correct posture — so it must be hub-handled, not auto-delivered, until its CLAUDE.md explicitly
+# unsolicited "run this command" arriving in its pane as injection-shaped and refuse it (the
+# correct posture), so it must be hub-handled, not auto-delivered, until its CLAUDE.md explicitly
 # authorizes the fleet bus as a trusted channel.
 HUB_HANDLED = {"hub"}
 
@@ -169,6 +169,21 @@ def _deliver_question(session, m):
     _tmux("send-keys", "-t", session, "Enter")  # Enter sent separately, never from payload
 
 
+def _asker_resume_hint(m):
+    """resume_hint from the parent request iff the parent was sent by this result's recipient."""
+    pid = m.get("parent_id")
+    if not pid:
+        return None
+    try:
+        with fleet_bus._conn() as c:
+            parent = fleet_bus._row(c, pid)
+    except Exception:
+        return None
+    if not parent or parent.get("from_agent") != m.get("to_agent"):
+        return None
+    return fleet_bus._resume_hint(parent.get("payload"))
+
+
 def _deliver_result(session, m):
     """Deliver an answer (result msg) back to the asker AND trigger it to RESUME the work that
     prompted the request, instead of dropping the answer as passive info. Agents were going silent
@@ -178,14 +193,12 @@ def _deliver_result(session, m):
     completion never re-routes (fleet_bus.complete loop-guard)."""
     frm = _san(m["from_agent"], 40)
     path = _drop_payload(m["id"], "answer", m["payload"])  # FILE-DROP: full reply lands in the file, not the keystroke stream
-    # the requester's resume_hint (if they set one when publishing) lets us resume them precisely.
-    hint = None
-    try:
-        d = json.loads(m["payload"])
-        if isinstance(d, dict):
-            hint = d.get("resume_hint")
-    except Exception:
-        pass
+    # The resume_hint is typed into the asker's pane as an instruction, so it must come from the
+    # ASKER: read it from the parent request, and only when that request was published by the
+    # agent we are delivering to. A hint inside the result payload is ignored: any agent can
+    # publish --type result, so trusting it let one agent write instructions into another's pane
+    # ("boundary laundering"). Regression test: tests/test_bus_resume_hint.py.
+    hint = _asker_resume_hint(m)
     resume = (_san(hint, 400) if hint
               else "resume the work that prompted your original request, incorporating this answer")
     prompt = (
@@ -270,7 +283,7 @@ def _nudge_hub():
     new = [m for m in pend if m.get("id") and m["id"] not in seen]
     if not new:
         return []
-    lines = [f"🔔 fleet bus: {len(new)} msg(s) waiting for you (hub) —"]
+    lines = [f"🔔 fleet bus: {len(new)} msg(s) waiting for you (hub):"]
     for m in new[:8]:
         lines.append(f"• [{m['id'][:8]}] {_san(m.get('from_agent','?'),24)} "
                      f"({_san(m.get('msg_type',''),12)}): {_nudge_gist(m.get('payload',''))}")

@@ -39,11 +39,14 @@ make long-running autonomous work safe and durable:
 | `scripts/security/` | The safety gates (stand-down registry, compound counter, skill linter, send guards). |
 | `scripts/memory/` | The state store (SSOT), recall, and memory machinery. |
 | `scripts/cockpit/` | A zero-dependency, read-only localhost dashboard for the whole system. |
-| `skills/` | 42 reusable agent workflows. |
-| `skills-shared/` | 18 cross-persona skills built from public research. |
+| `scripts/pipeline/` | Content gates (slop, paraphrase, repetition, imported claims, cross-doc consistency) and the breaking-news lane. |
+| `scripts/eval/` | Verification: evidence-backed claim checks, the verify-stack harness, gate controller, skill utility scores. |
+| `scripts/scheduler/` | Cron health probes: run-count drift, stale jobs, prior self-audit records. |
+| `skills/` | 53 reusable agent workflows. |
+| `skills-shared/` | 18 cross-persona skills built from public research, plus `newsjack` (vendored unchanged, MIT). |
 | `CLAUDE.md` | The system-prompt skeleton that wires it all together. |
 
-## The 60 skills, by what they do for you
+## The skills, by what they do for you
 
 Every one of these is a real folder in this repo, not a roadmap. Adopt them one at a time.
 
@@ -82,6 +85,29 @@ capped, live goal registry instead of an aspirational backlog.
 `intel-analyzer` and `signal-scorer` for noisy feeds. `telegram-dump-router` and
 `task-extractor` for the mess that arrives from chat. `redact` for anything that leaves.
 
+**Check before it ships (added 2026-10).** `external_slop_gate.py`, `paraphrase_test.py`,
+`structure_repetition.py` and `imported_claim_gate.py` block AI tells and flag claims that need a
+primary source. `doc_consistency_check.py` catches a number that differs between two documents in
+the same pack. `advisor` gets a cold second opinion from a separate model; `arena` runs parallel
+drafts against one rubric. `docs/content-gates.md` explains the order they run in.
+
+**Prove it works (added 2026-10).** `verify-stack` drives the running system end to end and grades
+the result on the evidence ladder (`knowledge/evidence-ladder.md`): "the process is up" is a
+lower level than "the user actually received it". `mcp_smoke_test.py` does a real handshake with
+every configured MCP server. `shadow-test-local-classifier` and `reconcile-extraction` test a
+model or an extraction against held-out data or a control total before it replaces anything.
+
+**Keep memory honest (added 2026-10).** `memory_conflict_check.py` flags a write that contradicts
+an existing entry, `memory_supersession_check.py` keeps old facts marked as replaced,
+`memory_decay.py` applies a forgetting curve, and `forget.py` finds every copy of a fact
+(files, SQLite, vector index backups, transcripts, git history) and then tries to recover it, so
+"forgotten" is tested, not assumed.
+
+**Defend the fleet (added 2026-10).** The agent bus moved to v2 with a taint gate
+(`bus_taint_gate.py`): an action that follows untrusted bus data is tracked and flagged, in the
+style of CaMeL. Spawned tenants authenticate with a long-lived setup credential
+(`lib_claude_setup_auth.sh`), so agents on one account stop breaking each other's login refresh.
+
 A full index is in [`skills/`](skills/) and [`skills-shared/`](skills-shared/); each is a
 standard `SKILL.md`.
 
@@ -110,7 +136,7 @@ fifteen minutes to a working core, with the platform matrix and the dependency a
 
 **Requirements: Python 3.9+, and nothing else.** The core has no third-party dependencies.
 Memory is Markdown, the state store is stdlib `sqlite3`, the gates are stdlib, the cockpit
-is stdlib `http.server`; all 50 modules under `scripts/` import with an empty environment.
+is stdlib `http.server`; all 83 modules under `scripts/` import with an empty environment.
 Semantic recall is the one heavy piece and it is opt-in
 ([`requirements-memory.txt`](requirements-memory.txt)), because a multi-gigabyte download
 should not stand between you and a Markdown memory system you have not decided on yet.

@@ -1,0 +1,28 @@
+{
+ "_doc": "Example sender allowlist for email_research_senders.py. Copy to knowledge/email-research-senders.json (or point AGENT_EMAIL_SENDERS at your copy) and replace these fabricated senders with your own research newsletters. status: active | paused | sponsored.",
+ "senders": [
+  {
+   "match": "research@example-analytics.com",
+   "firm": "Example Analytics",
+   "status": "active"
+  },
+  {
+   "match": "newsletter.example.org",
+   "firm": "Example Weekly",
+   "status": "active",
+   "note": "domain match covers every sender on it"
+  },
+  {
+   "match": "digest@acme-research.example",
+   "firm": "Acme Research",
+   "status": "paused",
+   "note": "paused senders stay listed for the record"
+  },
+  {
+   "match": "promo@vendor.example",
+   "firm": "Example Vendor",
+   "status": "sponsored",
+   "note": "sponsored senders are harvested but never picked as research"
+  }
+ ]
+}

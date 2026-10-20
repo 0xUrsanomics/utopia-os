@@ -112,6 +112,10 @@ Hard rules:
 - SHIP_WITH_FIXES = fixable in-place (citation add, wording refine, scope clarification).
 - SHIP = passes both checks AND has >=1 tool call backing the strongest claim.
   SHIP without ANY tool call is forbidden.
+- In "reason", tag the strongest claim with its evidence level from
+  knowledge/evidence-ladder.md (L2 pointed at a source, L4 ran a check against real
+  data, etc.), e.g. "user count grounded at L2 (publisher's own release)". An
+  absence claim ("no record of X") must name the scope searched.
 - Zero tool calls → return BLOCK with reason "self-reflection only, no tool grounding."
 - Graceful degradation: if you hit the 8-turn ceiling with checks incomplete, return
   SHIP_WITH_FIXES + `fixes: [{"issue":"incomplete grounding","fix":"re-run critic with

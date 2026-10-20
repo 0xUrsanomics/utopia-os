@@ -8,6 +8,8 @@ trigger: debug, debugging, stuck, not working, why is this failing, can't figure
 
 Condensed from GSD v1 (audit 2026-04-28). Tier-2. fetch when actively debugging, not preloaded.
 
+**Build the feedback loop first.** Everything below is the restraint half of debugging (do not believe the wrong thing). The other half is producing evidence: a fast pass/fail signal that goes red on this specific bug. Build that before theorising. Ten loop types and how to tighten them: `knowledge/diagnosis-feedback-loop.md`.
+
 ## Conversation context (prior)
 
 **Prior conversation**: skill triggers when actively debugging an issue. The prior turn has: an error message OR an "expected X but got Y" report OR multiple failed fix attempts. Read those, treat user as reporter (knows symptom) not investigator (does not know cause). Don't ask user what's broken. that's the investigator's job.
@@ -124,4 +126,5 @@ When proposal/event-ops drafts ship with these phrases, they create deferred wor
 ## Cross-references
 
 - Origin: the `gsd-build/get-shit-done` references (debugger-philosophy, universal-anti-patterns, planner-antipatterns) (MIT, doc-mined).
+- Evidence half: `knowledge/diagnosis-feedback-loop.md` (adapted from mattpocock/skills diagnosing-bugs, MIT).
 - Sister skills: `skills-shared/anti-ai-slop/SKILL.md`, `skills-shared/sycophancy-guard/SKILL.md`, `skills-shared/test-before-bulk/SKILL.md`

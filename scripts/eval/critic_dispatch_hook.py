@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# critic_dispatch_hook.py — Stop-hook that dispatches a tool-grounded Critic on high-stake output.
+# critic_dispatch_hook.py: Stop-hook that dispatches a tool-grounded Critic on high-stake output.
 # Part of Utopia OS, an open framework for personal-AI-operations. MIT.
 """Critic dispatch hook.
 
@@ -500,7 +500,16 @@ def _dispatch_critic_via_claude_print(prompt: str) -> dict:
     # critic_dispatch_hook short-circuits. Prevents the infinite chain that burned
     # extra-usage + RAM overnight once (Critic output mentioning regulators/partners/
     # money re-classified stake=high -> recursion).
-    child_env = {**os.environ, "AGENT_CRITIC_DISABLE": "1"}
+    # The headless child authenticates off the long-lived setup credential (fail-open), so the
+    # critic keeps working after the interactive session's OAuth block expires. Without it every
+    # dispatch can fail auth silently and fall back to operator review for days.
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
+        from lib_claude_child_env import child_env as _child_env
+        child_env = _child_env()
+    except Exception:
+        child_env = dict(os.environ)
+    child_env["AGENT_CRITIC_DISABLE"] = "1"
     try:
         start = time.time()
         result = subprocess.run(

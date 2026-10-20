@@ -131,6 +131,10 @@ composes the message into a draft, and the human sends it. No OAuth send scope, 
 other outbound channels the send guard runs a pre-flight check (recipient, content, mode) before anything
 leaves.
 
+Content quality before send is a separate gate layer: the lexical slop gate, retracted-claim hard blocks,
+the imported-claim flag and the cross-document check. Which script runs on which surface:
+`content-gates.md`.
+
 ## Security-first install rule
 
 Underneath the registry sits a standing rule for anything downloaded or integrated: check it before running

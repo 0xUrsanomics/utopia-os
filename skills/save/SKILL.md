@@ -127,6 +127,29 @@ For each extracted item that passed the Step 2.5 gate:
 - Keep entries concise. future sessions pay cost to read them
 - Use the existing file format (`key:: value` for Preferences, dated entries for Decisions/Learnings)
 
+### Step 3.1. Validity fields and write-time contradiction check
+
+**Validity fields** (PACMI convention, arXiv 2610.05732), for Decisions AND Learnings:
+- When a new entry replaces or corrects an older one, the NEW entry gets `supersedes:: <file> <date> "<old heading>"`. If it builds on an older entry that could later turn out wrong, add `depends-on:: <same ref form>`.
+- The OLD entry gets exactly one edit: a `status::` line set to `superseded`, `disputed` (newer evidence contradicts it, not settled) or `retracted` (shown wrong). For a dated bullet, indent it under the bullet (`  status:: superseded`). Keep the old heading and text: history is evidence.
+- `status::` means "is this still true". Ship state goes in `outcome::`. Legacy free-text `status::` values read as active, so never mass-migrate.
+- Only mark the old entry when the edge is EXPLICIT (you read both and the new one clearly replaces the old). A guess stays a note in the new entry. Check with `python3 scripts/memory/memory_supersession_check.py` (read-only).
+
+**Contradiction check.** Before writing any DECISION, CONTEXT or LEARNING that states a fact (a status, a number, a date, a who-did-what), run it past the existing memory:
+
+```
+python3 scripts/memory/memory_conflict_check.py --text "<the candidate entry>"
+```
+
+Exit 0 = nothing related disagrees, write it. Exit 1 = one or more related entries are flagged (status flip, number drift, date drift, negation mismatch). For each flagged neighbour, decide now:
+- the new entry supersedes it (the usual case: state changed): mark the old one per the validity fields above, then write the new entry;
+- the old entry is right and the candidate is wrong: fix or drop the candidate;
+- both are true (different scope, different date, different subject): make the scope explicit in the candidate so the two cannot be read as the same fact.
+
+The script flags, it never decides. Flags are noisy on long blocks; read the quoted sentence before acting. It reads the live files, so it also sees what this same save already wrote. Why: two live versions of one fact (a count that read 88, 105 and 122 in three files) get picked up by a later session as current. Resolving at write time is cheaper than a cleanup pass.
+
+**Intentions.** If a candidate is a PLAN or a promised follow-up with a date ("check X on Friday", "follow up if no reply by Monday"), it is not a fact. Record it with `python3 scripts/memory/intentions.py add "<what>" --due YYYY-MM-DD --source "<file or message ref>"`. Close it with `intentions.py done <id>` in the same turn it is handled.
+
 ### Step 3.2. Provenance stamp
 
 Every NEW `##` entry written to `Learnings.md`, `Decisions.md`, or a `Context/`/`Infra/`/`Feedback/`
@@ -157,6 +180,19 @@ manufactures exactly the false confidence this exists to prevent. Unstamped mean
 Sanity check after a run: `python3 scripts/memory/lib_provenance.py audit`. It reports coverage
 and, more usefully, **same-session clusters**: k entries sharing one session are k restatements of
 one origin, not k independent confirmations. Expect your own run to appear there. That is correct.
+
+### Step 3.3. SHIPPED / LIVE requires a `verified_working::` observation
+
+BUILT and LIVE read the same in memory, so a later review cannot tell "code exists" from "code observed producing effect". Any entry that claims a system is **SHIPPED, LIVE, or DEPLOYED** MUST carry a `verified_working::` line with a DATE plus the observation that proves EFFECT, not existence:
+
+```
+verified_working:: 2026-08-23: cron fired 4x, last_run 08-22T22:00, wrote 3 rows to reality_feedback.sqlite
+```
+
+- The observation is an EFFECT (fired N times, produced N outputs, a counter moved), never "script exists" or "cron created". A scheduled task with `run_count: 0` is BUILT by definition, never LIVE.
+- An artifact not yet observed running through its REAL trigger (the scheduler, the hook, the pipeline) is written as **BUILT** until an effect is seen. Downgrade the label rather than assert a state you have not observed.
+- This binds the agent's own work in the same session: a script tested by hand is BUILT. A cron you just created is not LIVE; its first real firing is the earliest it can be.
+- Cite the level from `knowledge/evidence-ladder.md` with the observation (L4 ran it, L5 reproduced on the live surface).
 
 ### Step 3.5. Active Handoff block management (GSD pattern)
 
@@ -274,7 +310,7 @@ No reply_to needed unless responding to a specific message.
 
 When writing a new fact, ask *what KIND of memory is it?*
 
-- Behavior rule (always active) → `Preferences.md` or `CLAUDE.md`
+- Behavior rule (always active) → `Preferences.md` (a change to `CLAUDE.md` itself is operator-gated constitution: SURFACE it, never auto-write, see Rules)
 - Writing style pattern → `Voice-Profile.md`
 - Decision with context/reasoning → `Decisions.md` (episodic, recall-fetched)
 - Insight/learning tagged by topic → `Learnings.md` (episodic, recall-fetched)
@@ -288,6 +324,8 @@ When writing a new fact, ask *what KIND of memory is it?*
 - **NEVER** create empty files or placeholder entries. if nothing new to save in a category, skip it
 - **NEVER** duplicate existing entries. check Preferences.md / Decisions.md / Learnings.md first
 - Maximum 5 new files per save run to avoid bloat (update existing files freely)
+- **NEVER auto-write the constitution (immutable-base invariant).** /save writes ONLY the mutable supplement: `Preferences.md`, `Decisions.md`, `Voice-Profile.md`, `Learnings.md`, `Context/`, `Infra/`, `personas/`, and skill candidates. It NEVER writes `SOUL.md`, `USER.md` or `CLAUDE.md`. Those are the immutable base (mandates, not observations), operator-gated, and /save can run autonomously from cron or a Stop hook where no CONFIRM gate fires. If a save-worthy item belongs in the constitution, surface it to the operator. The same rule binds every other auto-writer (dreaming, future memory refiners). Pattern credit: the immutable-base, mutable-supplement split in PrimeIntellect-ai/prime-agent.
+- **Retracted claims.** When a correction retracts a claim that already appeared in an outbound artifact (a CV, a pitch, a client doc, a post), append a row to `knowledge/retracted-claims.json` (format: `knowledge/retracted-claims.example.json`). `scripts/pipeline/external_slop_gate.py` then HARD-blocks every stale copy at ship time. A text lesson alone does not stop a copied draft.
 - If the session was brief / nothing substantive happened / temp mode was on: respond "nothing worth saving" and exit
 - If the session was heavy (multiple decisions / substantive work): multiple categories will have entries, that's expected
 
