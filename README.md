@@ -42,8 +42,8 @@ make long-running autonomous work safe and durable:
 | `scripts/pipeline/` | Content gates (slop, paraphrase, repetition, imported claims, cross-doc consistency) and the breaking-news lane. |
 | `scripts/eval/` | Verification: evidence-backed claim checks, the verify-stack harness, gate controller, skill utility scores. |
 | `scripts/scheduler/` | Cron health probes: run-count drift, stale jobs, prior self-audit records. |
-| `skills/` | 53 reusable agent workflows. |
-| `skills-shared/` | 18 cross-persona skills built from public research, plus `newsjack` (vendored unchanged, MIT). |
+| `skills/` | 55 reusable agent workflows. |
+| `skills-shared/` | 19 cross-persona skills built from public research, plus `newsjack` (vendored unchanged, MIT). |
 | `CLAUDE.md` | The system-prompt skeleton that wires it all together. |
 
 ## The skills, by what they do for you
@@ -111,6 +111,40 @@ style of CaMeL. Spawned tenants authenticate with a long-lived setup credential
 A full index is in [`skills/`](skills/) and [`skills-shared/`](skills-shared/); each is a
 standard `SKILL.md`.
 
+## What's new in v3
+
+**Approvals you can check.** `confirm_ledger.py` records each CONFIRM ask and accepts an approval only
+if it is a real chat message from the operator, written by the harness, sent AFTER the ask. A quoted
+"go" inside a tool result, a file or an email never counts, and one approval reused for a second ask
+is surfaced instead of allowed.
+
+**Gates that prove they still work.** `gate_calibration.py` runs every gate's own selftest and fails
+if any gate ran zero cases. `lib_case_coverage.py` marks an eval score partial when the run dropped,
+repeated or added cases. `hallucination_sample.py` has a different model family judge a daily sample
+of outputs, treats an empty verdict as an error rather than a pass, and checks a "fabricated" citation
+over HTTP before believing the judge. `bench_stats.py` reports A-vs-B results with Wilson intervals
+and a paired test, and says "not separated" when the data cannot tell the arms apart.
+`label_consensus.py` finds where two teacher models disagree on training labels.
+
+**Compaction that keeps the details.** Before a context compaction, `precompact_handoff_snapshot.sh`
+snapshots the active handoff, `compact_anchor_extract.py` saves exact paths, hashes, ids, errors and
+URLs (and prints them back after the compact), and `session_slimlog.py` writes a slim, rg-searchable
+log of the whole session. `context_meter_hook.sh` tells the model how full its window is.
+`instruction_stack_diff.py` shows what changed in the CLI's system prompt and tool definitions
+between two versions.
+
+**Memory you can trust and find again.** Provenance stamps gained an `origin` field and a `sanitize`
+step that strips forged trust stamps from outside text before it is stored. Recall withholds a
+path's boost from entries formed from untrusted content, and ranks on independent support counts.
+`addr.py` gives every subagent report and cron run a short id, so a later session pulls the finding
+back instead of redoing the work. `open_loops.py` (with `skills/open-loops`) lists who is waiting
+on you and who you are waiting on, by deterministic rules. The slop gate now catches a reworded copy
+of a retracted claim, not only the exact wording.
+
+**Writing.** `skills/longform` is the interview-driven long-form pipeline, with a required cold red
+team before anything is posted. `skills-shared/majas-playbook` covers figurative language that
+explains a mechanism instead of decorating it.
+
 ## What's deliberately NOT here
 
 No real memory content, no business data, no personal information, no secrets. Utopia OS is built as a
@@ -136,7 +170,7 @@ fifteen minutes to a working core, with the platform matrix and the dependency a
 
 **Requirements: Python 3.9+, and nothing else.** The core has no third-party dependencies.
 Memory is Markdown, the state store is stdlib `sqlite3`, the gates are stdlib, the cockpit
-is stdlib `http.server`; all 83 modules under `scripts/` import with an empty environment.
+is stdlib `http.server`; all 94 modules under `scripts/` import with an empty environment.
 Semantic recall is the one heavy piece and it is opt-in
 ([`requirements-memory.txt`](requirements-memory.txt)), because a multi-gigabyte download
 should not stand between you and a Markdown memory system you have not decided on yet.

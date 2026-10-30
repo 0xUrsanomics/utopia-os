@@ -8,6 +8,7 @@
     "scope: 'cv' = checked only under --cv; 'all' = checked on every run.",
     "replacement: the corrected wording, so the person fixing the draft does not have to look it up.",
     "source: where the correction is recorded (a Decisions.md entry or a file path).",
+    "concept (optional): a list of regexes that must ALL match inside ONE sentence. Catches a reworded copy of the claim that the exact pattern misses (see the widget row below). Keep each group narrow and test it against the canonical replacement so the corrected wording still passes.",
     "Never delete a row because the drafts look clean now. Old drafts get copied again."
   ],
   "claims": [
@@ -18,6 +19,7 @@
      "replacement": "The walk was over fee structure, not compliance.",
      "source": "Decisions.md 2026-01-15"},
     {"id": "widget-launch-year", "pattern": "\\blaunched\\b.{0,40}\\bwidget\\b.{0,20}\\b2023\\b", "retracted": "2026-02-02", "scope": "all",
+     "concept": ["\\bwidget\\b", "\\b(launch\\w*|shipped|released|went live)\\b.{0,15}\\bin 2023\\b"],
      "replacement": "The widget launched in 2024, not 2023.",
      "source": "Decisions.md 2026-02-02"}
   ]

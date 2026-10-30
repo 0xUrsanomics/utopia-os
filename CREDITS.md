@@ -70,6 +70,15 @@ Running an operator agent all day is expensive; these tools keep the token spend
 - **MemCut** (arXiv 2610.21405). The finding that deletion fails on missed related records, which shaped `forget.py`.
 - Rules 42 to 46 of `anti-ai-slop` restate an a16z article on empty-weight sentences in our own words; credit is in the skill.
 
+## v3 additions (2026-10)
+- **[elizaOS](https://github.com/elizaOS/eliza)** (MIT). Three patterns, no code copied: a confirmation counts only from a newer user message (`confirm_ledger.py`), forged security stamps are stripped from incoming text (`lib_provenance.py sanitize`), and benchmark results must cover exactly the selected cases, with scorers calibrated on known answers (`lib_case_coverage.py`, `gate_calibration.py`).
+- **[Mainplane](https://github.com/mainplane-ai/mainplane)**. The idea of pointing a continuing session at a searchable log of the prior one instead of trusting the summary (`session_slimlog.py`), and the context meter (`context_meter_hook.sh`). Pattern only.
+- **[plurnk-bench](https://github.com/plurnk/plurnk-bench)**. The reporting format in `bench_stats.py` (Wilson intervals, paired tests, "not separated") and the addressable-memory idea behind `addr.py`. Pattern only.
+- **gbrain** (docs/guides/open-loops.md and memory-trust.md). The open-loop rules in `open_loops.py` and the `origin` field on provenance stamps. Pattern only.
+- **Compact-Bench** (arXiv 2610.31710). The finding that a regex extractor keeps far more recurring details than an LLM summary, which shaped `compact_anchor_extract.py`.
+- **ClawMMU** (arXiv 2610.28093). The authority cap in recall: a curated path does not lend its boost to an entry formed from untrusted content.
+- **arXiv 2610.37332** on instruction stacks changing in bursts, behind `instruction_stack_diff.py`.
+
 ---
 
 Where an upstream project ships a LICENSE, that license is preserved in the relevant subdirectory

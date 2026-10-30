@@ -70,7 +70,7 @@ for _entry in filter(None, os.environ.get("FORGET_EXTRA_DIRS", "").split(os.path
 BACKUP_DIRS = ("vector_brain.bak", "backup-pre-reindex", "pre-consolidation-backup")
 DERIVED = ("backlink_map.json", "tag_cocite_map.json")
 SQLITE = [s.strip() for s in os.environ.get(
-    "FORGET_SQLITE", "memory.db,telegram.db,session_search.db,vector_brain_fts.db,fleet_bus.db").split(",")
+    "FORGET_SQLITE", "memory.db,telegram.db,session_search.db,vector_brain_fts.db,fleet_bus.db,addr.db").split(",")
     if s.strip()]
 SELF = {str(Path(__file__).resolve())}
 

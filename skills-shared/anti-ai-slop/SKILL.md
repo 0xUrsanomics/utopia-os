@@ -81,7 +81,7 @@ This directive OVERRIDES any rule below that, applied mechanically, would produc
 
 ---
 
-## The 3 Levers (v3, research-backed): scrubbing is necessary, NOT sufficient
+## The 3 Levers (v3, research-backed) + lever 4 (figurative language): scrubbing is necessary, NOT sufficient
 
 Detectors and readers do not catch AI by counting banned words. They catch it three ways: **perplexity** (how predictable each next word is. LLM text is statistically smooth, so generic high-probability phrasing reads as AI), **burstiness** (sentence-to-sentence variance. LLMs write a metronomic monotone, humans alternate long and short), and the human **"big but empty" read** (grandiose but says nothing checkable). Modern neural classifiers (GPTZero, Pangram, Binoculars) key on that deep distributional fingerprint, NOT on em-dashes. So killing the surface tells below is necessary but does NOT, by itself, make text read human. These three positive levers are what actually carry it:
 
@@ -92,6 +92,8 @@ Detectors and readers do not catch AI by counting banned words. They catch it th
 3. **Voice + content-correlated imperfection.** Hold a consistent idiosyncratic register (a little edge, real idiom, the user's actual slang). Let roughness ARISE FROM THE CONTENT: hesitate where a human would actually hesitate, run long where the thought is genuinely complex, leave one edge unresolved. Critical: imperfection must be DYNAMIC, not sprinkled. Random "ums" or manufactured typos read as fabricated ("salt on a bad steak"). It has to correlate with what's being said.
 
 **The 2025-2026 frontier:** the tell migrated from vocabulary to STRUCTURE (the wordlist got trained out of the models), so negative parallelism, tricolon, participial tails, and low burstiness now out-signal any single word. AND the de-slopped CASUAL register is the newest tell ("honestly,", "look,", "here's the thing", faux-spontaneity). Do not trade formal-slop for casual-slop. The answer is never a uniform register, it's variance + specificity + a real voice. (Caveat: the em-dash tell is decaying as models add opt-outs, but the zero-tolerance stands. it is still a tell and still a hard rule.)
+
+4. **Figurative language (majas), carried as ONE extended image.** A de-slopped piece that is plain all the way through reads machine-flat, and strong human longform runs on figures. The move is NOT scattered decoration. Pick one image that encodes the mechanism of the argument and return to it at each turn (fabricated example): "A rate cap is a dam. Fine, then watch where the water goes."; a new settlement network as "a rail line laid between two cities", with informal transfers as the old dirt road, an existing reserve rule as "track already laid", and "tracks don't create passengers" for the demand problem. Side images stay in the same world (stations, gauges, sidings). Check each image's connotation matches the thing described: mechanism over drama. This is the positive side of rule 2: rule 2 kills images that inflate significance ("a testament to"), this lever wants images that EXPLAIN. The paraphrase test still applies: if the image collapses to "things are hard", cut it. Full move list, tests and everyday images: `skills-shared/majas-playbook/SKILL.md`.
 
 ---
 

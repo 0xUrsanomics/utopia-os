@@ -99,6 +99,20 @@ SOURCE_BOOST_PATTERNS: list[tuple[str, float]] = [
     ("/knowledge-graph/", 1.0),    # Knowledge-graph baseline (mixed quality)
 ]
 SOURCE_BOOST_DEFAULT = 1.0  # Anything not matched gets neutral weight
+# Authority cap (ClawMMU, arXiv 2610.28093). A path boost says "this file is curated",
+# not "this claim is trustworthy". An entry whose provenance stamp says it was formed
+# from untrusted content (`provenance:: ... ingest=untrusted`, see lib_provenance.py)
+# keeps its place in the file but does not inherit the file's boost: authority never
+# lifts itself by being written somewhere curated. Only the operator lifts it, with an
+# `authority:: operator` line on the entry. Unstamped entries are unknown, not
+# untrusted, and keep the old behaviour. Parsed at query time, so no reindex.
+_UNTRUSTED_STAMP_RE = re.compile(r"^provenance::[^\n]*\bingest=untrusted\b", re.M)
+_OPERATOR_AUTH_RE = re.compile(r"^authority::\s*operator\b", re.M | re.I)
+
+
+def authority_capped(text: str) -> bool:
+    """True when the entry was formed from untrusted content and the operator has not lifted it."""
+    return bool(_UNTRUSTED_STAMP_RE.search(text or "")) and not _OPERATOR_AUTH_RE.search(text or "")
 # L6 wiring (2026-05-17): confidence / stance as a rank signal.
 # Parsed from chunk text at query time (confidence:: lives in the indexed
 # body of Learnings/Decisions entries) so NO reindex is needed. Soft + bounded
@@ -351,6 +365,9 @@ def apply_source_boost(results: list[dict]) -> list[dict]:
     for r in results:
         path = r.get("source", "") or ""
         factor = _path_boost_factor(path, patterns)
+        if factor > 1.0 and authority_capped(r.get("text", "") or ""):
+            factor = 1.0
+            r["_authority_capped"] = True
         if factor != 1.0:
             r["rrf_score"] = r.get("rrf_score", 0) * factor
             r["_source_factor"] = factor
@@ -361,6 +378,22 @@ def apply_source_boost(results: list[dict]) -> list[dict]:
 
 
 _CONF_RE = re.compile(r"confidence::\s*([01](?:\.\d+)?)", re.I)
+# Support count from the provenance stamp (`provenance:: ... support=Nx`, lib_provenance.py)
+# is the preferred rank signal. A legacy confidence:: line is read only when the entry
+# carries no support stamp, so an entry that repeats a claim N times in one session cannot
+# score as N independent confirmations through two fields at once.
+_SUPPORT_RE = re.compile(r"^provenance::[^\n]*\bsupport=(once|twice|\d+x)\b", re.I | re.M)
+SUPPORT_FACTOR = {1: 1.0, 2: 1.05, 3: 1.10, 4: 1.14}   # 5x and up -> CONF_FACTOR_MAX
+
+
+def support_factor(text: str) -> float:
+    """Boost from provenance support=Nx; 1.0 for once or no stamp."""
+    m = _SUPPORT_RE.search(text or "")
+    if not m:
+        return 1.0
+    v = m.group(1).lower()
+    n = 1 if v == "once" else 2 if v == "twice" else int(v[:-1])
+    return SUPPORT_FACTOR.get(n, CONF_FACTOR_MAX) if n >= 1 else 1.0
 _SUPERSEDED_RE = re.compile(
     r"superseded by|\bsupersede[sd]?\b|status::\s*superseded|\bSUPERSEDED\b|~~", re.I)
 _REAFFIRMED_RE = re.compile(
@@ -379,6 +412,9 @@ def apply_confidence_boost(results: list[dict]) -> list[dict]:
     untouched (the bulk of the corpus). Applied AFTER source boost, BEFORE
     temporal, so temporal recency still has the final pre-rerank say.
 
+    The base factor is the provenance support=Nx count; a legacy confidence::
+    line counts only on entries with no support stamp.
+
     Marks `_confidence_factor=<float>` for transparent display.
     """
     if not results:
@@ -386,8 +422,8 @@ def apply_confidence_boost(results: list[dict]) -> list[dict]:
     bumped = 0
     for r in results:
         text = r.get("text", "") or ""
-        factor = 1.0
-        m = _CONF_RE.search(text)
+        factor = support_factor(text)
+        m = None if _SUPPORT_RE.search(text) else _CONF_RE.search(text)
         if m:
             try:
                 conf = float(m.group(1))
@@ -657,6 +693,7 @@ def attach_provenance(results: list[dict]) -> list[dict]:
             "rrf_score": r.get("rrf_score"),
             "rerank_score": r.get("rerank_score"),
             "source_factor": r.get("_source_factor"),
+            "authority_capped": bool(r.get("_authority_capped")),
             "project_boost": bool(r.get("_project_boost")),
             "confidence_factor": r.get("_confidence_factor"),
             "graph_factor": r.get("_graph_factor"),
@@ -1778,6 +1815,8 @@ def search(query: str, top_k: int = 5, mode: str = "hybrid", rerank_enable: bool
         proj_marker = " 📂" if r.get("_project_boost") else ""
         sf = r.get("_source_factor")
         src_marker = f" ×{sf:g}" if sf and sf != 1.0 else ""
+        if r.get("_authority_capped"):
+            src_marker += " (untrusted origin, boost withheld)"
         cf = r.get("_confidence_factor")
         conf_marker = f" ★{cf:g}" if cf and cf != 1.0 else ""
         gf = r.get("_graph_factor")

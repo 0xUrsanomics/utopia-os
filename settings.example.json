@@ -5,12 +5,15 @@
     "and point each hook command at the real gate script. JSON has no comments, so guidance lives here.",
     "The hooks below wire the security gates described in CLAUDE.md and docs/security-gates.md:",
     "  SessionStart     -> load the session-bootstrap parachute + run idempotent boot tasks",
+    "  SessionStart     -> (matcher compact) print back exact anchors saved before compaction",
     "  UserPromptSubmit -> reset the auto-compound counter on each new operator message",
     "  UserPromptSubmit -> surface new fleet-bus messages addressed to the hub (bus_turn_poll.py)",
+    "  UserPromptSubmit -> context meter: how full the window is, as additionalContext (context_meter_hook.sh)",
     "  PreToolUse       -> stand-down registry check before installs / MCP adds / settings edits",
     "  PreToolUse       -> lint skill files for injection patterns before they are trusted",
     "  PostToolUse      -> verify-after-write on file edits (re-read the written value)",
     "  Stop             -> reply-guard / save-nudge at end of turn",
+    "  PreCompact       -> snapshot the active handoff, save exact anchors + a slim searchable session log",
     "Replace the matcher tool names with your runtime's actual tool identifiers.",
     "permissions.deny encodes the BLOCKED class: secrets are never readable, outbound-send is never run,",
     "and curl-pipe-bash is refused. Tighten allow[] to the tools you actually want auto-approved."
@@ -52,6 +55,16 @@
             "timeout": 30
           }
         ]
+      },
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${WORKSPACE}/scripts/session/compact_anchor_extract.py emit",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -66,6 +79,11 @@
           {
             "type": "command",
             "command": "python3 ${WORKSPACE}/scripts/agents/bus_turn_poll.py",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "${WORKSPACE}/scripts/session/context_meter_hook.sh",
             "timeout": 10
           }
         ]
@@ -113,6 +131,18 @@
             "type": "command",
             "command": "${WORKSPACE}/scripts/security/reply_guard.sh",
             "timeout": 20
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${WORKSPACE}/scripts/session/precompact_handoff_snapshot.sh",
+            "timeout": 10
           }
         ]
       }

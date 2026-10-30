@@ -124,8 +124,15 @@ def _retracted(body, cv):
     except Exception:
         return []  # a missing or broken registry never blocks a ship on its own
     flat = re.sub(r"\s+", " ", body)
+    # Paraphrase net: a row may also carry "concept", a list of regex groups. It matches when
+    # every group appears in ONE sentence, so a reworded copy of a retracted claim is caught,
+    # not only the exact old wording.
+    sentences = re.split(r"(?<=[.!?])\s+|\n+", body)
+    def _concept(r):
+        groups = r.get("concept") or []
+        return bool(groups) and any(all(re.search(g, sen, re.I) for g in groups) for sen in sentences)
     return [r for r in rows if (r.get("scope") == "all" or (cv and r.get("scope") == "cv"))
-            and re.search(r["pattern"], flat, re.I)]
+            and (re.search(r["pattern"], flat, re.I) or _concept(r))]
 
 def scan(text, cv=False):
     body = _strip_md(text)
@@ -242,11 +249,14 @@ def _selftest():
     saved = RETRACTED
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as tf:
         json.dump({"claims": [{"id": "example-led-acme-deal", "pattern": "led\\s+the\\s+acme\\s+deal",
-                               "scope": "cv", "replacement": "supported the Acme deal team"}]}, tf)
+                               "scope": "cv", "replacement": "supported the Acme deal team",
+                               "concept": ["\\b(led|ran|headed|drove)\\b", "\\bacme\\b", "\\b(deal|partnership|contract)\\b"]}]}, tf)
     RETRACTED = tf.name
     try:
         r = scan("Led the Acme deal in 2024", cv=True); checks.append(("retracted_claim_blocks_cv", bool(r["retracted"]) and r["hard_hit"]))
         r = scan("Led the Acme deal in 2024"); checks.append(("retracted_scoped_to_cv", not r["retracted"]))
+        r = scan("Headed the partnership with Acme from day one.", cv=True); checks.append(("retracted_paraphrase_blocks", bool(r["retracted"]) and r["hard_hit"]))
+        r = scan("Supported the Acme deal team on pricing.", cv=True); checks.append(("canonical_line_passes", not r["retracted"]))
     finally:
         RETRACTED = saved
         os.unlink(tf.name)

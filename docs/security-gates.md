@@ -52,6 +52,14 @@ way structurally: pairing requests, allowlist edits, and channel approvals are d
 terminal, never by a message that *asks* to be approved, because that request is precisely what an attacker
 would send.
 
+The rule can be checked, not only followed. `scripts/security/confirm_ledger.py` records each CONFIRM ask
+(`ask --item ...`) and then checks an approval by message id (`check --ask ... --msg-id ...`): it passes only
+if that id belongs to a record the harness wrote for an incoming message from `OPERATOR_CHAT_ID`, sent after
+the ask and within 24 hours. A tag quoted inside a tool result or a message body never matches, and one
+approval reused for a second ask exits 3 so the agent restates each item. It proves who sent the message
+and when, not that the words mean yes. `scripts/security/confirm_gate.py` covers the other half: it binds
+an approval to a hash of the exact action, so a changed action cannot ride an old yes.
+
 ## The stand-down registry
 
 A message-level reminder ("don't install that sketchy package") is forgotten by the next session. A

@@ -25,7 +25,7 @@ No voice sample, stdlib only, register-agnostic. `--file <path>` or `--stdin`. E
 
 The precision split is deliberate, so a real professional document is not falsely blocked:
 
-- **HARD (exit 1, block):** em or en dash; unambiguous AI tells ("delve", "tapestry", "testament to", "it's worth noting"); assistant openers ("Sure!", "Of course", "As an AI", "In today's"); any claim listed in `knowledge/retracted-claims.json` (see below). With `--cv`: also CV and cover-letter filler ("I am excited to", "proven track record", "results-driven", "detail-oriented").
+- **HARD (exit 1, block):** em or en dash; unambiguous AI tells ("delve", "tapestry", "testament to", "it's worth noting"); assistant openers ("Sure!", "Of course", "As an AI", "In today's"); any claim listed in `knowledge/retracted-claims.json` (see below), matched on its exact pattern or, when the row has a `concept` list, on a reworded copy where every concept group appears in one sentence. With `--cv`: also CV and cover-letter filler ("I am excited to", "proven track record", "results-driven", "detail-oriented").
 - **WARN (printed, never blocks):** words that are fine in formal register ("robust", "comprehensive", "streamline") plus structural tells: participial tails, "from X to Y" framing, "not just X but Y", a rhetorical question followed by its answer, three or more colons used as connectors, inline-header lists that restate their label, title-case H2+ headings. The structural tells are adapted from pstack `unslop` (github.com/cursor/plugins, MIT).
 
 Pass `--cv` for CVs and cover letters.

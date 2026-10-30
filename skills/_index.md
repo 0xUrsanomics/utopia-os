@@ -24,10 +24,12 @@ Every skill folder in this repo, with the one-line description from its `SKILL.m
 | `skills/idea` | Capture ad-hoc thought into the active project's Inbox section. Falls back to side-quests if no active project. Lightweight quick-drop primitive. no friction, n |
 | `skills/inline-tags` | Append 1-3 hashtag tags to the end of every TG reply for native TG search. Domain + project + status taxonomy. Replaces full TG-Topics migration without rebuild |
 | `skills/intel-analyzer` | > |
+| `skills/longform` | Interview-driven long-form pipeline (monthly thesis, essay, X Article, newsletter issue). Every section is anchored in the operator's own interview answers, not |
 | `skills/loop-experiment` | Run a Karpathy-loop / autoresearch-style optimization experiment on any task with measurable fitness. Bounds the loop with the stack's discipline (fitness-funct |
 | `skills/loop-library` | Catalog of repeatable agent-loop workflows (goal -> iterate w/ verification -> stopping condition -> output). Each loop is a reusable SOP for autonomous iterati |
 | `skills/meta-memory-review` | Periodic self-optimization of the memory STRUCTURE (not its content). Review tier layout, dedupe, prune, and re-index the memory system. |
 | `skills/office-hours` | Force assumptions into the open before code is written. 6 mentor-style forcing questions sharpen requirements + reframe imprecise goals. Goal-type mode-mapping  |
+| `skills/open-loops` | Find email threads where someone is waiting on you (24h+) or you are waiting on someone (72h+). Read-only, deterministic rules, zero LLM judging. |
 | `skills/plan-ceo-review` | Product-strategist mode review on a draft plan. 4 scope-modes (EXPAND / SELECTIVE / HOLD / REDUCE) chosen explicitly upfront and committed-to throughout. Catche |
 | `skills/plan-design-review` | Designer's-eye plan review. Rate each design dimension 0-10, explain what would make it a 10, then fix the plan to get there. 7 passes (info architecture / inte |
 | `skills/prd` | Structured PRD/spec generator. Transforms vague ideas (skill / infra / process / feature) into requirements, success metrics, build phases, and go-or-park gates |
@@ -64,6 +66,7 @@ Every skill folder in this repo, with the one-line description from its `SKILL.m
 | `skills-shared/content-humanizer` | Makes AI-generated content sound genuinely human. not just cleaned up, but alive. Use when content feels robotic, uses too many AI clichés, lacks personality, o |
 | `skills-shared/debugging-discipline` | Evergreen debugging + restart heuristics + cognitive-bias antidotes. Tier-2 (recall-fetched on-demand, NOT always-loaded). Lifted in condensed form from gsd-bui |
 | `skills-shared/decision-council` | > |
+| `skills-shared/majas-playbook` | Figurative language (majas, the Indonesian term for figures of speech) for analytical longform, distilled from a few hundred best-selling books across global no |
 | `skills-shared/marketing-psychology` | When the user wants to apply psychological principles, mental models, or behavioral science to marketing. Also use when the user mentions 'psychology,' 'mental  |
 | `skills-shared/memory-offload` | Manages the agent's context overflow by offloading dense operational state to an Agent-Memory namespace in your knowledge graph and pulling it back when needed. |
 | `skills-shared/negotiation` | > |

@@ -70,6 +70,24 @@ depend on the transcript, because the transcript is exactly what compaction thin
 **Clear it when the task is done.** A stale handoff pointing at finished work is its own hazard, it tells the
 next resume to pick up something that no longer needs doing.
 
+### What the PreCompact hook saves
+
+The handoff block is written by the agent, so it holds what the agent thought to write down. Three hooks
+cover what it did not (wired in `settings.example.json`):
+
+- `scripts/session/precompact_handoff_snapshot.sh` (PreCompact) snapshots the handoff block to
+  `memory/state/handoff-snapshots/`, so it survives even if the live file drifts.
+- `scripts/session/compact_anchor_extract.py extract` (called by the same hook) saves the exact strings a
+  summary tends to drop: file paths, commit hashes, message ids, error types, URLs, key=value pairs.
+  `compact_anchor_extract.py emit` (SessionStart, matcher `compact`) prints them back after the compact.
+- `scripts/session/session_slimlog.py` (started detached by the same hook) writes a slim, rg-searchable
+  log of the whole session. The emit step points the resumed session at it, so an exact detail is
+  retrieved with `rg` instead of trusted to the summary.
+
+Lines that look like secrets are dropped before anything is written. All three fail open: a broken hook
+never blocks a compaction. `scripts/session/context_meter_hook.sh` (UserPromptSubmit) warns the model
+at 60, 75 and 85 percent of its window, so the handoff gets written before the compaction, not after.
+
 ## Size self-regulation
 
 Because every reply re-sends the context, the agent checks its own session size each turn and acts at
