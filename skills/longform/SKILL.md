@@ -7,7 +7,7 @@ inputs:
     - memory/SOUL.md
     - memory/Voice-Profile.md
     - skills-shared/anti-ai-slop/SKILL.md
-    - skills-shared/majas-playbook/SKILL.md
+    - skills-shared/figurative-playbook/SKILL.md
     - docs/content-gates.md
   working:
     - outputs/raw/longform/audits/YYYY-MM-substrate-audit.md
@@ -124,7 +124,7 @@ Brief fields (400-900 tokens): `thesis` (the sub-claim), `reader`, `proof` (inte
 
 Per section: read the brief and the relevant interview answers, draft to target, include at least one interview quote (verbatim or close paraphrase), a counterargument paragraph and an implication paragraph. Then run your voice gate on the section right away (a per-section score is noisy, so treat a fail as a strong nudge to reinject, not a verdict), then the Phase 3.5 critic, then get the operator's section-level approval.
 
-Voice rules: lift the operator's actual phrases (verbatim beats paraphrase), keep their register and code-switching, lead with the point, no preamble, no hedging, zero em or en dashes, strip the anti-slop wordlist. One controlling image per piece if the piece uses figures at all (`skills-shared/majas-playbook/SKILL.md`).
+Voice rules: lift the operator's actual phrases (verbatim beats paraphrase), keep their register and code-switching, lead with the point, no preamble, no hedging, zero em or en dashes, strip the anti-slop wordlist. One controlling image per piece if the piece uses figures at all (`skills-shared/figurative-playbook/SKILL.md`).
 
 ## Phase 3.5. SECTION CRITIC
 

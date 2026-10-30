@@ -66,7 +66,7 @@ Every skill folder in this repo, with the one-line description from its `SKILL.m
 | `skills-shared/content-humanizer` | Makes AI-generated content sound genuinely human. not just cleaned up, but alive. Use when content feels robotic, uses too many AI clichés, lacks personality, o |
 | `skills-shared/debugging-discipline` | Evergreen debugging + restart heuristics + cognitive-bias antidotes. Tier-2 (recall-fetched on-demand, NOT always-loaded). Lifted in condensed form from gsd-bui |
 | `skills-shared/decision-council` | > |
-| `skills-shared/majas-playbook` | Figurative language (majas, the Indonesian term for figures of speech) for analytical longform, distilled from a few hundred best-selling books across global no |
+| `skills-shared/figurative-playbook` | Figurative language for analytical longform, distilled from a few hundred best-selling books |
 | `skills-shared/marketing-psychology` | When the user wants to apply psychological principles, mental models, or behavioral science to marketing. Also use when the user mentions 'psychology,' 'mental  |
 | `skills-shared/memory-offload` | Manages the agent's context overflow by offloading dense operational state to an Agent-Memory namespace in your knowledge graph and pulling it back when needed. |
 | `skills-shared/negotiation` | > |

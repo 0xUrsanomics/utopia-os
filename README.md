@@ -142,7 +142,7 @@ on you and who you are waiting on, by deterministic rules. The slop gate now cat
 of a retracted claim, not only the exact wording.
 
 **Writing.** `skills/longform` is the interview-driven long-form pipeline, with a required cold red
-team before anything is posted. `skills-shared/majas-playbook` covers figurative language that
+team before anything is posted. `skills-shared/figurative-playbook` covers figurative language that
 explains a mechanism instead of decorating it.
 
 ## What's deliberately NOT here
