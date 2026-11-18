@@ -35,7 +35,9 @@ from pathlib import Path
 REPO_ROOT = Path(os.environ.get("AGENT_ROOT", str(Path(__file__).resolve().parents[2])))
 DB_PATH = REPO_ROOT / "memory" / "state" / "reality_feedback.sqlite"
 
-VALID_OUTCOMES = {"positive", "negative", "neutral", "unknown"}
+VALID_OUTCOMES = {"positive", "negative", "neutral", "unknown", "excluded"}
+# "excluded" = the entry never held a gradeable prediction (narration, critic echo).
+# It leaves the backlog but also leaves the gate math, so a noise sweep cannot fake a labeling rate.
 
 
 def _open_db() -> sqlite3.Connection:
@@ -54,7 +56,7 @@ def query_due(conn: sqlite3.Connection) -> list[dict]:
         SELECT id, timestamp, surface, summary, prediction,
                expected_outcome_window_days, classifier_metadata, critic_verdict
         FROM entries
-        WHERE outcome IS NULL
+        WHERE outcome IS NULL AND prediction IS NOT NULL AND trim(prediction) != ''
         ORDER BY timestamp ASC
         """
     )
@@ -78,11 +80,28 @@ def query_due(conn: sqlite3.Connection) -> list[dict]:
     return due
 
 
+def exclude_unpredicted(conn: sqlite3.Connection) -> int:
+    """Rows with no stored forecast can never be graded, so they leave the backlog as
+    `excluded` instead of reaching the operator as a labeling prompt. Returns the count marked."""
+    now = datetime.now(timezone.utc).isoformat()
+    cur = conn.execute(
+        """
+        UPDATE entries
+        SET outcome = 'excluded', outcome_marked_at = ?,
+            summary = summary || ' [auto-excluded: no prediction stored]'
+        WHERE outcome IS NULL AND (prediction IS NULL OR trim(prediction) = '')
+        """,
+        (now,),
+    )
+    conn.commit()
+    return cur.rowcount
+
+
 def stats(conn: sqlite3.Connection) -> dict:
     """Return labeling-rate + distribution stats for a decision gate."""
     cur = conn.execute("SELECT outcome, COUNT(*) FROM entries GROUP BY outcome")
     distribution = {row[0] or "NULL": row[1] for row in cur}
-    total = sum(distribution.values())
+    total = sum(v for k, v in distribution.items() if k != "excluded")
     labeled = total - distribution.get("NULL", 0)
     rate = (labeled / total) if total > 0 else 0.0
 
@@ -203,6 +222,9 @@ def main() -> int:
             ok = mark_outcome(conn, entry_id, outcome, args.note)
             print(json.dumps({"updated": ok, "id": entry_id, "outcome": outcome}))
             return 0 if ok else 1
+
+        if not (args.json or args.stats):
+            exclude_unpredicted(conn)  # digest path only; --json/--stats stay read-only
 
         due = query_due(conn)
         s = stats(conn)

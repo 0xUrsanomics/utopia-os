@@ -89,7 +89,17 @@ def grep_tree(root, strings, binary, only=None):
     for s in strings:
         cmd += ["-e", s]
     out = subprocess.run(cmd + [str(t) for t in targets], capture_output=True, text=True, timeout=1800)
-    return [ln for ln in out.stdout.splitlines() if ln and ln not in SELF]
+    hits = [ln for ln in out.stdout.splitlines() if ln and ln not in SELF]
+    # Old transcripts are often archived as gzip. grep -I skips .gz as binary, so a fact that
+    # survives only in an archived transcript would read as forgotten. Search inside them too.
+    gz = [str(p) for t in targets if t.is_dir() for p in t.rglob("*.jsonl.gz") if not p.is_symlink()]
+    if gz:
+        zcmd = ["zgrep", "-lFi"]
+        for s in strings:
+            zcmd += ["-e", s]
+        zout = subprocess.run(zcmd + gz, capture_output=True, text=True, timeout=1800)
+        hits += [ln for ln in zout.stdout.splitlines() if ln]
+    return hits
 
 
 def grep_sqlite(db, strings):
@@ -198,8 +208,13 @@ def selftest():
         found = grep_tree(tmp, [fact.upper()], False)
         (tmp / "note.md").write_text("clean\n")
         gone = grep_tree(tmp, [fact], False)
-        ok = found == [str(tmp / "note.md")] and gone == []
-        print(f"selftest {'PASS' if ok else 'FAIL'}: planted found={bool(found)} (case-insensitive), after removal found={bool(gone)}")
+        import gzip
+        (tmp / "old.jsonl.gz").write_bytes(gzip.compress(f'{{"t": "{fact}"}}\n'.encode()))
+        found_gz = grep_tree(tmp, [fact.upper()], False)
+        (tmp / "old.jsonl.gz").unlink()
+        ok = found == [str(tmp / "note.md")] and gone == [] and found_gz == [str(tmp / "old.jsonl.gz")]
+        print(f"selftest {'PASS' if ok else 'FAIL'}: planted found={bool(found)} (case-insensitive), "
+              f"after removal found={bool(gone)}, inside .jsonl.gz found={bool(found_gz)}")
         return 0 if ok else 1
     finally:
         shutil.rmtree(tmp)

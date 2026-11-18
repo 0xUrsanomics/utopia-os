@@ -49,6 +49,26 @@ Pages missing required properties for their namespace:
 Internal links `[[Namespace/page-name]]` pointing to pages that don't exist.
 - **Action:** List broken links with the page they appear on.
 
+### 4b. Dead pointers in the ALWAYS-LOADED memory indexes. `severity: critical`
+Distinct from check 4: that one is the knowledge graph, this is the `MEMORY.md` index files injected
+into every session. A dead pointer here is worse than a dead wikilink, because the index is read as a
+map of what exists, so a broken entry reads as "this knowledge is filed" while resolving to nothing.
+
+```bash
+python3 scripts/memory/memory_link_check.py          # exit 1 if any pointer is dead
+python3 scripts/memory/memory_link_check.py --json   # for a digest
+```
+
+**It checks BOTH indexes on purpose**, `<repo>/memory/MEMORY.md` and the harness-injected auto-memory
+index (if your harness keeps one). They share titles but sit at different depths and therefore need
+different link prefixes, so inspecting one in isolation makes the other look healthy. A single wrong
+relative prefix copied between the two can kill a large share of one index unnoticed.
+
+- **Action:** run it, fix any dead pointer, never delete the line to make the check pass. The two
+  recurring causes are (a) a relative prefix written for the other file's depth, and (b) `/review`
+  relocating an `outputs/raw/` file to `outputs/reviewed/` while MEMORY.md still points at the old
+  path. Cause (b) means **this check should run after any review-gate batch**, not only weekly.
+
 ### 5. Missing Compiled Truth / Timeline Structure. `severity: warning`
 Pages in namespaces that should follow the compiled truth + timeline pattern (see logseq-ops.md) but lack the `---` separator or have no "Compiled Truth" / "Timeline" headers.
 - **Action:** List pages needing structural update.

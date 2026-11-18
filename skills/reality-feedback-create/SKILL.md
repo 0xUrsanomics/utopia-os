@@ -48,7 +48,7 @@ Returns ONE row appended to `data/reality_feedback.sqlite` table `outcomes`:
 
 ## When to fire
 
-**Auto-fired** by `scripts/pipeline/reality_feedback_create.py` from the Stop hook chain (after critic_dispatch). Conditions: stake_classified event in the current turn = high. Cooldown via session.jsonl walk-back: if a `reality_entry_created` event already exists for the current turn, skip.
+**Auto-fired** by `scripts/pipeline/reality_feedback_create.py` from the Stop hook chain (after critic_dispatch). Conditions: stake_classified event in the current turn = high, AND the turn carries an explicit line starting `Forecast:` or `My call:` that names a date or window (opt-in rows only; a turn without one logs `reality_entry_skipped` with reason `no_forecast_marker`). Cooldown via session.jsonl walk-back: if a `reality_entry_created` event already exists for the current turn, skip.
 
 **Manual invocation** (operator override): use this skill when the classifier missed a high-stakes output but you want it tracked. Run the script with `--manual` flag (TODO: add CLI manual mode).
 

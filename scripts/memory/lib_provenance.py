@@ -73,7 +73,7 @@ CORPUS = ["memory/Learnings.md", "memory/Decisions.md",
           "memory/Context/*.md", "memory/Infra/*.md", "memory/Feedback/*.md"]
 
 LINE = re.compile(
-    r"^provenance::\s*"
+    r"^[ \t]*provenance::\s*"   # may be indented under a dated bullet
     r"agent=(?P<agent>\S+)\s+"
     r"session=(?P<session>\S+)\s+"
     r"support=(?P<support>\S+)\s+"
@@ -199,14 +199,21 @@ def parse(text: str) -> dict | None:
     return m.groupdict() if m else None
 
 
+# `##\s` needed whitespace right after two hashes, so a dated `### ` entry never started an
+# entry and got folded into the one above (and read as stamped if that one was). A dated `###` or
+# `####` heading is therefore a boundary too. An undated sub-heading such as `### Rule:` (the
+# Learnings template schema) stays inside its `##` entry, so it does not read as a missing stamp.
+SPLIT_HEADINGS = r"\n(?=##\s|#{3,4}\s+\d{4}-\d{2}-\d{2})"
+
+
 def entries(path: Path) -> list[tuple[str, str]]:
-    """Split a memory file into (heading, body) on `##` boundaries.
+    """Split a memory file into (heading, body) on `##` boundaries and dated `###`/`####` ones.
 
     Matches the recall indexer's chunking boundary on purpose: if the two
     disagreed, a stamp could sit in a different chunk than the claim it describes,
     which would be worse than no stamp at all.
     """
-    parts = re.split(r"\n(?=##\s)", path.read_text(encoding="utf-8"))
+    parts = re.split(SPLIT_HEADINGS, path.read_text(encoding="utf-8"))
     out = []
     for p in parts:
         if not p.startswith("##"):
@@ -347,8 +354,26 @@ def main() -> int:
     a = sub.add_parser("audit", help="stamp coverage + same-session clusters")
     a.add_argument("--file", default=None)
     a.add_argument("--show", type=int, default=6, help="max rows per section")
+    a.add_argument("--selftest", action="store_true", help="fixture with a ### entry must split into 2 entries")
 
     args = ap.parse_args()
+
+    if args.cmd == "audit" and args.selftest:
+        import tempfile
+        fx = ("# Learnings\n\n## 2026-01-01. Stamped entry\n### Rule: a sub-heading, not an entry\nbody\n"
+              "  provenance:: agent=agent session=x support=once ingest=clean\n\n"
+              "### 2026-01-02. Unstamped entry\nbody without a stamp\n")
+        with tempfile.TemporaryDirectory() as td:
+            fp = Path(td) / "Learnings.md"
+            fp.write_text(fx, encoding="utf-8")
+            got = entries(fp)
+        n_ok = len(got) == 2 and got[1][0].startswith("### 2026-01-02")
+        first_ok = n_ok and parse(got[0][1]) is not None
+        second_ok = n_ok and parse(got[1][1]) is None
+        ok = n_ok and first_ok and second_ok
+        print(f"split selftest: {len(got)} entries, indented stamp parsed={first_ok}, "
+              f"second unstamped={second_ok} -> {'PASS' if ok else 'FAIL'}")
+        return 0 if ok else 1
 
     if args.cmd == "stamp":
         try:

@@ -34,6 +34,8 @@
 #                                `type:system, subtype:compact_boundary` line at every
 #                                compact (TG-dispatched or native REPL /compact), so
 #                                this is a robust marker regardless of compact entry point.
+#                                API-request log rows are excluded (never reloaded into context).
+#   ACTIVE_CONTEXT_BYTES    - whole-file byte count without the API-request log rows
 #   ACTIVE_META_SESSION_ID  - sessionId from PID metadata (may be stale; exposed for debugging)
 #
 # Returns:
@@ -121,24 +123,34 @@ except Exception:
     # Compute bytes since the LAST compact_boundary marker. Claude Code writes
     # `{"type":"system","subtype":"compact_boundary",...}` at every compact.
     # If no marker exists (fresh session, never compacted), falls back to full size.
-    ACTIVE_BYTES_SINCE_COMPACT=$(python3 -c "
+    # Newer Claude Code versions also log every API request in the transcript
+    # ("api-request-shape" / "api-request-blob" rows). They are never reloaded into context
+    # and can be most of the bytes since compact, so they are excluded from both counts.
+    # ACTIVE_CONTEXT_BYTES = whole-file equivalent without those rows.
+    read ACTIVE_BYTES_SINCE_COMPACT ACTIVE_CONTEXT_BYTES < <(python3 -c "
 import sys
 path = '$ACTIVE_TRANSCRIPT'
 try:
-    last_off = 0
-    off = 0
+    since = total = 0
     with open(path, 'rb') as f:
         for line in f:
+            # api-request rows first: a logged request body can quote compact_boundary
+            # and must not reset the count.
+            if line.startswith(b'{\"type\":\"api-request'):
+                continue
             if b'compact_boundary' in line:
-                last_off = off
-            off += len(line)
-    size = off
-    print(size - last_off)
+                since = 0
+            since += len(line)
+            total += len(line)
+    print(since, total)
 except Exception:
     sys.exit(1)
 " 2>/dev/null)
     if [ -z "$ACTIVE_BYTES_SINCE_COMPACT" ]; then
         ACTIVE_BYTES_SINCE_COMPACT="$ACTIVE_SIZE_BYTES"
+    fi
+    if [ -z "$ACTIVE_CONTEXT_BYTES" ]; then
+        ACTIVE_CONTEXT_BYTES="$ACTIVE_SIZE_BYTES"
     fi
 
     return 0

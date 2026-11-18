@@ -13,6 +13,38 @@ inputs:
     - outputs/raw/longform/audits/YYYY-MM-substrate-audit.md
     - outputs/raw/longform/runs/active/{issue}/content-object.md
     - outputs/raw/longform/runs/active/{issue}/draft-full.md
+stages:
+  # ICM Lift 2+3: execution order + per-stage soft token budget (2000-8000 ICM target; advisory).
+  - id: 0-substrate-audit
+    does: substrate audit of source material
+    out: outputs/raw/longform/audits/YYYY-MM-substrate-audit.md
+    budget: 8000
+  - id: 1-thesis-curate
+    does: pick the thesis
+    budget: 4000
+  - id: 2-interrogation
+    does: interrogate the thesis with the operator (interview anchor)
+    budget: 6000
+  - id: 2.5-outline-review
+    does: build and review the section outline
+    budget: 4000
+  - id: 3-section-draft
+    does: draft section by section from the interview answers
+    out: outputs/raw/longform/runs/active/{issue}/content-object.md
+    budget: 8000
+  - id: 3.5-critic
+    does: per-section cold critic pass
+    budget: 6000
+  - id: 4-gates
+    does: slop, voice, structure and paraphrase gates
+    budget: 6000
+  - id: 4.5-worldview
+    does: capture worldview excerpts from the interview answers
+    budget: 3000
+  - id: 5-cross-publish
+    does: paste-ready copy per surface plus promo thread
+    out: outputs/raw/longform/runs/active/{issue}/draft-full.md
+    budget: 6000
 ---
 
 # /longform. Interview-driven long-form pipeline

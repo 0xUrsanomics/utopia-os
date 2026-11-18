@@ -20,7 +20,12 @@ Usage:
 
 Output (stdout JSON):
   {closed, status, closed_by, decisions_hits, learnings_hits, verdict, reason}
-  verdict = "block-reescalation" (closed, no new signature) | "allow"
+  verdict = "block-reescalation" (closed, no new signature)
+          | "escalate-to-proposal" (--fix-owed with --recurrence >= 3, not closed)
+          | "allow"
+
+A dossier whose frontmatter says `status: fix-owed` with an empty `closed_by` is OPEN, and that
+structured state outranks fuzzy keyword hits in Decisions.md / Learnings.md.
 """
 import argparse
 import json
@@ -35,6 +40,11 @@ CLOSE_MARKERS = re.compile(
     r"\b(closed|shipped|resolved|accepted|fixed|done|superseded)\b", re.IGNORECASE
 )
 CLOSED_FM_VALUES = {"closed", "monitoring", "shipped", "resolved", "done"}
+# Frontmatter statuses that mean "fix still owed". With an empty closed_by, these OUTRANK fuzzy
+# Decisions/Learnings hits (generic-word hits used to read a fix-owed dossier as CLOSED).
+OPEN_FM_VALUES = {"fix-owed", "fix_owed", "fixowed"}
+# closed_by values that count as empty (YAML null spellings and blanks)
+EMPTY_CLOSED_BY = {"", "null", "none", "~", "[]", "''", '""', "n/a", "-"}
 # generic filler tokens that must NOT alone trigger a topic match (else a word like "topic" or
 # "issue" false-matches unrelated closed entries and suppresses a legitimate append)
 STOPWORDS = {
@@ -53,12 +63,15 @@ def _frontmatter_status(text):
         end = text.find("\n---", 3)
         if end != -1:
             for line in text[3:end].splitlines():
-                m = re.match(r"\s*status\s*:\s*(.+?)\s*$", line)
+                # accept both YAML "status:" and outliner-style "status::"
+                m = re.match(r"\s*status\s*::?\s*(.+?)\s*$", line)
                 if m:
                     status = m.group(1).strip().lower()
-                m2 = re.match(r"\s*closed_by\s*:\s*(.+?)\s*$", line)
+                m2 = re.match(r"\s*closed_by\s*::?\s*(.*?)\s*$", line)
                 if m2:
                     closed_by = m2.group(1).strip()
+    if closed_by is not None and closed_by.lower() in EMPTY_CLOSED_BY:
+        closed_by = None  # "closed_by: null" must not read as a truthy closing ref
     return status, closed_by
 
 
@@ -91,6 +104,8 @@ def main():
     ap.add_argument("--dossier", required=True, help="path to the memory/Infra/*.md dossier")
     ap.add_argument("--topic", required=True, help="topic/keywords to check for closure")
     ap.add_argument("--signature", default="", help="a NEW failure signature, if any, that could re-open")
+    ap.add_argument("--recurrence", type=int, default=0, help="how many times this fix-owed has already recurred (dreaming counts prior appends)")
+    ap.add_argument("--fix-owed", action="store_true", help="this candidate entry is an unbuilt fix-owed, not a pure observation")
     args = ap.parse_args()
 
     out = {
@@ -112,6 +127,12 @@ def main():
 
         fm_closed = (status in CLOSED_FM_VALUES) or bool(closed_by)
         decision_closed = bool(dh)
+        # An explicit fix-owed status with an empty closed_by is the dossier's own structured
+        # state and outranks the fuzzy keyword hits. Hits stay in the output for audit.
+        fm_open = (status in OPEN_FM_VALUES) and not closed_by
+        if fm_open and decision_closed:
+            decision_closed = False
+            out["fuzzy_hits_overridden"] = True
         out["closed"] = bool(fm_closed or decision_closed)
 
         new_sig = args.signature.strip()
@@ -132,9 +153,22 @@ def main():
                 f"Closed, but a NEW signature was supplied ('{new_sig[:60]}'). A genuinely new "
                 "failure mode may re-open the issue. Allow the append, but verify the novelty is real."
             )
+        elif args.fix_owed and args.recurrence >= 3:
+            out["verdict"] = "escalate-to-proposal"
+            out["reason"] = (
+                f"Unbuilt fix-owed at recurrence {args.recurrence} (>=3) and NOT closed. Do NOT append "
+                "another 'still owed' entry (that is the silent-divergence trap). Register a "
+                "meta-review proposal instead: `scripts/memory/meta_review_proposals.py add` with the fix "
+                "and a predicate, so it enters the ledger that forces a decision."
+            )
         else:
             out["verdict"] = "allow"
             out["reason"] = "No closing decision or status found. Append is fine."
+        if out.get("fuzzy_hits_overridden"):
+            out["reason"] += (
+                f" Note: {len(dh)} fuzzy Decisions hit(s) were ignored because the dossier frontmatter "
+                "says status fix-owed with an empty closed_by."
+            )
     except Exception as e:
         out["verdict"] = "allow"
         out["reason"] = (

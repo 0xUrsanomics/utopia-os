@@ -147,7 +147,7 @@ Source: Gecko Security disclosure + Snyk ToxicSkills + SkillScan empirical study
 - **If you must take more than markdown**: run `python3 scripts/security/check_standdown.py --bundle-scan <dir>` first. The scanner walks the dir and flags any file matching the skill-bundle-rce pattern. WARN-severity match = manual file-by-file audit required before any tool can run from that dir.
 - Skills bundling executable scripts are **2.12× more vuln-prone** than instruction-only skills (Snyk data). When in doubt, prefer the instruction-only shape.
 
-**Cross-references**: `memory/Learnings.md` 2026-05-11 entry + `memory/standdowns.json` `skill-bundle-rce-in-test-file` pattern entry + `scripts/security/check_standdown.py --bundle-scan` mode.
+**Cross-references**: `memory/Learnings.md` 2026-05-11 entry + `memory/state/standdowns.json` `skill-bundle-rce-in-test-file` pattern entry + `scripts/security/check_standdown.py --bundle-scan` mode.
 
 #### Writing Patterns
 

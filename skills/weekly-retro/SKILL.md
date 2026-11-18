@@ -74,6 +74,9 @@ Pull from the past 7 days:
 - Knowledge gaps to fill
 - System issues to fix
 - Scheduled tasks to add/modify/remove
+- Mistakes that recurred in a fixed pattern (wrong path, banned call, bad format) get a script, hook or cron check, not another instruction line. Before proposing a new check, look for an existing one in `scripts/` or the hooks that is not wired up or not firing; wiring it is the item. Judgement calls only go into a skill or CLAUDE.md.
+- Rank NEXT WEEK items worst first.
+(Last two lifted from mattpocock/skills @ 59db609 `retro`, MIT.)
 
 ### 3. Output
 

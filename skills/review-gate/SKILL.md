@@ -2,6 +2,29 @@
 name: review-gate
 description: Knowledge quality gate. review raw outputs, approve/flag/merge before writing to the knowledge graph
 trigger: review, approve, gate, check outputs, pending review
+inputs:
+  # ICM Lift 1: declared load contract. reference = internalize as constraints, working = process as input.
+  reference:
+    - skills-shared/anti-ai-slop/SKILL.md
+    - skills/_index.md
+    - memory/Learnings.md
+  working:
+    - outputs/raw/{persona}/YYYY-MM-DD-{slug}.md
+stages:
+  # ICM Lift 2+3: execution order + per-stage soft token budget (2000-8000 ICM target; advisory).
+  - id: 1-scan
+    does: scan outputs/raw for pending items
+    out: outputs/raw/{persona}/YYYY-MM-DD-{slug}.md
+    budget: 3000
+  - id: 2-review
+    does: review each item + advisory slop scan
+    budget: 5000
+  - id: 3-verdict
+    does: approve / flag / merge verdict per item
+    budget: 4000
+  - id: 4-graph-write
+    does: write approved items to the knowledge graph
+    budget: 4000
 ---
 
 # Review Gate

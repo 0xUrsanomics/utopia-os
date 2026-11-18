@@ -79,6 +79,13 @@ Running an operator agent all day is expensive; these tools keep the token spend
 - **ClawMMU** (arXiv 2610.28093). The authority cap in recall: a curated path does not lend its boost to an entry formed from untrusted content.
 - **arXiv 2610.37332** on instruction stacks changing in bursts, behind `instruction_stack_diff.py`.
 
+## Later additions
+- **[mattpocock/skills](https://github.com/mattpocock/skills)** (MIT, commit 59db609). The stash-instead-of-hard-reset revert in `loop-experiment` and two NEXT WEEK rules in `weekly-retro`. Pattern only.
+- **[emilkowalski/skills](https://github.com/emilkowalski/skills)** (MIT, Emil Kowalski, commit a81dbca). The motion, mobile, stress-test and type rules in `knowledge/taste-skill-frontend-rules.md`, paraphrased.
+- **[jakubkrehel/skills](https://github.com/jakubkrehel/skills)** (MIT, Jakub Krehel, commit 592aedc). The accessibility, UI writing, UI states and review rules in `knowledge/taste-skill-frontend-rules.md`, paraphrased.
+- **[caldoai/skills](https://github.com/caldoai/skills)** (MIT, commit 442c299). The refactor and review lens in `knowledge/untangle-refactor-rules.md`, paraphrased.
+- **"Beyond Task Completion"** (arXiv 2512.12791), behind the warn-only `done_claim_guard.py`. **arXiv 2611.06545** on invented or stale approvals in self-written handoffs, behind `handoff_approval_lint.py`. **arXiv 2608.10218**, the mind-virus guard in `CLAUDE.md`.
+
 ---
 
 Where an upstream project ships a LICENSE, that license is preserved in the relevant subdirectory

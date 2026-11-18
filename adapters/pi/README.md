@@ -96,7 +96,7 @@ role. So the port changes the wiring, not the guarantees.
    and you synthesize the stdin JSON pi doesn't hand you.
 2. **Native TS for the hot path.** `tool_call` fires on every bash/read/edit/write. If subprocess latency
    matters, port *only* `check_standdown.py`'s registry match and `skill_linter.py`'s rule scan into
-   TypeScript (the registry `memory/standdowns.json` and the rule table stay as data). This is the one
+   TypeScript (the registry `memory/state/standdowns.json` and the rule table stay as data). This is the one
    genuine *logic* rewrite, and it is a latency optimization, not a correctness requirement.
 
 **Confirm before relying:** the skeleton uses verified fields (`event.toolName`, `event.input.command`

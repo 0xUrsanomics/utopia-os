@@ -22,7 +22,8 @@ Rules this enforces:
 Env:
   AGENT_ROOT              repo root (default: two levels up)
   HALLU_JUDGE_CMD         judge command; the prompt is appended as the last argv (e.g. "gemini -p")
-  HALLU_DIRS              os.pathsep-separated dirs to sample (default: $AGENT_ROOT/outputs/raw)
+  HALLU_DIRS              os.pathsep-separated dirs to sample
+                          (default: $AGENT_ROOT/outputs/raw and $AGENT_ROOT/outputs/reviewed)
   HALLU_JUDGE_TIMEOUT     seconds (default 120)
   AGENT_UTC_OFFSET_HOURS  local offset used for the report date (default 0)
   AGENT_DATA_DIR          alert signal file goes to $AGENT_DATA_DIR/signals/ (default $AGENT_ROOT/.data)
@@ -44,7 +45,10 @@ from pathlib import Path
 import shlex
 
 ROOT = Path(os.environ.get("AGENT_ROOT", str(Path(__file__).resolve().parents[2])))
-SUBSTANTIVE_DIRS = [Path(p) for p in os.environ.get("HALLU_DIRS", str(ROOT / "outputs/raw")).split(os.pathsep) if p]
+# The review gate moves files from outputs/raw to outputs/reviewed, often before the judge runs, so
+# sampling raw alone misses most of a day's outputs. Still filtered to the last 24h by mtime.
+SUBSTANTIVE_DIRS = [Path(p) for p in os.environ.get(
+    "HALLU_DIRS", os.pathsep.join([str(ROOT / "outputs/raw"), str(ROOT / "outputs/reviewed")])).split(os.pathsep) if p]
 AUDIT_DIR = ROOT / "outputs/raw/hallucination-audit"
 LOG_PATH = ROOT / "logs/session.jsonl"
 DATA_DIR = Path(os.environ.get("AGENT_DATA_DIR", str(ROOT / ".data")))

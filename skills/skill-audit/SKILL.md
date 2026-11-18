@@ -1,6 +1,6 @@
 ---
 name: skill-audit
-description: Pre-install structural security audit for SKILL.md artifacts. Detects 3 threat chains (Hidden Override / Disguised Transfer / Remote Bootstrap) and runs 5 detectors (D1 MHG / D2 BCC / D3 DEP / D4 CEC / D5 APS) using staged-verdict logic that prevents suspicious/malicious collapse. Output is a structured audit memo at `outputs/raw/agent/skill-audits/YYYY-MM-DD-{slug}.md`. Optional `--write-standdown` flag appends to `memory/standdowns.json`. Lifted from a skill-auditor SKILL.md (arxiv 2604.25109 SKILLGUARD-ROBUST + 2605.00314 Semia + 2605.00055 Ambient Persuasion), with 3 mods for this stack: scoped triggers, standdown integration, raw-output routing. NOT a runtime monitor, NOT a content-quality review, NOT a broader security review (a CSO skill covers OWASP / STRIDE / app-level threats).
+description: Pre-install structural security audit for SKILL.md artifacts. Detects 3 threat chains (Hidden Override / Disguised Transfer / Remote Bootstrap) and runs 5 detectors (D1 MHG / D2 BCC / D3 DEP / D4 CEC / D5 APS) using staged-verdict logic that prevents suspicious/malicious collapse. Output is a structured audit memo at `outputs/raw/agent/skill-audits/YYYY-MM-DD-{slug}.md`. Optional `--write-standdown` flag appends to `memory/state/standdowns.json`. Lifted from a skill-auditor SKILL.md (arxiv 2604.25109 SKILLGUARD-ROBUST + 2605.00314 Semia + 2605.00055 Ambient Persuasion), with 3 mods for this stack: scoped triggers, standdown integration, raw-output routing. NOT a runtime monitor, NOT a content-quality review, NOT a broader security review (a CSO skill covers OWASP / STRIDE / app-level threats).
 trigger: audit this skill, skill audit, pre-install review, is this skill safe, scan SKILL.md, run skill-audit, skill-auditor, shared-skill audit
 ---
 
@@ -243,7 +243,7 @@ write_standdown: false  # set true on --write-standdown flag
 
 ## Step 7 (optional): Write to the standdown registry
 
-If invoked with the `--write-standdown` flag AND the verdict is SUSPICIOUS or MALICIOUS, append an entry to `memory/standdowns.json`:
+If invoked with the `--write-standdown` flag AND the verdict is SUSPICIOUS or MALICIOUS, append an entry to `memory/state/standdowns.json`:
 
 ```json
 {

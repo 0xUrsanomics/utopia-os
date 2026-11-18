@@ -47,6 +47,10 @@ Re-scan the transcript specifically for casual-register musings that reveal: how
 
 1. **PREFERENCES**: workflow, formatting, behavior rules the user stated
    Format: `key:: value` pairs, append to `memory/Preferences.md` (dedup on key::)
+   **TIER ROUTING (anti-bloat). Preferences.md is ALWAYS-LOADED, paid on every reply. Before writing a rule there, ask: is it TASK-SCOPED (only relevant during a specific kind of task) or UNIVERSAL (applies across all or most work)?**
+   - TASK-SCOPED -> write to the matching recall companion, NOT tier-1: one companion file per task family, named `memory/Preferences-<topic>.md` (for example decks and outreach, job applications, public content, dashboards and UI, engineering and infra). Keep a `preferences-companions::` rule in `Preferences.md` as the canonical map and load trigger; each companion loads at the START of its task.
+   - UNIVERSAL only (voice, security-first, save/compact, scope gate, plain language, cross-cutting verification discipline that fires on any task) -> `Preferences.md` tier-1.
+   - If unsure, DEFAULT TO THE COMPANION: a rule wrongly in a companion still loads for its task; a task-scoped rule wrongly in tier-1 is paid on EVERY reply forever. When in doubt run `python3 scripts/memory/check_always_loaded_budget.py`; if Preferences is at or over budget, a tier-1 write needs an explicit universal justification or it goes to a companion.
    Wisdom-layer note: when adding a behavioral rule (port from arXiv 2604.11364), include an `evidence::` line tracking `[applied_count, last_applied_date, outcome_distribution]`. Initial state on first save: `evidence:: [1, YYYY-MM-DD, untested]`. graph-hygiene check #12 audits stale rules (zero recent evidence = speculative, may not be working).
 
 2. **DECISIONS**: architectural / strategic / tactical choices with context
@@ -62,8 +66,26 @@ Re-scan the transcript specifically for casual-register musings that reveal: how
 5. **LEARNINGS**: insights worth remembering across sessions, tagged
    Append to `memory/Learnings.md` with date + tags
    Wisdom-layer note: like Preferences, learnings can carry an `evidence::` field. Optional, but useful when the learning makes a falsifiable claim ("X always causes Y").
-   Fix-owed tag: when a LEARNINGS entry names a SPECIFIC, SCOPED, un-shipped fix (not a pure observation), add the tag `fix-owed` to its tag line. Meta-memory-review's lens-D worklist is then `grep -l 'fix-owed' memory/Learnings.md` minus anything carrying a `closed_by::` marker. Converts the weekly recurring-failure scan from a full re-read into a deterministic tag-grep. A pure observation ("X tends to cause Y") is NOT fix-owed; only an entry naming a concrete fix that has not shipped. Clear the tag (or add `closed_by::`) once the fix ships.
-   Recurrence tag: when a LEARNINGS entry is a REPEAT of a prior failure mode (not a first observation), tag it `#recurrence-Nx` on the tag line, where N = how many times this shape has now fired (e.g. `#recurrence-4x`). Optional `recurrence:: N` field mirrors it as structured data. Forward-only. no reformat of history. This makes the weekly recurrence scan a deterministic `grep '#recurrence-'` sorted by N, instead of guessing from freeform prose ("4th occurrence", "again", "still"). A first-time observation gets NO tag; the tag appears only on the 2nd+ occurrence. Pairs with `fix-owed`: a recurring un-shipped fix carries both (`fix-owed #recurrence-3x`).
+   Fix-owed tag: when a LEARNINGS entry names a SPECIFIC, SCOPED, un-shipped fix (not a pure observation), add the tag `fix-owed` to its tag line. Meta-memory-review's lens-D worklist is then `python3 scripts/memory/lib_learnings_index.py fix-owed`. **Do not hand-write a grep for this.** `grep -l 'fix-owed' memory/Learnings.md` against a single file prints the FILENAME and no entries, so the worklist is empty by construction and an empty worklist reads exactly like nothing owed. The bare pattern also matches an unrelated `structural-fix-owed`. The script handles the word boundary, the `structural-` exclusion and the `closed_by::` exclusion; `lib_learnings_index.py close --date <YYYY-MM-DD> --note "<what shipped>"` appends the `closed_by::` line. Converts the weekly recurring-failure scan from a full re-read into a deterministic tag-grep. A pure observation ("X tends to cause Y") is NOT fix-owed; only an entry naming a concrete fix that has not shipped. Clear the tag (or add `closed_by::`) once the fix ships.
+   Recurrence tag: when a LEARNINGS entry is a REPEAT of a prior failure mode (not a first observation), tag it `#recurrence-Nx` on the tag line, where N = how many times this shape has now fired (e.g. `#recurrence-4x`). Optional `recurrence:: N` field mirrors it as structured data. Forward-only. no reformat of history. The weekly recurrence scan is `python3 scripts/memory/lib_learnings_index.py recurrences`, NOT a grep: the tag drifts into several surface forms (`#recurrence-3x` outside the tag parens, `recurrence-4x` inside a tag list with no hash, a `tags::` line), so `grep '#recurrence-'` silently drops some markers, which is the exact miss the tag was invented to prevent. It replaces guessing from freeform prose ("4th occurrence", "again", "still"). A first-time observation gets NO tag; the tag appears only on the 2nd+ occurrence. Pairs with `fix-owed`: a recurring un-shipped fix carries both (`fix-owed #recurrence-3x`).
+
+### Step 2.4. Entry format. CANONICAL. Read this before writing any Learnings entry
+
+A Learnings file that runs two incompatible entry schemas at once makes every convention shipped later invisible to one of them: a stamp or tag rule authored against one schema silently misses the other. Write new entries exactly like this:
+
+```
+## YYYY-MM-DD. Short title naming the pattern, not the incident
+provenance:: agent=<agent> session=<id> support=once|Nx ingest=clean|untrusted
+tags:: #topic #reusable [#recurrence-Nx] [fix-owed]
+scope:: project:<name> | global
+
+context:: what was happening, in one or two sentences.
+learning:: the transferable rule. what to do differently, and why.
+```
+
+The metadata lines sit directly under the heading, before any sub-heading (such as the template's `### Rule:` line), so `provenance::` and `tags::` attach to the entry they describe. Generate the stamp with `python3 scripts/memory/lib_provenance.py stamp --support <once|Nx>`. A dated `### YYYY-MM-DD` heading is read as its own entry too; whichever heading you use, the `provenance::` line goes directly under it, and a repeat carries `#recurrence-Nx` (see Step 2, LEARNINGS).
+
+**FORWARD-ONLY. Do not rewrite older entries into this format.** Their content is real, and a bulk reformat is an unverifiable mass edit. Readers keep handling both: `scripts/memory/lib_learnings_index.py schema` reports the split, which is how drift gets watched instead of assumed.
 
 ### Step 2.5. Write-gate (MemReader port)
 
@@ -114,6 +136,7 @@ Any LEARNINGS or PREFERENCES candidate that makes a **falsifiable behavioral cla
 1. `confidence:: >=0.8`
 2. `scope:: global` (observed across 2+ distinct projects/contexts)
 3. `>=20` cumulative observations OR explicit operator confirmation ("yes, always do this")
+4. **TIER ROUTING (promote side):** even when 1-3 pass, a TASK-SCOPED rule hardens into the matching companion (`memory/Preferences-<topic>.md`, per the Step 2 PREFERENCES map), never tier-1 `Preferences.md`. Only a UNIVERSAL rule (fires on any task) earns an always-loaded slot. An explicit operator confirmation authorizes promotion; it does not override the tier routing.
 
 Until the gate passes, it stays an episodic Learnings entry (recall-fetched, not always-loaded). This keeps speculative single-observation patterns out of tier-1 reply-cost. The existing `evidence:: [applied_count, last_date, outcome]` array (Step 2 items 1+5) is the raw substrate; `confidence::` is the derived scalar the gate reads. graph-hygiene check #12 already audits stale rules; this gate is the inbound side of the same discipline.
 

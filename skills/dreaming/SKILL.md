@@ -15,6 +15,15 @@ Default outcome is promote nothing. The gates exist to keep memory small, not to
 - Scheduled: daily at 03:00 local
 - Manual: `/dream` or "consolidate memory"
 
+## Refire check (run BEFORE Phase 1)
+A usage-cap kill can land after the cycle has already written its files (state file and reflection saved, process killed one second later, scheduler status `error`), and a reconciler that retries failed jobs then refires the whole cycle hours later. First look for `memory/.dreams/dream-<today, local date>.json`. If it exists with `phase_completed: deep`, this run is a TOP-UP of that cycle, not a new one, unless the prompt explicitly asks for a full re-run:
+1. Verify every artifact the state file names exists on disk (auto-skill file, appended sections, MEMORY.md line). Do not re-run Phases 1 to 3 over the same window and do not re-append what is already there.
+2. Stage candidates only from log rows newer than the state file's mtime and score them as usual (the zero-promotion path applies). Reuse the original `decayed` number.
+3. Write what the killed run lost (usually the `dream_cycle_complete` log row and the closing heartbeat), add a `refire_topup` block to the state file (original keys stay untouched), and append a dated addendum to the reflection. Back each file up first.
+4. The max-1 auto-skill cap counts per date: if the state file already shows one drafted, the top-up drafts none.
+
+In a normal cycle, append the `dream_cycle_complete` log row in the same Bash call that writes the state file, so one API turn cannot separate them.
+
 ## Phase 1. LIGHT (Ingest + Deduplicate)
 
 Read all inputs:
@@ -34,6 +43,8 @@ grep -ic "<key term>" logs/session.jsonl
 grep -i "<key term>" logs/session.jsonl | grep -o '"category": *"[^"]*"' | sort -u | wc -l
 ```
 If `logs/session.jsonl` is missing or the term returns 0, set both to 0 and let the gate reject it. Never substitute a guessed count.
+Read the rows behind any count over 10 and any count that clears a gate, before scoring. A key term that is also a log field name (`message_id`, `ungrounded`) or that sits in the subject's own producer run reports matches every row of that producer: first-pass counts picked this way have come out 5x to 300x too high, all in the direction of a false promotion. Pick terms that cannot be a field name and drop the producer categories.
+Sanity controls. Run BEFORE scoring any candidate, over the same 36 h window of `logs/session.jsonl`, with the same case-insensitive raw count. Fix two or three control terms and a floor for each in advance, from terms that appear in the log every day (for example `<control-term-1>` need `<floor-1>`, `<control-term-2>` need `<floor-2>`), and set each floor well under the counts measured on a thin window. Do not pick substitutes during a cycle: a term chosen after reading the log is bound to hit and tests nothing. If a control fails, report it to the operator, say whether the log has rows in the window (empty log = search not tested, not a search bug), and score nothing that night. Changing the control terms or floors is the operator's call.
 
 Output: staged candidates list (in-memory, not written yet)
 
@@ -102,7 +113,7 @@ python3 scripts/pipeline/check_dossier_closure.py --dossier memory/Infra/<file>.
 - verdict `block-reescalation`: the issue reads CLOSED (via the dossier's `status::` frontmatter or a closing entry in Decisions.md). Do NOT append a re-escalation. Either do nothing, or append one STATUS-update line noting it stays closed. Read the returned `reason` + `decisions_hits` and confirm they actually match your escalation. If the closing hits are about a DIFFERENT sub-item, or a genuinely NEW failure signature has appeared, re-run with `--signature "<new signature>"` (returns `allow`) and proceed.
 - verdict `allow`: proceed with the append.
 - FAIL-OPEN by design (any error returns `allow`), so it can never block consolidation. This gate replaces the failed "remember to grep Decisions.md" prose lesson with a script you must run. It exists because closed issues kept getting re-escalated across multiple dreaming cycles.
-- A fix-owed that keeps recurring while OPEN is the other half of the trap. If the same unbuilt fix has already been appended 3 or more times, do NOT append another "still owed" line. Move it into whatever decision ledger your review cycle reads (build, decline or reassign), so a person has to decide. An N+1th text entry while the fix stays unbuilt is silent divergence, not progress.
+- A fix-owed that keeps recurring while OPEN is the other half of the trap. If the same unbuilt fix has already been appended 3 or more times, do NOT append another "still owed" line. Move it into whatever decision ledger your review cycle reads (build, decline or reassign), so a person has to decide. An N+1th text entry while the fix stays unbuilt is silent divergence, not progress. Pass `--fix-owed --recurrence <N>` to the closure check; at N >= 3 on an open issue it returns `escalate-to-proposal`, and the entry goes into `scripts/memory/meta_review_proposals.py add <id> <date> "<title>" --resolved-when "<predicate>" --kind outcome` instead of the dossier. A dossier whose frontmatter says `status: fix-owed` with an empty `closed_by` reads OPEN even when fuzzy Decisions hits say otherwise (output key `fuzzy_hits_overridden`).
 
 **Zero-promotion path (expected, not a failure):** most cycles promote nothing. If no candidate clears all three gates, write the dream state file with `promoted: 0` and a one-line `reflection` naming the closest candidate and which gate it missed. Still run Prune and Decay. Do NOT lower a gate, do NOT promote the best of a bad batch, and do NOT report the cycle as errored. Same rule if `logs/session.jsonl` is empty or absent: log `candidates_staged: 0`, skip Phases 2 to 3C, exit clean.
 

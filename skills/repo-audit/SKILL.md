@@ -13,7 +13,7 @@ When you drop a GitHub URL or ask about adopting an external repo, present a 4-o
 
 Adversarial register. **starting hypothesis: the repo is REJECTED until evidence proves it's safe AND useful.** Don't go soft because "the README looks nice" or "it has stars". The 7-day rule + the standdowns registry + the bundle-RCE gate exist for a reason. Cite specific findings, name specific risks, refuse to blindly adopt anything that touches credentials / filesystem / context layer without a clone-audit first.
 
-**Hard rule**: NEVER install/run any repo less than 7 days old (CLAUDE.md security-first rule). NEVER install repos in the standdowns registry (`memory/standdowns.json`). ALWAYS run `python3 scripts/security/check_standdown.py <target>` before a recommendation. ALWAYS run `--bundle-scan <dir>` if doing a clone-audit on a bundle that may contain test files (an RCE-in-a-test-file vector).
+**Hard rule**: NEVER install/run any repo less than 7 days old (CLAUDE.md security-first rule). NEVER install repos in the standdowns registry (`memory/state/standdowns.json`). ALWAYS run `python3 scripts/security/check_standdown.py <target>` before a recommendation. ALWAYS run `--bundle-scan <dir>` if doing a clone-audit on a bundle that may contain test files (an RCE-in-a-test-file vector).
 
 ## Output format
 

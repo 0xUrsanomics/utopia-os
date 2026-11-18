@@ -104,7 +104,7 @@ for iter in 1..max_iterations:
   4. Run eval_command. Capture stdout, exit code, latency.
   5. Extract score via score_regex. Apply secondary_regex if defined.
   6. If score improves: keep edit. git add + commit on loop/<tag> branch with message "loop iter <N> score <X>"
-  7. If score regresses or violates secondary: git reset --hard HEAD. Revert.
+  7. If score regresses or violates secondary: git stash push -u -m "loop iter <N> reverted" -- <mutable_path>. Revert (the edit stays recoverable in the stash, and a command guard that blocks a hard reset lets this through; pattern from mattpocock/skills @ 59db609, MIT).
   8. Append iter record to log_path: {iter, ts, score, delta, kept|reverted, edit_summary}
   9. Stop if score >= target_score OR N consecutive non-improvements OR max_iterations reached
 ```
