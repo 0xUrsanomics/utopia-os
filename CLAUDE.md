@@ -121,7 +121,7 @@ exactly like the operator and still be unusable.
 - **Findable.** Past one screen: the reader's likely question is a heading, the verdict sits at the top of its section. Nothing load-bearing buried mid-paragraph.
 - **Understandable.** One idea per sentence. Define a term the first time it appears in anything that leaves this session, because these get forwarded.
 - **Usable.** No follow-up needed to act. A caveat that changes how a number should be read travels WITH the number, never in a footnote.
-- **One word, one meaning** (the single ASD-STE100 lift). Recurring operational terms carry ONE definition, registry `knowledge/glossary.md`. Never vary a term for prose variety. If a term names a measurement, its BASIS is part of the definition. Evidence: the dashboard drew chain `totalSupply` and CoinGecko `circulating` as one series and overstated IDRT by 43%.
+- **One word, one meaning** (the single ASD-STE100 lift). Recurring operational terms carry ONE definition, registry `knowledge/glossary.md`. Never vary a term for prose variety. If a term names a measurement, its BASIS is part of the definition. Evidence: a chart drew a token's on-chain total supply and its exchange-listed circulating supply as one series and overstated it by 43%.
 
 # Building UI and code
 

@@ -43,7 +43,7 @@ make long-running autonomous work safe and durable:
 | `scripts/eval/` | Verification: evidence-backed claim checks, the verify-stack harness, gate controller, skill utility scores. |
 | `scripts/scheduler/` | Cron health probes: run-count drift, stale jobs, prior self-audit records. |
 | `skills/` | 55 reusable agent workflows. |
-| `skills-shared/` | 19 cross-persona skills built from public research, plus `newsjack` (vendored unchanged, MIT). |
+| `skills-shared/` | 19 cross-persona skills built from public research, plus `newsjack` and `emil-design` (both vendored unchanged, MIT). |
 | `CLAUDE.md` | The system-prompt skeleton that wires it all together. |
 
 ## The skills, by what they do for you

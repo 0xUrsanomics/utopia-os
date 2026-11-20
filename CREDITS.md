@@ -81,7 +81,7 @@ Running an operator agent all day is expensive; these tools keep the token spend
 
 ## Later additions
 - **[mattpocock/skills](https://github.com/mattpocock/skills)** (MIT, commit 59db609). The stash-instead-of-hard-reset revert in `loop-experiment` and two NEXT WEEK rules in `weekly-retro`. Pattern only.
-- **[emilkowalski/skills](https://github.com/emilkowalski/skills)** (MIT, Emil Kowalski, commit a81dbca). The motion, mobile, stress-test and type rules in `knowledge/taste-skill-frontend-rules.md`, paraphrased.
+- **[emilkowalski/skills](https://github.com/emilkowalski/skills)** (MIT, Emil Kowalski, commit a81dbca). The motion, mobile, stress-test and type rules in `knowledge/taste-skill-frontend-rules.md`, paraphrased. Four of that repo's design skills and two cheatsheets are also vendored unchanged at that commit in `skills-shared/emil-design/` (MIT, Copyright (c) 2026 Emil Kowalski, see the bundled LICENSE).
 - **[jakubkrehel/skills](https://github.com/jakubkrehel/skills)** (MIT, Jakub Krehel, commit 592aedc). The accessibility, UI writing, UI states and review rules in `knowledge/taste-skill-frontend-rules.md`, paraphrased.
 - **[caldoai/skills](https://github.com/caldoai/skills)** (MIT, commit 442c299). The refactor and review lens in `knowledge/untangle-refactor-rules.md`, paraphrased.
 - **"Beyond Task Completion"** (arXiv 2512.12791), behind the warn-only `done_claim_guard.py`. **arXiv 2611.06545** on invented or stale approvals in self-written handoffs, behind `handoff_approval_lint.py`. **arXiv 2608.10218**, the mind-virus guard in `CLAUDE.md`.
