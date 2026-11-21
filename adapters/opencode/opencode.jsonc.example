@@ -25,6 +25,15 @@
       "command": ["python3", "/path/to/utopia-os/scripts/memory/vector_brain.py", "serve"],
       "enabled": true
     },
+    // knowledge graph, read-only by default (docs/logseq-graph.md). For an Obsidian vault, append
+    // "--format", "obsidian" to command and set OBSIDIAN_VAULT_DIR instead (docs/obsidian.md).
+    // Set GRAPH_MCP_WRITES=1 only once the CONFIRM gate is wired for this harness.
+    "graph": {
+      "type": "local",
+      "command": ["python3", "/path/to/utopia-os/scripts/mcp/graph_mcp/server.py"],
+      "environment": { "LOGSEQ_GRAPH_DIR": "/path/to/logseq-graph", "GRAPH_NAMESPACES_FILE": "/path/to/namespaces.json" },
+      "enabled": true
+    },
 
     // --- credentialed servers (token via {env:...}, never inline) ---
     "telegram": {

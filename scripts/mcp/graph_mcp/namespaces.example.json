@@ -1,0 +1,27 @@
+{
+  "_doc": [
+    "EXAMPLE namespace registry for scripts/mcp/graph_mcp/server.py. Copy it next to your graph,",
+    "rename the namespaces to your own taxonomy, and point GRAPH_NAMESPACES_FILE at the copy.",
+    "Without GRAPH_NAMESPACES_FILE the server loads this file as is.",
+    "namespaces.<Name>.domain     a key from 'domains', for grouping in graph_stats",
+    "namespaces.<Name>.template   optional page skeleton appended by create_page(use_template=true), or null",
+    "namespaces.<Name>.protected  true = readable, never writable through the server (create, update, append refused)",
+    "namespaces.<Name>.obsidian_folder  optional, Obsidian only: store this namespace in a differently named folder",
+    "Journal is a namespace for notes ABOUT days. Logseq's own daily journals live in journals/ and are read",
+    "with read_journal; on Obsidian, set GRAPH_DAILY_FOLDER=Journal to make the two the same folder.",
+    "An unreadable or malformed registry stops the server at startup. It never falls back to 'no rules'."
+  ],
+  "domains": {
+    "work": "projects, people, meetings",
+    "knowledge": "concepts and reference material",
+    "life": "journal and personal notes"
+  },
+  "namespaces": {
+    "Project": {"domain": "work", "template": "## Compiled Truth\n\n## Timeline\n", "protected": false},
+    "Person": {"domain": "work", "template": "## Compiled Truth\n\n## Timeline\n", "protected": false},
+    "Meeting": {"domain": "work", "template": "## Notes\n\n## Decisions\n\n## Actions\n", "protected": false},
+    "Concept": {"domain": "knowledge", "template": null, "protected": false},
+    "Reference": {"domain": "knowledge", "template": null, "protected": true},
+    "Journal": {"domain": "life", "template": null, "protected": false}
+  }
+}

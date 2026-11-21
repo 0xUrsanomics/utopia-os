@@ -1,5 +1,5 @@
 {
-  "_comment": "Utopia OS MCP servers for Kimi Code. Copy to ~/.kimi-code/mcp.json (or .kimi-code/mcp.json in the project; project overrides user). Same mcpServers shape as Claude Code's .mcp.json. Replace /path/to placeholders. Supply credentials via env, never inline a secret here.",
+  "_comment": "Utopia OS MCP servers for Kimi Code. Copy to ~/.kimi-code/mcp.json (or .kimi-code/mcp.json in the project; project overrides user). Same mcpServers shape as Claude Code's .mcp.json. Replace /path/to placeholders. Supply credentials via env, never inline a secret here. The graph server is read-only by default (docs/logseq-graph.md); for an Obsidian vault add \"--format\", \"obsidian\" to its args and set OBSIDIAN_VAULT_DIR instead (docs/obsidian.md). Set GRAPH_MCP_WRITES=1 only once the CONFIRM gate is wired for this harness.",
   "mcpServers": {
     "memory": {
       "command": "python3",
@@ -8,6 +8,11 @@
     "recall": {
       "command": "python3",
       "args": ["/path/to/utopia-os/scripts/memory/vector_brain.py", "serve"]
+    },
+    "graph": {
+      "command": "python3",
+      "args": ["/path/to/utopia-os/scripts/mcp/graph_mcp/server.py"],
+      "env": { "LOGSEQ_GRAPH_DIR": "/path/to/logseq-graph", "GRAPH_NAMESPACES_FILE": "/path/to/namespaces.json" }
     },
     "telegram": {
       "command": "python3",

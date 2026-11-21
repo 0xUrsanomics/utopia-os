@@ -32,6 +32,8 @@ If you are an agent asked to set this up, read [SETUP.md](SETUP.md) and follow i
 - [docs/memory-system.md](docs/memory-system.md): the 3-tier memory + recall.
 - [docs/security-gates.md](docs/security-gates.md): the security gate suite (stand-down, send-guards, sandbox, approval binding, fleet policy).
 - [docs/mcp-layer.md](docs/mcp-layer.md): the MCP / daemon airlock (where credentials live).
+- [docs/logseq-graph.md](docs/logseq-graph.md): the knowledge graph taxonomy, page conventions and its bundled MCP server.
+- [docs/obsidian.md](docs/obsidian.md): running the graph server on an Obsidian vault, and the format mapping.
 - [docs/knowledge-pipeline.md](docs/knowledge-pipeline.md): the WORK to REVIEW to BRAIN to BRIEF pipeline.
 - [docs/session-management.md](docs/session-management.md): session survival, handoff, and compaction.
 - [docs/cockpit.md](docs/cockpit.md): the zero-dependency read-only dashboard.

@@ -17,8 +17,31 @@
     "  PreCompact       -> snapshot the active handoff, save exact anchors + a slim searchable session log",
     "Replace the matcher tool names with your runtime's actual tool identifiers.",
     "permissions.deny encodes the BLOCKED class: secrets are never readable, outbound-send is never run,",
-    "and curl-pipe-bash is refused. Tighten allow[] to the tools you actually want auto-approved."
+    "and curl-pipe-bash is refused. Tighten allow[] to the tools you actually want auto-approved.",
+    "_mcpServers_example is NOT read from settings.json: Claude Code registers MCP servers in .mcp.json",
+    "(project) or ~/.claude.json (user). Copy the inner object under an \"mcpServers\" key there. Use either",
+    "graph entry or both: logseq (LOGSEQ_GRAPH_DIR) or obsidian (--format obsidian, OBSIDIAN_VAULT_DIR).",
+    "Both start read-only; GRAPH_MCP_WRITES=1 adds create/update/append (docs/logseq-graph.md#writes-are-opt-in)."
   ],
+  "_mcpServers_example": {
+    "logseq": {
+      "command": "python3",
+      "args": ["${WORKSPACE}/scripts/mcp/graph_mcp/server.py"],
+      "env": {
+        "LOGSEQ_GRAPH_DIR": "/path/to/logseq-graph",
+        "GRAPH_NAMESPACES_FILE": "/path/to/namespaces.json"
+      }
+    },
+    "obsidian": {
+      "command": "python3",
+      "args": ["${WORKSPACE}/scripts/mcp/graph_mcp/server.py", "--format", "obsidian"],
+      "env": {
+        "OBSIDIAN_VAULT_DIR": "/path/to/vault",
+        "GRAPH_NAMESPACES_FILE": "/path/to/namespaces.json",
+        "GRAPH_DAILY_FOLDER": "Journal"
+      }
+    }
+  },
   "permissions": {
     "allow": [
       "Read",

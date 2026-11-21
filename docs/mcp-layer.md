@@ -4,8 +4,8 @@ The agent is a reasoning loop. On its own it cannot send a message, read a calen
 account, write to the knowledge graph, or fire a job tomorrow morning. Every one of those capabilities is
 provided by a **Model Context Protocol (MCP) server** running in a local daemon alongside the agent. This
 doc is the map of that layer: what servers exist, what each exposes, how their credentials are handled so
-the agent never touches them, and why the server *code* is deliberately absent from this repo while the
-*interface* is documented here.
+the agent never touches them, and why the local-only servers ship in this repo while the credentialed
+ones are documented as interfaces only.
 
 The one-line version: **the agent reasons; the daemon acts; the credentials live with the daemon, never
 with the agent.**
@@ -49,7 +49,7 @@ cheapest to trust and the first ones anyone rebuilding this stack should stand u
 | **telegram (bot)** | operator channel: send/receive | `send_message`, `send_file`, `poll_updates`, `read_inbox`, `list_topics` | bot token |
 | **telegram (channel reader)** | continuous intake from monitored channels | `read_channel`, `list_channels` | user-session string |
 | **memory** | durable store + session log + skills | `memory_store`, `memory_search`, `session_log`, `skill_get` | none (local) |
-| **logseq** | the knowledge graph (see `logseq-graph.md`) | `read_page`, `append_to_page`, `query_by_property`, `find_links` | none (local) |
+| **logseq** | the knowledge graph, Logseq graph or Obsidian vault (see `logseq-graph.md`, `obsidian.md`) | `read_page`, `search`, `query_by_property`, `find_links`, `append_to_page` | none (local) |
 | **scheduler** | cron: create/fire jobs between sessions | `schedule_create`, `schedule_list`, `schedule_toggle`, `execution_log` | none (local) |
 | **sheets** | the CRM read/write surface | `read_range`, `update_cells`, `append_row`, `find_rows` | workspace OAuth |
 | **twitter** | outbound posting | `post_tweet`, `upload_media` | platform API keys |
@@ -60,7 +60,8 @@ Two things worth reading off this table:
 
 - **Local-only servers (memory, logseq, scheduler) carry no external secret.** They read and write files on
   the same machine. They still sit behind the autonomy gates, writing to the graph is a `CONFIRM` action, 
-  but there is no credential to leak, so they are the safe core.
+  but there is no credential to leak, so they are the safe core. The memory and graph servers ship in
+  this repo (below).
 - **The credentialed servers are all *outbound*.** Sending a message, writing a row, posting, generating
   media. That is not a coincidence: reaching *out* is exactly where a real key is required, and therefore
   exactly where the secret broker (below) and the confirmation gate earn their keep.
@@ -82,9 +83,9 @@ what. The broker replaces it with an encrypted, scoped, audited vault.
 
 ```
 <vault-dir>/                     (chmod 700, never in git)
-├── master.key                   Fernet key, chmod 600 — the ONLY plaintext. rotate to re-key.
+├── master.key                   Fernet key, chmod 600, the ONLY plaintext. rotate to re-key.
 ├── vault.enc                    Fernet-encrypted JSON: { KEY_NAME: value }
-├── policy.json                  { agent-id: ["KEY_A", "KEY_B"] | "*" }  — unlisted = DENY
+├── policy.json                  { agent-id: ["KEY_A", "KEY_B"] | "*" }  (unlisted = DENY)
 └── audit.jsonl                  one line per fetch: { ts, agent, key, decision }
 ```
 
@@ -144,14 +145,30 @@ And the rule that sits above both, because an MCP result is *external data the a
 
 ---
 
-## Why the server code is not in this repo
+## What ships, and what does not
 
-Everything above is architecture. The running servers themselves are not here, on purpose:
+Four servers ship. Three touch only local files and need no credential at all. The fourth, the Telegram
+bridge, needs a bot token, which it reads from the environment at run time and never stores:
 
-- **They are credential-bearing and account-specific.** Each is wired to particular accounts, tokens, and
+| Server | Path | Writes | Dependencies |
+|--------|------|--------|--------------|
+| memory | [`scripts/memory/memory_server.py`](../scripts/memory/memory_server.py) | none, by design | stdlib |
+| recall | `scripts/memory/vector_brain.py serve` | none | the recall tier (`requirements-memory.txt`) |
+| graph (Logseq or Obsidian) | [`scripts/mcp/graph_mcp/server.py`](../scripts/mcp/graph_mcp/server.py) | opt-in, `GRAPH_MCP_WRITES=1` | stdlib; the pinned SDK only for `--sdk` |
+| telegram bridge | [`scripts/mcp/telegram_bridge.py`](../scripts/mcp/telegram_bridge.py) | sends to an allowlist | stdlib, token from the environment |
+
+The graph server is the only shipped server that can write to ground truth. Its write tools are hidden
+and refused until you set `GRAPH_MCP_WRITES=1`. That keeps a fresh install on any harness, including one
+with no hook layer for the `CONFIRM` gate, read-only by default. The safety rules it enforces itself
+(protected namespaces, the path jail, name validation, size caps) are in
+[`logseq-graph.md`](logseq-graph.md#safety-rules-enforced-in-the-server-not-left-to-the-caller).
+
+The rest of the catalog (the daemon's scheduler, sheets, posting, image generation) is not here, on purpose:
+
+- **Most are credential-bearing and account-specific.** Each is wired to particular accounts, tokens, and
   API endpoints. Shipping them safely would mean re-templatizing every server minus its auth, a large
   surface where a single missed token is a real, permanent, public leak. The cost/benefit is wrong.
-- **The reusable part is the interface, not the wiring.** Someone rebuilding this stack implements their own
+- **The reusable part is the interface.** Someone rebuilding this stack implements their own
   servers against their own accounts. What transfers is the *shape*: the airlock boundary, the local-vs-
   credentialed split, the broker pattern, the gates. That shape is fully documented here and in the
   per-server docs (e.g. [`logseq-graph.md`](logseq-graph.md) for the graph server, [`memory-system.md`](memory-system.md)

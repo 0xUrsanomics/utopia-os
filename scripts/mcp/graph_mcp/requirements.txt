@@ -1,0 +1,20 @@
+# Graph MCP server (scripts/mcp/graph_mcp/server.py): OPTIONAL dependency
+#
+# The server needs NOTHING to run. Its default transport is a stdlib JSON-RPC loop over stdio,
+# the same as scripts/memory/memory_server.py, and its selftest runs on a bare Python.
+#
+# This file is only for `server.py --sdk`, which serves the same tool table through the official
+# MCP SDK, for clients that need protocol features the stdlib loop does not implement.
+#
+#   pip install -r scripts/mcp/graph_mcp/requirements.txt
+#   python3 scripts/mcp/graph_mcp/server.py --selftest-sdk    # real handshake through the SDK
+#
+# Pinned exactly to the version --selftest-sdk was run against.
+#
+# ADVISORIES. OSV lists advisories against 1.26.0, fixed in 1.27.2, 1.28.1 and 1.30.0. A
+# version-specific OSV query for 1.30.0 returned none when this pin was set. Query OSV again
+# before you install.
+#
+# The SDK's own dependencies (anyio, pydantic, jsonschema, ...) come in transitively and are
+# not pinned here; use a lock file or a constraints file if you need a fully pinned install.
+mcp==1.30.0

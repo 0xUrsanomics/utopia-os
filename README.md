@@ -41,6 +41,7 @@ make long-running autonomous work safe and durable:
 | `scripts/cockpit/` | A zero-dependency, read-only localhost dashboard for the whole system. |
 | `scripts/pipeline/` | Content gates (slop, paraphrase, repetition, imported claims, cross-doc consistency) and the breaking-news lane. |
 | `scripts/eval/` | Verification: evidence-backed claim checks, the verify-stack harness, gate controller, skill utility scores. |
+| `scripts/mcp/` | Reference MCP servers: the Telegram bridge, and a knowledge-graph server for a Logseq graph or an Obsidian vault (read-only until you turn writes on). |
 | `scripts/scheduler/` | Cron health probes: run-count drift, stale jobs, prior self-audit records, and a shell notifier that exits 1 when Telegram rejects the message. |
 | `skills/` | 56 reusable agent workflows. |
 | `skills-shared/` | 19 cross-persona skills built from public research, plus `newsjack` and `emil-design` (both vendored unchanged, MIT). |
@@ -177,7 +178,7 @@ fifteen minutes to a working core, with the platform matrix and the dependency a
 
 **Requirements: Python 3.9+, and nothing else.** The core has no third-party dependencies.
 Memory is Markdown, the state store is stdlib `sqlite3`, the gates are stdlib, the cockpit
-is stdlib `http.server`; all 110 modules under `scripts/` import with an empty environment.
+is stdlib `http.server`; all 112 modules under `scripts/` import with an empty environment.
 Semantic recall is the one heavy piece and it is opt-in
 ([`requirements-memory.txt`](requirements-memory.txt)), because a multi-gigabyte download
 should not stand between you and a Markdown memory system you have not decided on yet.

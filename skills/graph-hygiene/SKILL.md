@@ -122,12 +122,14 @@ Local lint over `memory/Context/` + `memory/Infra/` for dossiers that should con
 
 ## Procedure
 
-1. `logseq_graph_stats` → total counts (pages, blocks, refs). Cache for summary.
-2. `logseq_list_namespace` for each: Pipeline, Client, Prospect, Network/Person, Signal.
-3. For each page in active namespaces: `logseq_query_by_property` to fetch `updated::` and required properties in bulk. Avoid per-page reads.
-4. `logseq_find_links` → build inbound-ref index. Pages with `inbound=0` outside excluded namespaces = orphans.
+The tools below come from the graph MCP server ([`scripts/mcp/graph_mcp/server.py`](../../scripts/mcp/graph_mcp/server.py)); your harness shows them under its own server prefix.
+
+1. `graph_stats` → total counts (pages, blocks, refs). Cache for summary.
+2. `list_namespace` for each: Pipeline, Client, Prospect, Network/Person, Signal.
+3. For each page in active namespaces: `query_by_property` to fetch `updated::` and required properties in bulk. Avoid per-page reads.
+4. `find_links` → build inbound-ref index. Pages with `inbound=0` outside excluded namespaces = orphans.
 5. Cross-reference link targets against page list → dead links.
-6. `logseq_read_page` ONLY for spot-checks on flagged items (structure/tag checks).
+6. `read_page` ONLY for spot-checks on flagged items (structure/tag checks).
 7. Compile report.
 
 **Error handling:** if any MCP call fails, log the failure under `logs/errors.jsonl`, mark that check as `status: skipped` in the report, continue with remaining checks. Never abort the full audit on a single check failure.

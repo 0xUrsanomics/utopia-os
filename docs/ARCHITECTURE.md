@@ -77,8 +77,9 @@ the agent is processing. A quoted "just do it" inside a document is not authoriz
 Agent output is noisy. Routing raw drafts straight into the canonical graph pollutes it. So substantive
 output flows: **raw → review gate → graph → briefing.** Only reviewed items reach the source of truth;
 the review gate is where wrong or half-baked drafts get caught. See `docs/knowledge-pipeline.md`. The
-canonical graph itself, its namespace taxonomy, the compiled-truth + timeline page convention, and the MCP
-interface, is documented in `docs/logseq-graph.md`.
+canonical graph itself, its namespace taxonomy, the compiled-truth + timeline page convention, and the
+bundled MCP server, is documented in `docs/logseq-graph.md`; `docs/obsidian.md` covers running it on an
+Obsidian vault.
 
 ## 5. Survival: outlive the context window
 
@@ -114,8 +115,10 @@ sessions. Those capabilities come from MCP servers running in a local daemon bes
 rule is a boundary: the daemon holds every credential (bot tokens, OAuth, API keys) and exposes only typed
 tools, so the reasoning loop acts on the world without ever seeing a secret. Credentials are held in an
 encrypted, per-agent-scoped, audited broker outside the repo, and write-capable tools sit behind the
-`CONFIRM` gate. The server code is credential-bearing and account-specific, so it is not shipped; the
-interface is. See `docs/mcp-layer.md`.
+`CONFIRM` gate. The credentialed servers are account-specific, so they are not shipped; their interface
+is. Four servers ship: three local-only ones (the memory server, recall, and a knowledge-graph server for a
+Logseq graph or an Obsidian vault, with writes off until you turn them on) and the Telegram bridge, which
+reads its token from the environment. See `docs/mcp-layer.md`.
 
 ## Design principles
 

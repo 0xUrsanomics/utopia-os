@@ -1,5 +1,5 @@
 {
-  "_comment": "Utopia OS MCP servers for pi (earendil-works/pi). pi has NO built-in MCP by design; this file is read by the community pi-mcp-adapter extension (npm:pi-mcp-adapter), which you must audit + install first (see README step 3). The adapter reads a standard mcpServers block from ~/.pi/agent/mcp.json, .pi/mcp.json, ~/.config/mcp/mcp.json, or .mcp.json (project overrides global). Same mcpServers shape as Claude Code's .mcp.json, so this ports 1:1. Replace /path/to placeholders. Supply credentials via env, never inline a secret. 'lifecycle: lazy' is a pi-mcp-adapter option: the server process starts only on first use.",
+  "_comment": "Utopia OS MCP servers for pi (earendil-works/pi). pi has NO built-in MCP by design; this file is read by the community pi-mcp-adapter extension (npm:pi-mcp-adapter), which you must audit + install first (see README step 3). The adapter reads a standard mcpServers block from ~/.pi/agent/mcp.json, .pi/mcp.json, ~/.config/mcp/mcp.json, or .mcp.json (project overrides global). Same mcpServers shape as Claude Code's .mcp.json, so this ports 1:1. Replace /path/to placeholders. Supply credentials via env, never inline a secret. 'lifecycle: lazy' is a pi-mcp-adapter option: the server process starts only on first use. The graph server is read-only by default (docs/logseq-graph.md); for an Obsidian vault add \"--format\", \"obsidian\" to its args and set OBSIDIAN_VAULT_DIR instead (docs/obsidian.md). Set GRAPH_MCP_WRITES=1 only once the CONFIRM gate is wired for this harness.",
   "mcpServers": {
     "memory": {
       "command": "python3",
@@ -9,6 +9,12 @@
     "recall": {
       "command": "python3",
       "args": ["/path/to/utopia-os/scripts/memory/vector_brain.py", "serve"],
+      "lifecycle": "lazy"
+    },
+    "graph": {
+      "command": "python3",
+      "args": ["/path/to/utopia-os/scripts/mcp/graph_mcp/server.py"],
+      "env": { "LOGSEQ_GRAPH_DIR": "/path/to/logseq-graph", "GRAPH_NAMESPACES_FILE": "/path/to/namespaces.json" },
       "lifecycle": "lazy"
     },
     "telegram": {

@@ -23,6 +23,8 @@ Configuration is via environment variables (all optional, sensible defaults):
     AGENT_ROOT              repo root (default: two dirs above this file)
     AGENT_DATA_DIR          where the index + caches live (default: <root>/.data)
     AGENT_GRAPH_DIR         knowledge-graph pages dir (default: <root>/knowledge-graph)
+    AGENT_GRAPH_FORMAT      logseq (default: <graph>/pages/*.md, flat) or obsidian
+                            (<vault>/**/*.md, hidden folders skipped, page = relative path)
     AGENT_LOG_DIR           recall/latency logs (default: <root>/logs)
     AGENT_AUTO_MEMORY_GLOB  optional external memory glob (default: skipped)
     AGENT_SHARED_CORPUS_GLOB optional multi-agent corpus glob (default: skipped)
@@ -57,6 +59,9 @@ from pathlib import Path
 ROOT = Path(os.environ.get("AGENT_ROOT", str(Path(__file__).resolve().parents[2])))
 DATA_DIR = Path(os.environ.get("AGENT_DATA_DIR", str(ROOT / ".data")))
 GRAPH_DIR = Path(os.environ.get("AGENT_GRAPH_DIR", str(ROOT / "knowledge-graph")))
+GRAPH_FORMAT = (os.environ.get("AGENT_GRAPH_FORMAT") or "logseq").strip().lower()
+if GRAPH_FORMAT not in ("logseq", "obsidian"):
+    raise SystemExit(f"AGENT_GRAPH_FORMAT must be logseq or obsidian, got {GRAPH_FORMAT!r}")
 LOG_DIR = Path(os.environ.get("AGENT_LOG_DIR", str(ROOT / "logs")))
 # Optional external agent-memory dir (e.g. a harness-managed memory folder).
 # Empty by default = that source is skipped.
@@ -200,12 +205,12 @@ SOURCES = {
         "paths": [str(ROOT / "knowledge/*.md")],
         "type": "markdown",
     },
-    # Knowledge-graph pages (e.g. a Logseq/Obsidian export). Point AGENT_GRAPH_DIR
-    # at your graph; the page-name convention (___ / __ encode '/') is Logseq-style.
-    "graph": {
-        "paths": [str(GRAPH_DIR / "pages/*.md")],
-        "type": "logseq_page",
-    },
+    # Knowledge-graph pages. Point AGENT_GRAPH_DIR at your graph. Logseq (default): flat
+    # pages/*.md, and the filename encodes '/' as ___ (or __). Obsidian
+    # (AGENT_GRAPH_FORMAT=obsidian): every .md under the vault, folders are namespaces.
+    "graph": ({"paths": [str(GRAPH_DIR / "**/*.md")], "type": "obsidian_page"}
+              if GRAPH_FORMAT == "obsidian" else
+              {"paths": [str(GRAPH_DIR / "pages/*.md")], "type": "logseq_page"}),
     "outputs": {
         "paths": [str(ROOT / "outputs/reviewed/**/*.md")],
         "type": "markdown",
@@ -227,6 +232,7 @@ if SHARED_CORPUS_GLOB:
 SKIP_PATTERNS = [
     "node_modules", "venv", ".git", "__pycache__",
     "Zone.Identifier", ".archive",
+    "/.obsidian/", "/.trash/",  # Obsidian app config and its trash: not notes
 ]
 
 
@@ -467,8 +473,52 @@ def _is_tag_hub(page: str) -> bool:
 
 
 def _page_name_from_source(path: str) -> str:
-    """Recover the logseq page key from an indexed chunk's source filepath."""
-    return _norm_page(Path(path).stem) if path else ""
+    """Recover the graph page key from an indexed chunk's source filepath."""
+    if not path:
+        return ""
+    if GRAPH_FORMAT == "obsidian":
+        return _graph_key(Path(path)) or ""
+    return _norm_page(Path(path).stem)
+
+
+def _graph_files() -> list:
+    """The graph source's files, for the backlink and tag maps. Same set the indexer reads."""
+    try:
+        glob_pat = SOURCES["graph"]["paths"][0]
+    except (KeyError, IndexError):
+        return []
+    if GRAPH_FORMAT == "obsidian":
+        if not GRAPH_DIR.is_dir():
+            return []
+        return sorted(f for f in GRAPH_DIR.rglob("*.md")
+                      if not any(part.startswith(".") for part in f.relative_to(GRAPH_DIR).parts))
+    base = Path(glob_pat).parent
+    return sorted(base.glob(Path(glob_pat).name)) if base.exists() else []
+
+
+def _graph_key(f: Path):
+    """Normalized page key for a graph file. Obsidian: the vault-relative path, lowercased."""
+    if GRAPH_FORMAT != "obsidian":
+        return _norm_page(f.stem)
+    try:
+        rel = Path(f).resolve().relative_to(GRAPH_DIR.resolve()).as_posix()
+    except ValueError:
+        return None
+    return rel[:-3].strip().lower() if rel.lower().endswith(".md") else rel.strip().lower()
+
+
+def _link_key(raw: str, by_basename: dict) -> str:
+    """Normalized key a [[wikilink]] points at. Obsidian strips |alias, #heading and .md, and a
+    bare name resolves to the one note with that basename (left as-is when ambiguous)."""
+    if GRAPH_FORMAT != "obsidian":
+        return _norm_page(raw)
+    t = raw.split("|", 1)[0].split("#", 1)[0].strip()
+    if t.lower().endswith(".md"):
+        t = t[:-3]
+    t = t.lower()
+    if "/" not in t and len(by_basename.get(t, ())) == 1:
+        return by_basename[t][0]
+    return t
 
 
 def build_backlink_map(force: bool = False) -> dict[str, list[str]]:
@@ -485,12 +535,7 @@ def build_backlink_map(force: bool = False) -> dict[str, list[str]]:
     density may be low on a young graph, so the consumer (apply_graph_expansion)
     is the safe boost-in-pool form.
     """
-    try:
-        glob_pat = SOURCES["graph"]["paths"][0]
-    except (KeyError, IndexError):
-        return {}
-    base = Path(glob_pat).parent
-    files = sorted(base.glob(Path(glob_pat).name)) if base.exists() else []
+    files = _graph_files()
     if not files:
         return {}
 
@@ -503,17 +548,22 @@ def build_backlink_map(force: bool = False) -> dict[str, list[str]]:
         except (json.JSONDecodeError, OSError):
             pass  # rebuild on corrupt/unreadable cache
 
+    by_basename: dict[str, list[str]] = {}
+    for f in files:
+        k = _graph_key(f)
+        if k:
+            by_basename.setdefault(k.rsplit("/", 1)[-1], []).append(k)
     adj: dict[str, set[str]] = {}
     for f in files:
-        src = _norm_page(f.stem)
-        if _is_tag_hub(src):
+        src = _graph_key(f)
+        if not src or _is_tag_hub(src):
             continue
         try:
             content = f.read_text(encoding="utf-8", errors="ignore")
         except OSError:
             continue
         for m in _WIKILINK_RE.finditer(content):
-            tgt = _norm_page(m.group(1))
+            tgt = _link_key(m.group(1), by_basename)
             if not tgt or tgt == src or _is_tag_hub(tgt):
                 continue
             adj.setdefault(src, set()).add(tgt)
@@ -543,12 +593,10 @@ def build_tag_cocitation_map(force: bool = False) -> dict:
     the cap stays tunable without a rebuild. ZERO writes to the corpus. Same
     mtime-staleness caching as build_backlink_map.
     """
-    try:
-        glob_pat = SOURCES["graph"]["paths"][0]
-    except (KeyError, IndexError):
-        return {"page2tags": {}, "tag_df": {}}
-    base = Path(glob_pat).parent
-    files = sorted(base.glob(Path(glob_pat).name)) if base.exists() else []
+    # Reads Logseq-style `tags::` / `content-pillar::` lines only. Obsidian frontmatter
+    # `tags:` is NOT read, so on an Obsidian vault this source stays empty unless pages
+    # also carry `tags::` lines (docs/obsidian.md, "Recall").
+    files = _graph_files()
     if not files:
         return {"page2tags": {}, "tag_df": {}}
 
@@ -582,7 +630,9 @@ def build_tag_cocitation_map(force: bool = False) -> dict:
             if p and p not in _GENERIC_TAGS:
                 toks.add("pillar:" + p)
         if toks:
-            key = _norm_page(f.stem)
+            key = _graph_key(f)
+            if not key:
+                continue
             page2tags[key] = sorted(toks)
             for t in toks:
                 tag_df[t] = tag_df.get(t, 0) + 1
@@ -1056,6 +1106,19 @@ def extract_json_entries(filepath: str) -> list[dict]:
     ]
 
 
+def extract_obsidian_page(filepath: str) -> list[dict]:
+    """Obsidian note: same chunking as a Logseq page, titled by its vault-relative path."""
+    try:
+        title = Path(filepath).resolve().relative_to(GRAPH_DIR.resolve()).as_posix()[:-3]
+    except ValueError:
+        return []  # resolves outside the vault (a symlink out): never index it
+    docs = extract_logseq_page(filepath)
+    for d in docs:
+        d["title"] = title
+        d["source_type"] = "obsidian"
+    return docs
+
+
 def extract_logseq_page(filepath: str) -> list[dict]:
     """Extract chunks from a Logseq page. Tracks offsets for late chunking."""
     try:
@@ -1142,6 +1205,8 @@ def collect_documents(sources: list[str] | None = None) -> list[dict]:
                     docs = extract_json_entries(filepath)
                 elif source["type"] == "logseq_page":
                     docs = extract_logseq_page(filepath)
+                elif source["type"] == "obsidian_page":
+                    docs = extract_obsidian_page(filepath)
                 else:
                     continue
 
@@ -2154,6 +2219,84 @@ def mcp_serve(stdin=None, stdout=None) -> None:
             stdout.flush()
 
 
+def graph_format_selftest() -> int:
+    """Graph-format paths (Logseq and Obsidian) on temp graphs. No model load, no index."""
+    import shutil
+    import tempfile
+    global GRAPH_FORMAT, GRAPH_DIR, BACKLINK_MAP_PATH, TAG_COCITE_MAP_PATH
+    checks, failed = [], 0
+
+    def check(label, cond):
+        nonlocal failed
+        checks.append((label, bool(cond)))
+        if not cond:
+            failed += 1
+
+    saved = (GRAPH_FORMAT, GRAPH_DIR, BACKLINK_MAP_PATH, TAG_COCITE_MAP_PATH, SOURCES.get("graph"))
+    td = Path(tempfile.mkdtemp())
+    try:
+        BACKLINK_MAP_PATH = td / "data" / "backlink_map.json"
+        TAG_COCITE_MAP_PATH = td / "data" / "tag_cocite_map.json"
+
+        # Logseq: flat pages/, ___ encodes '/'
+        lg = td / "lg"
+        (lg / "pages").mkdir(parents=True)
+        (lg / "pages" / "Project___Alpha.md").write_text("tags:: demo\nWith [[Person/Jane-Doe]].\n")
+        (lg / "pages" / "Person___Jane-Doe.md").write_text("tags:: demo\nPerson page.\n")
+        GRAPH_FORMAT, GRAPH_DIR = "logseq", lg
+        SOURCES["graph"] = {"paths": [str(lg / "pages/*.md")], "type": "logseq_page"}
+        docs = collect_documents(["graph"])
+        check("logseq: pages are indexed with '/' titles",
+              {d["title"] for d in docs} == {"Project/Alpha", "Person/Jane-Doe"})
+        adj = build_backlink_map(force=True)
+        check("logseq: backlink map links the two pages", "person/jane-doe" in adj.get("project/alpha", []))
+        check("logseq: tag map reads tags::", "project/alpha" in build_tag_cocitation_map(force=True)["page2tags"])
+
+        # Obsidian: nested folders, hidden folders skipped, aliases and headings in links
+        v = td / "vault"
+        for d in (".obsidian", "Project", "Person", "Concept", "Meeting"):
+            (v / d).mkdir(parents=True)
+        (v / ".obsidian" / "cfg.md").write_text("hidden config\n")
+        (v / "Project" / "Alpha.md").write_text("---\nstatus: active\n---\nWith [[Jane Doe|JD]].\n")
+        (v / "Person" / "Jane Doe.md").write_text("See [[Project/Alpha#Timeline]].\n")
+        (v / "Concept" / "Graph.md").write_text("One graph.\n")
+        (v / "Meeting" / "Graph.md").write_text("Another graph. [[Graph]]\n")
+        outside = td / "outside"
+        outside.mkdir()
+        (outside / "secret.md").write_text("OUTSIDE\n")
+        os.symlink(outside, v / "Concept" / "linked")
+        GRAPH_FORMAT, GRAPH_DIR = "obsidian", v
+        SOURCES["graph"] = {"paths": [str(v / "**/*.md")], "type": "obsidian_page"}
+        docs = collect_documents(["graph"])
+        titles = {d["title"] for d in docs}
+        check("obsidian: nested notes are indexed with vault-relative titles",
+              {"Project/Alpha", "Person/Jane Doe", "Concept/Graph", "Meeting/Graph"} <= titles)
+        check("obsidian: .obsidian is not indexed", not any(".obsidian" in t for t in titles))
+        check("obsidian: a folder symlink out of the vault is not indexed",
+              not any("OUTSIDE" in d["text"] for d in docs))
+        check("obsidian: chunks carry source_type obsidian", all(d["source_type"] == "obsidian" for d in docs))
+        adj = build_backlink_map(force=True)
+        check("obsidian: [[Jane Doe|JD]] resolves by basename to person/jane doe",
+              "person/jane doe" in adj.get("project/alpha", []))
+        check("obsidian: [[Project/Alpha#Timeline]] drops the heading",
+              "project/alpha" in adj.get("person/jane doe", []))
+        check("obsidian: an ambiguous bare [[Graph]] is not resolved to either note",
+              "concept/graph" not in adj.get("meeting/graph", []))
+        check("obsidian: chunk source maps back to the same key the map uses",
+              _page_name_from_source(str(v / "Person" / "Jane Doe.md")) == "person/jane doe")
+    finally:
+        GRAPH_FORMAT, GRAPH_DIR, BACKLINK_MAP_PATH, TAG_COCITE_MAP_PATH, g = saved
+        if g is not None:
+            SOURCES["graph"] = g
+        shutil.rmtree(td, ignore_errors=True)
+
+    width = max(len(c[0]) for c in checks)
+    for label, ok in checks:
+        print(f"  [{'PASS' if ok else 'FAIL'}] {label.ljust(width)}", file=sys.stderr)
+    print(f"\n{len(checks) - failed}/{len(checks)} passed", file=sys.stderr)
+    return 1 if failed else 0
+
+
 def mcp_selftest() -> int:
     """Protocol-level, and deliberately runs WITHOUT the recall tier installed.
 
@@ -2231,6 +2374,7 @@ def main():
 
     sub.add_parser("serve", help="Run as an MCP server over stdio (JSON-RPC). This is the `recall` server the adapter templates point at.")
     sub.add_parser("selftest", help="Protocol selftest for `serve`. No model load, no index needed.")
+    sub.add_parser("graph-selftest", help="Logseq and Obsidian graph-format selftest on temp graphs. No model load.")
 
     srch = sub.add_parser("search", help="Hybrid search (vector + BM25)")
     srch.add_argument("query", help="Search query")
@@ -2302,6 +2446,8 @@ def main():
         mcp_serve()
     elif args.command == "selftest":
         sys.exit(mcp_selftest())
+    elif args.command == "graph-selftest":
+        sys.exit(graph_format_selftest())
     elif args.command == "stats":
         stats()
     else:

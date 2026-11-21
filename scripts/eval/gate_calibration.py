@@ -42,6 +42,8 @@ SELFTESTS = [
     ("session/thread_tracker.py", ["selftest"]),
     ("session/thread_classifier.py", ["--selftest"]),
     ("session/thread_classify_hook.py", ["--selftest"]),
+    ("mcp/graph_mcp/server.py", ["--selftest"]),
+    ("memory/vector_brain.py", ["graph-selftest"]),
 ]
 
 # (script, args, why). Example shape:
