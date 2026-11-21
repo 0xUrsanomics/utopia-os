@@ -21,6 +21,8 @@ python3 --version     # need 3.9+
 git clone https://github.com/0xUrsanomics/utopia-os.git
 cd utopia-os
 pip install -r requirements.txt     # installs nothing, by design. see the file's header
+# SDK transport pins: -c constraints.txt (or -c scripts/constraints.txt if you copied only scripts/).
+# The two constraints files must stay identical; gate_calibration.py checks it.
 ```
 
 Two things are genuinely optional and both are opt-in:

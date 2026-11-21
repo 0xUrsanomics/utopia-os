@@ -4,7 +4,7 @@
 # pin only when a requirement pulls that package in, so this file is safe to pass with any
 # requirements file in the repo:
 #
-#   pip install -r scripts/mcp/graph_mcp/requirements.txt -c constraints.txt
+#   pip install -r scripts/mcp/graph_mcp/requirements.txt -c scripts/constraints.txt
 #
 # scripts/mcp/graph_mcp/requirements.txt already names this file on a -c line, so a plain
 # `pip install -r scripts/mcp/graph_mcp/requirements.txt` applies it too.

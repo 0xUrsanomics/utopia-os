@@ -1,0 +1,54 @@
+# Utopia OS install constraints
+#
+# A constraints file pins versions without asking for anything to be installed. pip applies a
+# pin only when a requirement pulls that package in, so this file is safe to pass with any
+# requirements file in the repo:
+#
+#   pip install -r scripts/mcp/graph_mcp/requirements.txt -c scripts/constraints.txt
+#
+# scripts/mcp/graph_mcp/requirements.txt already names this file on a -c line, so a plain
+# `pip install -r scripts/mcp/graph_mcp/requirements.txt` applies it too.
+#
+# WHAT IS PINNED. The full dependency set of the graph server's optional SDK transport
+# (mcp and everything it pulls in), so `--sdk` installs the exact set `--selftest-sdk` passed
+# on. An unconstrained resolve picks the newest release of every transitive package, and some
+# of those can be a day old.
+#
+# THE RULE FOR EACH PIN. Every version here was on PyPI for at least 7 days when it was set,
+# and a version-specific OSV query (api.osv.dev) for it returned no advisories. To move a pin,
+# check both again for the new version, then re-run `server.py --selftest-sdk`.
+#
+# SCOPE. Resolved on Linux with CPython 3.12. Another OS or Python version can need packages
+# that are not listed (for example pywin32 on Windows); pip installs those unconstrained.
+# requirements-memory.txt does not use this file.
+
+# graph server SDK transport (scripts/mcp/graph_mcp/requirements.txt)
+mcp==1.30.0
+annotated-types==0.8.0
+anyio==4.16.0
+attrs==26.1.0
+certifi==2026.10.23
+cffi==2.1.1
+click==8.5.1
+cryptography==50.0.2
+h11==0.16.0
+httpcore==1.0.9
+httpx==0.28.1
+httpx-sse==0.4.3
+idna==3.20
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+pycparser==3.12
+pydantic==2.14.3
+pydantic-settings==2.16.2
+pydantic_core==2.50.4
+PyJWT==2.15.1
+python-dotenv==1.2.4
+python-multipart==0.0.33
+referencing==0.37.0
+rpds-py==2026.9.1
+sse-starlette==3.7.0
+starlette==1.10.0
+typing-inspection==0.4.5
+typing_extensions==4.16.0
+uvicorn==0.54.0

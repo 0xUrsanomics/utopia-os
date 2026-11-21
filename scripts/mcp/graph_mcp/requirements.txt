@@ -6,7 +6,7 @@
 # This file is only for `server.py --sdk`, which serves the same tool table through the official
 # MCP SDK, for clients that need protocol features the stdlib loop does not implement.
 #
-#   pip install -r scripts/mcp/graph_mcp/requirements.txt -c constraints.txt
+#   pip install -r scripts/mcp/graph_mcp/requirements.txt -c scripts/constraints.txt
 #   python3 scripts/mcp/graph_mcp/server.py --selftest-sdk    # real handshake through the SDK
 #
 # The -c line below applies the repo-root constraints.txt even when you leave out -c, so the
@@ -19,6 +19,6 @@
 # before you install.
 #
 # The SDK's own dependencies (anyio, pydantic, jsonschema, ...) come in transitively. They are
-# pinned in constraints.txt at the repo root, which says how each pin was chosen.
--c ../../../constraints.txt
+# pinned in scripts/constraints.txt (a copy of the repo-root constraints.txt), which says how each pin was chosen.
+-c ../../constraints.txt
 mcp==1.30.0

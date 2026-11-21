@@ -72,8 +72,20 @@ def count(out: str) -> tuple[int, int]:
     return 0, 0
 
 
+def constraints_copies_match() -> tuple[bool, str]:
+    """scripts/constraints.txt must be byte-identical to the root constraints.txt."""
+    a, b = SCRIPTS.parent / "constraints.txt", SCRIPTS / "constraints.txt"
+    if not (a.exists() and b.exists()):
+        return False, "constraints.txt copy missing (root or scripts/)"
+    return a.read_bytes() == b.read_bytes(), "root and scripts/ copies " + (
+        "identical" if a.read_bytes() == b.read_bytes() else "DIFFER")
+
+
 def main() -> int:
     fails, lines = 0, []
+    ok, msg = constraints_copies_match()
+    fails += not ok
+    lines.append(("ok  " if ok else "FAIL") + f"  constraints.txt: {msg}")
     for script, args in SELFTESTS:
         if not (SCRIPTS / script).exists():
             fails += 1
@@ -92,7 +104,7 @@ def main() -> int:
         else:
             lines.append(f"KNOWN GAP   {script}: {why}")
     print("\n".join(lines))
-    print(f"\ngate calibration: {len(SELFTESTS) - fails}/{len(SELFTESTS)} pass, {len(KNOWN_GAPS)} known gap(s)")
+    print(f"\ngate calibration: {len(SELFTESTS) + 1 - fails}/{len(SELFTESTS) + 1} pass, {len(KNOWN_GAPS)} known gap(s)")
     return 1 if fails else 0
 
 

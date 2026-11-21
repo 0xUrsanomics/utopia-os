@@ -227,12 +227,12 @@ The default transport is a stdlib JSON-RPC loop, the same as the memory server a
 that need protocol features the stdlib loop does not implement. `--selftest-sdk` runs a real stdio
 handshake through it and fails, rather than skipping, when the SDK is not installed.
 
-The SDK's own dependencies are pinned in [`constraints.txt`](../constraints.txt). Each pin was on PyPI
+The SDK's own dependencies are pinned in [`scripts/constraints.txt`](../scripts/constraints.txt) (identical copy of the root `constraints.txt`). Each pin was on PyPI
 for at least 7 days, with no OSV advisory for that version, when it was set. The requirements file
 applies the constraints itself, and naming them on the command line does the same:
 
 ```bash
-pip install -r scripts/mcp/graph_mcp/requirements.txt -c constraints.txt
+pip install -r scripts/mcp/graph_mcp/requirements.txt -c scripts/constraints.txt
 python3 scripts/mcp/graph_mcp/server.py --selftest-sdk
 ```
 

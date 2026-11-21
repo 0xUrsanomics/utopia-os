@@ -110,7 +110,7 @@ refused too.
 Registration (`.mcp.json` on Claude Code):
 
 ```json
-"obsidian": {
+"graph": {
   "command": "python3",
   "args": ["/path/to/utopia-os/scripts/mcp/graph_mcp/server.py", "--format", "obsidian"],
   "env": { "OBSIDIAN_VAULT_DIR": "/path/to/vault", "GRAPH_DAILY_FOLDER": "Journal" }

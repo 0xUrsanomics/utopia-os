@@ -20,11 +20,11 @@
     "and curl-pipe-bash is refused. Tighten allow[] to the tools you actually want auto-approved.",
     "_mcpServers_example is NOT read from settings.json: Claude Code registers MCP servers in .mcp.json",
     "(project) or ~/.claude.json (user). Copy the inner object under an \"mcpServers\" key there. Use either",
-    "graph entry or both: logseq (LOGSEQ_GRAPH_DIR) or obsidian (--format obsidian, OBSIDIAN_VAULT_DIR).",
+    "one of: graph (Logseq, LOGSEQ_GRAPH_DIR) or graph-obsidian (--format obsidian, OBSIDIAN_VAULT_DIR). Keep the key graph if you only register one.",
     "Both start read-only; GRAPH_MCP_WRITES=1 adds create/update/append (docs/logseq-graph.md#writes-are-opt-in)."
   ],
   "_mcpServers_example": {
-    "logseq": {
+    "graph": {
       "command": "python3",
       "args": ["${WORKSPACE}/scripts/mcp/graph_mcp/server.py"],
       "env": {
@@ -32,7 +32,7 @@
         "GRAPH_NAMESPACES_FILE": "/path/to/namespaces.json"
       }
     },
-    "obsidian": {
+    "graph-obsidian": {
       "command": "python3",
       "args": ["${WORKSPACE}/scripts/mcp/graph_mcp/server.py", "--format", "obsidian"],
       "env": {
