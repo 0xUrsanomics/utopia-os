@@ -85,7 +85,7 @@ The rule is: **the review gate governs authored output; automated feeds are gove
 - **Capture raw, trust reviewed.** Auto-save everything substantive; let nothing into the graph until it
   clears the gate.
 - **The gate is a separate step.** The author's own context can't judge the draft; make quality a distinct
-  pass, not a self-assessment.
+  pass instead of a self-assessment.
 - **Discard by archiving.** Rejected drafts move aside, never vanish, a bad call must remain reviewable.
 - **Tag provenance always.** Canonical knowledge without a source is knowledge you can't audit.
 - **Close the loop.** Briefings feed approved knowledge back in, so the pipeline compounds instead of merely

@@ -23,7 +23,7 @@ The mental model behind the split is the classic memory taxonomy:
 - **Episodic** (what happened, dated) → the two append-only logs, indexed into Tier 3, surfaced on recall.
 - **Semantic** (subject knowledge) → Tier 2 dossiers.
 - **Short-term** (this task, right now) → the session's runtime state and handoff block (see
-  `session-management.md`), not the memory tiers at all.
+  `session-management.md`), which sit outside the memory tiers.
 
 ## Tier 1: Core (always loaded)
 
@@ -140,11 +140,11 @@ category with nothing new. Rebuild the archival index after sessions that added 
 
 ## Design principles
 
-- **Split by access frequency, not by topic.** The tier a fact lives in is decided by how often a reply
-  needs it, not what it's about.
+- **Split by access frequency.** The tier a fact lives in is decided by how often a reply needs it; its
+  topic plays no part.
 - **Always-loaded must stay small and stable.** Every file in Tier 1 is a per-reply tax and a cache
   dependency. Earn its place.
-- **History is indexed, not injected.** Dated logs surface on recall; they never ride in the prompt by
+- **History is indexed and recalled on demand.** Dated logs surface on recall; they never ride in the prompt by
   default.
 - **Observe, then commit.** The style profile records; the constitution mandates. Keep the two separate so
   observations can accumulate before they harden into rules.

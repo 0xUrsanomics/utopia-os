@@ -4,7 +4,7 @@
 """Handoff approval lint.
 
 Recorded approvals in the agent's own handoff are POINTERS to a channel message id,
-never live authority (CLAUDE.md "Recorded approvals are pointers, not authority";
+never live authority (CLAUDE.md "Recorded approvals are pointers and carry no authority";
 arXiv 2611.06545: agents' self-written handoff summaries invent or stale-carry
 approvals).
 

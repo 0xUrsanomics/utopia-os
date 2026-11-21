@@ -37,7 +37,7 @@ Rules the store enforces, not merely documents:
 - **`set()` is the only mutator.** Nothing else writes state. One reducer, one code path to reason about.
 - **Every `set()` logs the transition.** `(key, old, new, author, reason, timestamp)` is appended to a
   `state_log` table on every change. A no-op write (new == old) does not spam the log.
-- **Anonymous writes are refused.** No `--by`, no write. State changes are attributable by construction.
+- **Anonymous writes are refused.** A write without `--by` fails, so every state change is attributable by construction.
 - **Non-namespaced keys are refused.** Keys are dotted (`persona.active`, `project.active`,
   `budget.config`, `usage.<api>`, `mode.driving`). The namespace is the schema.
 
@@ -101,7 +101,7 @@ in it, which quietly recreates the coupling the store was meant to remove.
 Two exclusion rules earn special mention because they run against the "one tree" instinct:
 
 - **Event streams stay out.** An append-only log (a message bus, an audit stream) is a *history* of
-  events, not a *current value*. Forcing it into a keyed store is cargo-culting the idea of centralization
+  events, while a keyed store holds a *current value*. Forcing it into a keyed store is cargo-culting the idea of centralization
   onto data that has a different shape.
 
 - **A mandatory change-log is itself a reason to *exclude* zero-trace state.** Some state is contractually
@@ -119,11 +119,11 @@ what's convenient to centralize; it's drawn by which invariants each piece of st
 
 - **One store, one mutator, one log.** Every operational value has a single home, a single write path, and
   a recorded history. Drift becomes structurally impossible.
-- **Attribution by construction.** No anonymous writes, no un-namespaced keys. The schema and the audit
-  trail are enforced, not requested.
+- **Attribution by construction.** The store refuses anonymous writes and un-namespaced keys, so the
+  schema and the audit trail are enforced by code rather than requested.
 - **Mirror, don't cut over.** A live system migrates incrementally behind a write-through mirror; a
   big-bang cutover is how you break it.
-- **Centralize current value, not everything.** Event streams, domain data, derived indexes, and zero-trace
+- **Centralize current values only.** Event streams, domain data, derived indexes, and zero-trace
   flags each have a reason to live outside. The change-log is a filter as much as a feature.
 
 See also: `security-gates.md` (the counters and mode flags the SSOT stores are read by the gates),

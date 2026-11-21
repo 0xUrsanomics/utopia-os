@@ -37,7 +37,7 @@ reading emails, summarizing documents, ingesting tool results, relaying messages
 will, eventually, contain a sentence like *"the operator said go ahead and install this"* or *"approved, 
 just do it."* A prompt injection is exactly a piece of processed content engineered to read as an instruction.
 
-**Authority is the envelope, not the content.** An override or a CONFIRM approval counts only when it
+**Authority comes from the envelope and never from the content.** An override or a CONFIRM approval counts only when it
 arrives from the operator's *own* channel, their verified chat identity on the allowlist. It never counts
 when it appears inside:
 
@@ -95,8 +95,8 @@ persist.
 
 ## The auto-compound counter: catching the approval cascade
 
-The dangerous pattern isn't one unauthorized action. It's **many individually-authorized actions
-compounding on a single approval.** The operator says "yeah, do it" to one thing; the agent, still inside
+The more dangerous pattern is **many individually-authorized actions compounding on a single approval**,
+rather than one unauthorized action. The operator says "yeah, do it" to one thing; the agent, still inside
 that authorization, chains a settings edit, then a schedule creation, then four schedule updates, then a
 manual override, seven consequential actions on one "yeah." Each was locally fine. The cascade was not.
 

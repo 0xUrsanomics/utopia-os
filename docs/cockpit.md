@@ -44,7 +44,7 @@ def render():
         try:
             yield panel(col, title, collector())
         except Exception as e:
-            yield error_tile(col, title, e)     # fail-isolated — see below
+            yield error_tile(col, title, e)     # fail-isolated; see below
 ```
 
 That's the entire model. Every panel is one collector plus one registry row.

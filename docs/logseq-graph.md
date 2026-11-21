@@ -178,12 +178,13 @@ A missing root, a root with no `pages/`, or an unreadable registry stops the ser
 message naming the variable. It never serves an empty graph. A dead symlink that answers "no such page"
 looks exactly like a page that does not exist, and that is the failure this rule prevents.
 
-Register it in your harness's MCP config (`.mcp.json` on Claude Code; the example is in
-[`settings.example.json`](../settings.example.json)). Each config example under
-[`adapters/`](../adapters/) registers it as `graph` in that harness's own format:
+Register it in your harness's MCP config (`.mcp.json` on Claude Code). Each config example under
+[`adapters/`](../adapters/) registers it as `graph` in that harness's own format, and the snippet below
+uses the same key. [`settings.example.json`](../settings.example.json) shows a Logseq and an Obsidian
+entry side by side, keyed `logseq` and `obsidian`:
 
 ```json
-"logseq": {
+"graph": {
   "command": "python3",
   "args": ["/path/to/utopia-os/scripts/mcp/graph_mcp/server.py"],
   "env": { "LOGSEQ_GRAPH_DIR": "/path/to/graph", "GRAPH_NAMESPACES_FILE": "/path/to/namespaces.json" }
@@ -225,6 +226,15 @@ The default transport is a stdlib JSON-RPC loop, the same as the memory server a
 [`scripts/mcp/graph_mcp/requirements.txt`](../scripts/mcp/graph_mcp/requirements.txt), for clients
 that need protocol features the stdlib loop does not implement. `--selftest-sdk` runs a real stdio
 handshake through it and fails, rather than skipping, when the SDK is not installed.
+
+The SDK's own dependencies are pinned in [`constraints.txt`](../constraints.txt). Each pin was on PyPI
+for at least 7 days, with no OSV advisory for that version, when it was set. The requirements file
+applies the constraints itself, and naming them on the command line does the same:
+
+```bash
+pip install -r scripts/mcp/graph_mcp/requirements.txt -c constraints.txt
+python3 scripts/mcp/graph_mcp/server.py --selftest-sdk
+```
 
 ### What the server does not do
 

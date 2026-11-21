@@ -7,7 +7,7 @@ The system splits cleanly into a **portable substrate** that runs on any harness
 ## Portable substrate (runs on any harness)
 
 - **MCP daemon.** The tools, memory, and recall are exposed over the Model Context Protocol, an open standard. Any MCP-capable harness (opencode, Cline, Cursor, Zed, Hermes) can point its MCP config at the daemon and use them unchanged.
-- **Memory files.** Plain Markdown under `memory/templates/`. No harness owns them.
+- **Memory files.** Plain Markdown under `memory/templates/`, owned by no harness.
 - **Recall and state machinery.** Plain Python under `scripts/memory/`, callable as a tool or over MCP.
 - **Skill and knowledge content.** The actual workflows and reference packs are prose, adoptable regardless of how your harness triggers them.
 

@@ -59,9 +59,9 @@ notes so the agent's own output never becomes its own source of truth. `self-aud
 `skill-audit` turn that scrutiny on the system itself.
 
 **Remember and compound.** `save` extracts durable preferences, decisions and learnings from
-a session instead of letting them evaporate. `recall` searches the archive. `dreaming` and
+a session instead of letting them evaporate. `recall` searches the archive, and `dreaming` and
 `meta-memory-review` consolidate memory offline. `memory-offload` gets working state out of
-context. `graph-hygiene` keeps the notes from rotting.
+context, and `graph-hygiene` keeps the notes from rotting.
 
 **Think before building.** `scope` restates the ask, its assumptions and what is explicitly
 out of scope, before any work starts. `decision-council` runs an anonymised panel over a
@@ -82,8 +82,8 @@ readable. `eod-summary`, `weekly-retro` and `reality-review-weekly` close the lo
 grading what the system actually predicted against what happened. `goals` keeps a small,
 capped, live goal registry instead of an aspirational backlog.
 
-**Handle real inputs.** `deep-research` and `autoresearch` for open questions.
-`intel-analyzer` and `signal-scorer` for noisy feeds. `telegram-dump-router` and
+**Handle real inputs.** `deep-research` and `autoresearch` cover open questions, and
+`intel-analyzer` and `signal-scorer` cover noisy feeds. `telegram-dump-router` and
 `task-extractor` for the mess that arrives from chat. `redact` for anything that leaves.
 `threads` keeps a small store of open workstreams; a UserPromptSubmit hook
 (`scripts/session/thread_classify_hook.py`, fail-open) tags each operator message with the thread

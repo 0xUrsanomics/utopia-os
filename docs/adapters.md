@@ -25,7 +25,7 @@ The core never changes per harness. An adapter points at it; it does not copy it
 
 Every adapter maps exactly these four things from Claude Code to the target harness:
 
-1. **Instruction file.** Claude Code reads `CLAUDE.md`. Most other harnesses read `AGENTS.md`. The
+1. **Instruction file.** Claude Code reads `CLAUDE.md`, while most other harnesses read `AGENTS.md`. The
    [`AGENTS.md`](../AGENTS.md) at the repo root already covers the common case.
 2. **Hook / event layer.** The guardrail and hygiene scripts (`settings.json` hooks: `PreToolUse`,
    `PostToolUse`, `Stop`, `SessionStart`, `UserPromptSubmit`) must fire on the target's event system.
@@ -63,8 +63,8 @@ Each `adapters/<harness>/` ships:
 ## Tiers
 
 - **Low**, a syntax translation only. The target has an MCP client, a hook layer that maps to CC's
-  events, and `SKILL.md` auto-trigger. Config differences are JSON/frontmatter to TOML. (Codex, Kimi,
-  grok.)
+  events, and `SKILL.md` auto-trigger. Config differences are JSON/frontmatter to TOML. This level covers
+  Codex, Kimi and grok.
 - **Medium**, the substrate ports, but guardrail scripts must be rewritten as in-process plugins in
   the target's language, and/or skill auto-trigger degrades. (Hermes, OpenClaw, opencode, pi.)
 - **High**, the target lacks an agent-lifecycle hook system, so the automated gates have no

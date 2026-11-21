@@ -185,5 +185,5 @@ it do work it should not have to.
   dependency group; it starts either way and tells you which file to install.
 - **A hook does not fire.** Harness hook config is the usual culprit. Check your adapter
   README, and confirm the script is executable (`chmod +x`).
-- **A gate blocks something you wanted.** That is the gate working. Read the reason it
-  printed; override deliberately rather than by disabling the hook.
+- **A gate blocks something you wanted.** That means the gate is working, so read the reason
+  it printed; override deliberately rather than by disabling the hook.

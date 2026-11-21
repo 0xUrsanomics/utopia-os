@@ -11,7 +11,8 @@
 # Everything third-party is either OPTIONAL WITH A FALLBACK (listed below) or confined to
 # the one feature that needs it: semantic recall (requirements-memory.txt) and the graph
 # server's optional SDK transport (scripts/mcp/graph_mcp/requirements.txt, only for --sdk).
-# Install only what you use.
+# Install only what you use. constraints.txt pins the SDK's full dependency set; pass it with
+# -c (`pip install -r requirements.txt -c constraints.txt`).
 #
 #   pip install -r requirements.txt              # this file: nothing required
 #   pip install -r requirements-memory.txt       # semantic recall, multi-GB, one file

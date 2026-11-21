@@ -179,8 +179,8 @@ so the tracker is POSIX only: on Windows, run it under WSL2.
   compaction or restart.
 - **The handoff is pulled on every resume.** Because compaction thins exactly the mid-task detail continuity
   depends on.
-- **Measure bytes since compaction, not file size.** The append-only transcript keeps growing; only
-  post-compact bytes are the real cost.
+- **Measure bytes since compaction.** Total file size overstates the cost, because the append-only
+  transcript keeps growing; only post-compact bytes are the real cost.
 - **Save and compact are independent.** One is durable extraction, the other is context shrink; don't chain
   them by reflex.
 - **Clear stale handoffs.** A checkpoint pointing at finished work misdirects the next resume.

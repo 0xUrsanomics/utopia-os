@@ -57,7 +57,7 @@ queries, the agent spawns a **child** with a fresh context, so the orchestrator'
 
 ```yaml
 type: subagent_dispatch
-parent: <the orchestrator>       # depth-2 max — see the hard rule below
+parent: <the orchestrator>       # depth-2 max; see the hard rule below
 child: fork | named:<agent_type>
 task: <one-sentence ask>
 budget:
@@ -78,7 +78,7 @@ summary it must trust:
 ```yaml
 summary: <verdict + key facts, not a transcript>
 exit_status: success | partial | failure
-files_changed:                  # exhaustive — every file the child touched
+files_changed:                  # exhaustive: every file the child touched
   - {path, action, lines_added, lines_removed, purpose}
 verification_hints:
   diff_command: <how the parent independently checks the change>
@@ -182,7 +182,7 @@ operator turn
   → tenant_run.sh       (the headless session it delivers into)
   → tenant_watchdog.sh  (cron: keeps that session alive / recycles it for config-freshness)
   → fleet_brain.py      (tenant-a drops a finding; the drain indexes it into shared recall so every
-                         agent — including the hub — can recall it later)
+                         agent, including the hub, can recall it later)
   → skill_sync.py       (cron: keeps tenant-a's skill copies in step with the canonical tree)
 ```
 

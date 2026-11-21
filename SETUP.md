@@ -33,8 +33,8 @@ authoritative, schema-verified guide for that harness. The rest of this file is 
    (who they are), the operating rules, and the `MEMORY.md` seed from their answers, instead of leaving
    them blank templates to fill by hand (which almost nobody does). Do NOT copy anyone else's memory
    content.
-3. **Core scripts.** Copy `scripts/` (security gates, memory/recall, cockpit). They are path-relative
-   (`AGENT_ROOT`/`WORKSPACE`), no edits needed.
+3. **Core scripts.** Copy `scripts/` (security gates, memory/recall, cockpit); they are path-relative
+   (`AGENT_ROOT`/`WORKSPACE`), so no edits are needed.
 4. **Skills.** Copy `skills/` and `skills-shared/` into the harness's skill directory (the adapter says
    which). `SKILL.md` content is portable; only *triggering* differs per harness.
 5. **MCP.** Use the adapter's MCP config template to point the harness at the user's tool servers.
