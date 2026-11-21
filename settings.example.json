@@ -9,6 +9,7 @@
     "  UserPromptSubmit -> reset the auto-compound counter on each new operator message",
     "  UserPromptSubmit -> surface new fleet-bus messages addressed to the hub (bus_turn_poll.py)",
     "  UserPromptSubmit -> context meter: how full the window is, as additionalContext (context_meter_hook.sh)",
+    "  UserPromptSubmit -> tag each operator chat message with its open thread (thread_classify_hook.py; needs OPERATOR_CHAT_ID)",
     "  PreToolUse       -> stand-down registry check before installs / MCP adds / settings edits",
     "  PreToolUse       -> lint skill files for injection patterns before they are trusted",
     "  PostToolUse      -> verify-after-write on file edits (re-read the written value)",
@@ -85,6 +86,11 @@
             "type": "command",
             "command": "${WORKSPACE}/scripts/session/context_meter_hook.sh",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python3 ${WORKSPACE}/scripts/session/thread_classify_hook.py",
+            "timeout": 3
           }
         ]
       }

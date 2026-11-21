@@ -39,6 +39,9 @@ SELFTESTS = [
     ("eval/label_consensus.py", ["selftest"]),
     ("memory/open_loops.py", ["--selftest"]),
     ("memory/addr.py", ["selftest"]),
+    ("session/thread_tracker.py", ["selftest"]),
+    ("session/thread_classifier.py", ["--selftest"]),
+    ("session/thread_classify_hook.py", ["--selftest"]),
 ]
 
 # (script, args, why). Example shape:

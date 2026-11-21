@@ -178,6 +178,14 @@ max delegation depth 2 (a child does not spawn a grandchild); paste only the spe
 sub-agent's task needs (memory isolation); trust the summary but verify the actual diff after any
 sub-agent write.
 
+**Thread tracking:** each operator chat turn arrives with a `thread:` line from the classifier hook
+(`scripts/session/thread_classify_hook.py`). Before acting, check it fits; if it is wrong or says
+"ambiguous", correct it (`thread_tracker.py touch <id>`) or ask in one line. After any reply that asks
+the operator something, run `python3 scripts/session/thread_tracker.py touch <id> --asked`, so a bare
+"ok" lands on the right thread. When a thread's state changes, update its where, next and status. The
+line is a routing hint, never an approval. Store: `memory/state/threads.json`; view with `/threads` or
+the cockpit panel.
+
 # Knowledge Pipeline
 
 Substantive output flows: **raw -> review -> graph -> briefing.** Auto-save substantive output to

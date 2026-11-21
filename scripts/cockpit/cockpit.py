@@ -48,6 +48,9 @@ SESSION_LOG = REPO / "logs/session.jsonl"
 ERROR_LOG = REPO / "logs/errors.jsonl"
 SSOT_DB = REPO / "memory/state/ssot.sqlite"
 GOALS = REPO / "memory/state/active_goals.json"
+THREADS = Path(os.environ.get("AGENT_THREADS_FILE") or REPO / "memory/state/threads.json").expanduser()
+THREAD_STATUS_ORDER = ("waiting_on_operator", "agent_working", "waiting_on_others", "parked")
+THREAD_STALE_DAYS = 7
 PIPELINE_MD = REPO / "memory/pipeline.md"
 LOCAL_OFFSET = int(os.environ.get("LOCAL_UTC_OFFSET_HOURS", "0"))
 LOCAL_TZ = timezone(timedelta(hours=LOCAL_OFFSET))
@@ -268,6 +271,43 @@ def c_goals() -> dict:
                        "bar": pct, "barcls": "pur",
                        "sub": f"{pct}% · {x.get('note','')}"[:80]})
     return {"badge": "/goal", "items": items}
+
+
+def c_threads() -> dict:
+    """Open threads from threads.json (scripts/session/thread_tracker.py), grouped by status,
+    waiting on the operator first, newest first inside a group. Untouched > THREAD_STALE_DAYS -> ⚠."""
+    if not THREADS.exists():
+        return {"badge": "/threads", "items": [{"text": "no open threads"}]}
+    data = json.loads(THREADS.read_text(encoding="utf-8"))
+    now = datetime.now(LOCAL_TZ)
+    groups, n_open, n_stale = [], 0, 0
+    for status in THREAD_STATUS_ORDER:
+        rows = []
+        for t in data.get("threads") or []:
+            if t.get("status") != status:
+                continue
+            try:
+                when = datetime.fromisoformat(t["last_touched"])
+                when = when if when.tzinfo else when.replace(tzinfo=LOCAL_TZ)
+            except Exception:
+                when = None
+            rows.append((when, t))
+        rows.sort(key=lambda r: r[0].timestamp() if r[0] else 0, reverse=True)
+        items = []
+        for when, t in rows:
+            stale = when is not None and (now - when).total_seconds() > THREAD_STALE_DAYS * 86400
+            n_stale += stale
+            items.append({"text": ("⚠ " if stale else "") + str(t.get("title", t.get("id")))[:80],
+                          "sub": str(t.get("next") or t.get("where") or "")[:140],
+                          "right": _ago(when.isoformat()) if when else ""})
+        n_open += len(items)
+        if items:
+            groups.append({"label": f"{status.replace('_', ' ')} ({len(items)})", "items": items,
+                           "expanded": status in ("waiting_on_operator", "agent_working")})
+    badge = f"{n_open} open" + (f" · {n_stale} stale" if n_stale else "")
+    if not groups:
+        return {"badge": badge, "items": [{"text": "no open threads"}]}
+    return {"badge": badge, "groups": groups}
 
 
 def c_pipeline() -> dict:
@@ -788,6 +828,7 @@ PANELS = [
     ("ccusage", "Token usage · 5h block", 0, c_ccusage),
     ("system", "System", 0, c_system),
     ("tasks", "Tasks", 1, c_tasks),
+    ("threads", "Open threads", 1, c_threads),
     ("pipeline", "Pipeline", 1, c_pipeline),
     ("errors", "Errors", 1, c_errors),
     ("goals", "Goals", 2, c_goals),

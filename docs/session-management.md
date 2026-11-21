@@ -134,6 +134,45 @@ The signalling between "kill this session" and "respawn clean vs. continue" is a
 point is only this: **the two paths read different amounts**, resume trusts the transcript plus the handoff;
 fresh trusts the parachute.
 
+## Thread tracking: which topic is this message about?
+
+On a chat channel the operator jumps between topics, and a bare "ok" carries no topic at all. The thread
+tracker keeps one entry per open workstream in `memory/state/threads.json` (shape:
+`memory/state/threads.example.json`), with a status, where it stands, what comes next, a few keywords and
+the recent message ids. Three scripts in `scripts/session/` share it:
+
+- `thread_tracker.py` is the only writer. Every write takes a lock, re-reads, and replaces the file
+  atomically. A corrupt store is never overwritten.
+- `thread_classifier.py` decides `continue`, `return`, `new` or `ambiguous` for one message, rules first:
+  a quote-reply to a known message id, then an acknowledgement ("ok", "yes", "draft it") routed to the
+  thread the agent last asked about, then keyword similarity. It never writes.
+- `thread_classify_hook.py` runs the classifier on each operator message and adds one line, such as
+  `thread: Essay: tidal power costs (continue, 0.82)`, to the prompt context. It then records the message id
+  on the matched thread.
+
+The hook **fails open**: any error, a corrupt store or a 1 s self-timer prints nothing and exits 0, and
+the error log gets the stage and error type only, never message text. The line is a routing hint, never an
+approval. Register it under `UserPromptSubmit` (see `settings.example.json`):
+
+```json
+{
+  "type": "command",
+  "command": "python3 ${WORKSPACE}/scripts/session/thread_classify_hook.py",
+  "timeout": 3
+}
+```
+
+> Note: only the Claude Code settings file wires this hook today. The kimi, openclaw, opencode and hermes adapters under `adapters/` do not register it yet; on those runtimes the tracker still works from the CLI, but nothing classifies messages automatically.
+
+
+Set `OPERATOR_CHAT_ID` in the hook's environment; with it unset the hook stays silent. `THREAD_TAG_SOURCE`
+names the channel tag your harness writes (default `plugin:telegram:telegram`), and `AGENT_THREADS_FILE`
+moves the store. After any reply that asks the operator something, run
+`thread_tracker.py touch <id> --asked`, so the next bare "ok" lands on that thread. `skills/threads` lists
+the open threads and documents the update commands. The cockpit shows them in its "Open threads" panel.
+Each script has a selftest; `scripts/eval/gate_calibration.py` runs all three. The store lock uses `fcntl`,
+so the tracker is POSIX only: on Windows, run it under WSL2.
+
 ## Design principles
 
 - **What must survive is written down.** Never trust the transcript to carry in-flight state across a

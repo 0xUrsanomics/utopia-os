@@ -56,6 +56,7 @@ Every skill folder in this repo, with the one-line description from its `SKILL.m
 | `skills/subagent-delegation` | > |
 | `skills/telegram-dump-router` | > |
 | `skills/telegram-reply-tool` | Enforcement protocol for always sending responses via the Telegram reply tool in interactive sessions. Tracks and prevents reply-tool misses. |
+| `skills/threads` | Open conversation threads. Lists the workstreams in memory/state/threads.json grouped by status (waiting on the operator first), replies with a short mobile summ |
 | `skills/verify-stack` | Drive-and-prove check for a long-running agent stack. Proves that features actually reach the person who uses them (evidence level L5), not just that processes  |
 | `skills/wave-plan` | Dependency-wave execution for multi-step tasks. Parse the ask into sub-tasks, build a DAG of dependencies, group into topo-sorted waves, execute each wave as pa |
 | `skills/weekly-retro` | Weekly retrospective across the entire stack. Reviews what shipped, what broke, what to improve over the past 7 days. Use this skill on a Sunday cron or wheneve |

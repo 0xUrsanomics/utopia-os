@@ -42,7 +42,7 @@ make long-running autonomous work safe and durable:
 | `scripts/pipeline/` | Content gates (slop, paraphrase, repetition, imported claims, cross-doc consistency) and the breaking-news lane. |
 | `scripts/eval/` | Verification: evidence-backed claim checks, the verify-stack harness, gate controller, skill utility scores. |
 | `scripts/scheduler/` | Cron health probes: run-count drift, stale jobs, prior self-audit records, and a shell notifier that exits 1 when Telegram rejects the message. |
-| `skills/` | 55 reusable agent workflows. |
+| `skills/` | 56 reusable agent workflows. |
 | `skills-shared/` | 19 cross-persona skills built from public research, plus `newsjack` and `emil-design` (both vendored unchanged, MIT). |
 | `CLAUDE.md` | The system-prompt skeleton that wires it all together. |
 
@@ -84,6 +84,10 @@ capped, live goal registry instead of an aspirational backlog.
 **Handle real inputs.** `deep-research` and `autoresearch` for open questions.
 `intel-analyzer` and `signal-scorer` for noisy feeds. `telegram-dump-router` and
 `task-extractor` for the mess that arrives from chat. `redact` for anything that leaves.
+`threads` keeps a small store of open workstreams; a UserPromptSubmit hook
+(`scripts/session/thread_classify_hook.py`, fail-open) tags each operator message with the thread
+it belongs to, so a bare "ok" lands on the thread the agent last asked about. Registration is in
+`docs/session-management.md`.
 
 **Check before it ships (added 2026-10).** `external_slop_gate.py`, `paraphrase_test.py`,
 `structure_repetition.py` and `imported_claim_gate.py` block AI tells and flag claims that need a
@@ -173,7 +177,7 @@ fifteen minutes to a working core, with the platform matrix and the dependency a
 
 **Requirements: Python 3.9+, and nothing else.** The core has no third-party dependencies.
 Memory is Markdown, the state store is stdlib `sqlite3`, the gates are stdlib, the cockpit
-is stdlib `http.server`; all 107 modules under `scripts/` import with an empty environment.
+is stdlib `http.server`; all 110 modules under `scripts/` import with an empty environment.
 Semantic recall is the one heavy piece and it is opt-in
 ([`requirements-memory.txt`](requirements-memory.txt)), because a multi-gigabyte download
 should not stand between you and a Markdown memory system you have not decided on yet.
