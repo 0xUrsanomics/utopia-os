@@ -28,6 +28,7 @@ import json
 import os
 import sqlite3
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone, timedelta
@@ -107,16 +108,39 @@ def _notify_creds():
     return tok, cid
 
 
+def _notify_failed(reason):
+    """A send Telegram did not accept is logged and printed, never raised: the probe's own
+    result and exit code must not depend on the chat ping. The reason never holds the token."""
+    print(f"runcount-probe: notify undelivered: {reason}", file=sys.stderr)
+    log({"ts": now_utc().isoformat(), "category": "runcount_probe",
+         "event": "notify_failed", "reason": reason})
+
+
 def notify(text):
-    """Best-effort chat ping. The bot credential goes in the request body, never argv or logs."""
+    """Best-effort chat ping. True only when Telegram answers ok:true. The bot credential
+    goes in the URL path of a POST, never argv or logs."""
     tok, cid = _notify_creds()
     if not tok or not cid:
-        return
+        return False
     try:
         data = urllib.parse.urlencode({"chat_id": cid, "text": text}).encode()
-        urllib.request.urlopen(f"https://api.telegram.org/bot{tok}/sendMessage", data=data, timeout=15).read()
-    except Exception:
-        pass
+        with urllib.request.urlopen(f"https://api.telegram.org/bot{tok}/sendMessage", data=data, timeout=15) as r:
+            body = json.loads(r.read().decode("utf-8") or "{}")
+    except urllib.error.HTTPError as e:
+        desc = ""
+        try:
+            desc = json.loads(e.read().decode("utf-8") or "{}").get("description", "")
+        except Exception:
+            pass
+        _notify_failed(f"HTTP {e.code} {desc}".strip())
+        return False
+    except Exception as e:
+        _notify_failed(type(e).__name__)
+        return False
+    if not body.get("ok"):
+        _notify_failed(f"Telegram rejected: {body.get('description', 'no description')}")
+        return False
+    return True
 
 
 def _selftest():
@@ -139,8 +163,64 @@ def _selftest():
     ok = err is None and [f["name"] for f in flagged] == ["never-fired-old"]
     missing, err2 = find_flagged(Path(td) / "nope.db")
     ok = ok and missing is None and "missing" in (err2 or "")
-    print(f"selftest {'PASS' if ok else 'FAIL'}: flagged={[f['name'] for f in flagged or []]}")
-    return 0 if ok else 1
+    ok_notify = _selftest_notify()
+    print(f"selftest {'PASS' if ok and ok_notify else 'FAIL'}: flagged={[f['name'] for f in flagged or []]} "
+          f"notify={'PASS' if ok_notify else 'FAIL'}")
+    return 0 if ok and ok_notify else 1
+
+
+def _selftest_notify():
+    """notify() against a fake urlopen: True only on ok:true, every failure logged, none raised.
+    Nothing goes over the network."""
+    import io
+    import tempfile
+    global SESSION_LOG
+    canary = "123456:CANARY-do-not-log"
+
+    class _Resp(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def fake(answer):
+        def _open(url, data=None, timeout=None):
+            if isinstance(answer, Exception):
+                raise answer
+            return _Resp(answer)
+        return _open
+
+    saved = (urllib.request.urlopen, SESSION_LOG, os.environ.get("TELEGRAM_BOT_TOKEN"), os.environ.get("OPERATOR_CHAT_ID"))
+    results = []
+    with tempfile.TemporaryDirectory() as td:
+        SESSION_LOG = Path(td) / "session.jsonl"
+        os.environ["TELEGRAM_BOT_TOKEN"], os.environ["OPERATOR_CHAT_ID"] = canary, "1"
+        try:
+            cases = [
+                ("ok_true", b'{"ok":true,"result":{}}', True),
+                ("ok_false", b'{"ok":false,"description":"Bad Request: chat not found"}', False),
+                ("http_error", urllib.error.HTTPError("u", 403, "Forbidden", {}, io.BytesIO(b'{"ok":false,"description":"Forbidden"}')), False),
+                ("transport_error", urllib.error.URLError("down"), False),
+            ]
+            for name, answer, want in cases:
+                urllib.request.urlopen = fake(answer)
+                try:
+                    got = notify("x")
+                except Exception:
+                    got = "raised"
+                results.append(got == want)
+            logged = SESSION_LOG.read_text() if SESSION_LOG.exists() else ""
+            results.append(logged.count('"notify_failed"') == 3)
+            results.append(canary not in logged)
+        finally:
+            urllib.request.urlopen, SESSION_LOG = saved[0], saved[1]
+            for k, v in (("TELEGRAM_BOT_TOKEN", saved[2]), ("OPERATOR_CHAT_ID", saved[3])):
+                if v is None:
+                    os.environ.pop(k, None)
+                else:
+                    os.environ[k] = v
+    return all(results)
 
 
 def main():

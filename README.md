@@ -41,7 +41,7 @@ make long-running autonomous work safe and durable:
 | `scripts/cockpit/` | A zero-dependency, read-only localhost dashboard for the whole system. |
 | `scripts/pipeline/` | Content gates (slop, paraphrase, repetition, imported claims, cross-doc consistency) and the breaking-news lane. |
 | `scripts/eval/` | Verification: evidence-backed claim checks, the verify-stack harness, gate controller, skill utility scores. |
-| `scripts/scheduler/` | Cron health probes: run-count drift, stale jobs, prior self-audit records. |
+| `scripts/scheduler/` | Cron health probes: run-count drift, stale jobs, prior self-audit records, and a shell notifier that exits 1 when Telegram rejects the message. |
 | `skills/` | 55 reusable agent workflows. |
 | `skills-shared/` | 19 cross-persona skills built from public research, plus `newsjack` and `emil-design` (both vendored unchanged, MIT). |
 | `CLAUDE.md` | The system-prompt skeleton that wires it all together. |
@@ -88,7 +88,10 @@ capped, live goal registry instead of an aspirational backlog.
 **Check before it ships (added 2026-10).** `external_slop_gate.py`, `paraphrase_test.py`,
 `structure_repetition.py` and `imported_claim_gate.py` block AI tells and flag claims that need a
 primary source. `doc_consistency_check.py` catches a number that differs between two documents in
-the same pack. `advisor` gets a cold second opinion from a separate model; `arena` runs parallel
+the same pack. The slop gate also blocks line-numbered structural tells (slogan-length "X, not Y"
+in a headline or closing line, runs of very short sentences, opinion markers over quota, section
+kicker closers, a term defined and never used) and any phrase on your own rejected list.
+`orphan_ref_check.py` warns when a summary still mentions something cut from the body. `advisor` gets a cold second opinion from a separate model; `arena` runs parallel
 drafts against one rubric. `docs/content-gates.md` explains the order they run in.
 
 **Prove it works (added 2026-10).** `verify-stack` drives the running system end to end and grades
@@ -170,7 +173,7 @@ fifteen minutes to a working core, with the platform matrix and the dependency a
 
 **Requirements: Python 3.9+, and nothing else.** The core has no third-party dependencies.
 Memory is Markdown, the state store is stdlib `sqlite3`, the gates are stdlib, the cockpit
-is stdlib `http.server`; all 94 modules under `scripts/` import with an empty environment.
+is stdlib `http.server`; all 107 modules under `scripts/` import with an empty environment.
 Semantic recall is the one heavy piece and it is opt-in
 ([`requirements-memory.txt`](requirements-memory.txt)), because a multi-gigabyte download
 should not stand between you and a Markdown memory system you have not decided on yet.

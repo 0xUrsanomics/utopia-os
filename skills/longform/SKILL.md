@@ -70,8 +70,11 @@ Phase 4   GATES                -> slop (block), voice (block), structure + parap
 Phase 4.3 REVIEW ENSEMBLE      -> adversarial agent + council + cross-model + REQUIRED cold red team
 Phase 4.5 WORLDVIEW CAPTURE    -> interview answers -> memory/projects/
 Phase 4.6 PACKAGING            -> TLDR at the top + one visual per section
+Phase 4.7 COPY-EDIT PASS       -> read-only second-model copy-edit, old -> new lines, operator picks
+                                  operator read-through and final OK
 Phase 5   CROSS-PUBLISH        -> paste-ready HTML per surface + promo thread (link in tweet 2)
 Phase 5.5 ARCHIVE              -> stamp published, move run active/ -> archive/
+Phase 5.6 CORRECTION           -> fix a factual error in a published piece in place, with a dated note
 ```
 
 ---
@@ -148,6 +151,8 @@ outputs/raw/longform/runs/active/<YYYY-MM-slug>/
   brief-sectionA.md    # 8-field brief per section
   draft-sectionA.md    # one draft per section
   draft-full.md        # assembled piece, after every section clears critic
+  draft-full.vN.md     # copy saved before every cut (Phase 4.0e compares against the newest)
+  verbatim-approved.md # '>' lines the operator approved word for word (slop gate exemption)
   review-ensemble.md   # Phase 4.3 pooled findings
   feedback.md          # post-publish pulls
 ```
@@ -204,10 +209,11 @@ Reinjection adds the operator's real words, never invented ones. A section with 
 
 Run on `draft-full.md`, never on single sections.
 
-- **4.0 Slop gate (hard block).** `python3 scripts/pipeline/external_slop_gate.py --file <run>/draft-full.md`. Em and en dashes, the slop wordlist, AI-cliche openers, hedge openers. Any hit blocks; surface the line and offer rewrite, edit, or override-with-log. Also run `scripts/pipeline/imported_claim_gate.py --file <run>/draft-full.md` (advisory): every load-bearing imported claim (legal status, entity counts, existence claims) gets checked against the primary source; block only on a real conflict.
+- **4.0 Slop gate (hard block).** `python3 scripts/pipeline/external_slop_gate.py --file <run>/draft-full.md`. Em and en dashes, the slop wordlist, AI-cliche openers, hedge openers, rejected phrases, plus line-numbered structural and copy-edit checks: slogan-length "X, not Y" antithesis in a headline, TL;DR bullet, opening or closing sentence; runs of three or more very short sentences; opinion markers over quota; three or more sections ending on a two-sentence kicker; a term defined and never used again (warn only: forward references, stray contractions, mixed spellings, hedge drift). Any block surfaces the line; offer rewrite, edit, or override-with-log. A line the operator approves word for word goes in `<run>/verbatim-approved.md` as a `>` line with the approving message id; the gate loads it from beside the draft and exempts that sentence. Re-run the gate after every round of edits, including the copy-edit picks in 4.7. Also run `scripts/pipeline/imported_claim_gate.py --file <run>/draft-full.md` (advisory): every load-bearing imported claim (legal status, entity counts, existence claims) gets checked against the primary source; block only on a real conflict.
 - **4.0b Voice gate (hard block).** Your own voice-fidelity gate, calibrated on the operator's interview: share of sentences that trace to `interview.md`, burstiness, fragment ratio. Pick floors by register (an institutional piece scores lower on casual-register floors and that is not a fail). A fail cannot be overridden: recycle through 3.x. Never make an AI detector the objective; injecting noise or typos to beat a classifier is banned.
 - **4.0c Structural tells (warn).** Flag if 2+ fire: over-explains the thesis, tidy single track with no live tension, flat escalation (uniform stakes from section to section), strictly linear structure. `scripts/pipeline/structure_repetition.py --file <run>/draft-full.md` covers repeated sentence skeletons and antithesis density.
 - **4.0d Paraphrase / insight-shaped (warn).** `scripts/pipeline/paraphrase_test.py --file <run>/draft-full.md --llm`. A sentence that sounds profound and means nothing: cut it or replace the abstraction with the concrete thing. Never reword to beat the scan.
+- **4.0e Orphan-reference check (warn, after ANY cut).** Every time a section, paragraph or named thing is cut from `draft-full.md` (critic fixes, red-team applies, length trims), save the pre-cut copy as `draft-full.vN.md` first, then run `python3 scripts/pipeline/orphan_ref_check.py <run>/draft-full.md` (or `--against <older copy>`). It lists headings and key phrases (names, acronyms, figures) gone from the body that the TL;DR, the first paragraph or the last section still mention. Fix each hit by cutting the mention or restoring the support. Exit 2 means nothing was compared (no older copy): save one and re-run, do not read it as clean. Lexical only: a paraphrased pointer ("the four tests") is missed.
 - **4.1 Bookmarkability rubric.** Seven criteria scored 0-2: thesis clarity, reader-action specificity, counterargument strength, forecast falsifiability, named-entity density, interview-anchor presence, cross-publish readiness. 10/14 or more ships to postmortem. 7-9: fix the weakest two rows and recycle to Phase 3. 6 or less: kill, log the reason.
 - **4.2 Viral postmortem.** Which paragraph gets quoted, which section gets screenshotted, which forecast becomes the "you called it" receipt, where a skimmer misreads it. No quotable paragraph is a structural failure.
 
@@ -233,11 +239,15 @@ Append the interview substrate to `memory/projects/<active>.md`: the verbatim an
 - **TLDR at the top, every surface.** 4-6 bullets, one load-bearing claim each, the whole thesis skimmable in 20 seconds. One canonical block reused everywhere.
 - **One visual per section.** Each encodes that section's one idea (diagram, comparison, flow, data cut); a pull-quote card is the fallback. Build as HTML, render PNG headless. Frame per surface: X at 5:2 (1500x600), newsletter at 16:9 or 21:9. One design, exported at each ratio.
 
+## Phase 4.7. COPY-EDIT PASS (before the operator's final OK)
+
+A second, stronger model reviews the final text read-only for grammar, punctuation, coherence and figures of speech (mixed metaphors, a kicker that contradicts its section). It writes `copyedit-review-<version>.md` as `old -> new` lines with line numbers. Nothing is applied until the operator picks which lines to take. Re-run the 4.0 slop gate on the text after the picks land, because a suggested rewrite can bring a tell back. Keep a checklist box for it in `content-object.md`, right before the operator's read-through, so it cannot be skipped from memory.
+
 ## Phase 5. CROSS-PUBLISH
 
 **Paste-ready conversion.** Rich-text editors (X Articles, newsletter platforms) map clipboard HTML to their own blocks; they do not parse raw markdown, so a `.md` paste lands as literal `##` and `**`. Render each surface's markdown to clean semantic HTML (pandoc works), open it in a browser, select all, copy, paste. Pull the H1 out into the platform's title field and the subtitle into its subtitle field. Images do not ride along in the paste: leave a visible "drop image here" marker at each spot.
 
-Surfaces: the X Article (primary, TLDR on top, 5:2 visuals), a newsletter mirror (subtitle required, 16:9 visuals), a PDF if you need a pitchable artifact.
+Surfaces: the X Article (primary, TLDR on top, 5:2 visuals), a newsletter mirror (subtitle required, 16:9 visuals), a PDF if you need a pitchable artifact (`scripts/pipeline/md_to_pdf.py` deletes the old PDF first and exits 1 if no fresh one was written, so a failed render cannot leave last version's file looking current; `[[VISUAL: ...]]` placeholder lines are dropped).
 
 **Promotional thread.** 5-7 posts cut from the article, written as independent marketing, not chopped paragraphs.
 - **Link placement:** if the thread links out, the link goes in POST 2, never the last post; nobody scrolls past ten posts to find it. Structure: post 1 = the TL;DR with no link, post 2 = the hook plus the link, post 3 onward = the content.
@@ -249,17 +259,31 @@ Never auto-publish: the agent drafts, the operator approves and posts.
 
 Cross-publish is not done until the run leaves `active/`: stamp `content-object.md` (`phase: PUBLISHED`, `archived:`, `published_url:`) and move the run to `outputs/raw/longform/runs/archive/<slug>/`. Make it a script, idempotent. A terminal transition that depends on someone remembering has no trigger and no consequence when skipped, so a live article ends up indistinguishable from an unfinished draft.
 
+## Phase 5.6. CORRECT A PUBLISHED PIECE IN PLACE
+
+For a factual error found after 5.5. The Phase 3.5 and 4.0 fixes cover pre-publication only.
+
+1. Name the wrong claim and the piece. One piece per correction, one deploy approval per piece.
+2. Verify the right fact from a primary source before editing (the regulator's or company's own page, the rule text).
+3. Edit the piece's source text and rebuild it with your site build. Never hand-edit deployed HTML.
+4. Add a dated version note ("Corrected <date>") that states the fact as amended. Never rewrite silently.
+5. Get the operator's deploy approval for that piece and log the deploy with the approving message id.
+6. After deploy, fetch the LIVE page and confirm the new sentence and the dated note are there. Run the critic on the live page, not the local file. Settle any date the critic flags as unsourced before calling it done.
+7. List every other surface that still carries the old claim (X Article, newsletter, PDF, the facts notes of later pieces) and tell the operator which are still wrong.
+
+Open questions to settle for your own stack: whether a typo needs a version note, and whether a platform lets you edit a post after it is published.
+
 ## content-object.md state
 
 ```yaml
 ---
 issue: YYYY-MM
 slug: {slug}
-phase: 0|1|2|2.5|2.9|3|3.5|4|4.3|4.5|4.6|5|5.5
+phase: 0|1|2|2.5|2.9|3|3.5|4|4.3|4.5|4.6|4.7|5|5.5|5.6
 section_state: {A: [brief, draft, critic, approved]}
 gates: {slop: pending|passed, voice: pending|passed, rubric: N/14, postmortem: pending|passed}
 review_ensemble: {adversarial: pending|clear|flags, council: ..., cross_model: ..., red_team: pending|clear|fatal|major}
-packaging: {tldr: pending|done, visuals: N-of-M}
+packaging: {tldr: pending|done, visuals: N-of-M, copyedit: pending|picked}
 publish: {x_article: pending|published, newsletter: pending|sent, pdf: pending|generated}
 ---
 ```

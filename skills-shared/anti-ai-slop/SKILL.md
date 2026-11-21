@@ -356,7 +356,7 @@ python3 scripts/pipeline/external_slop_gate.py --file <draft>        # add --cv 
 python3 scripts/pipeline/paraphrase_test.py --file <draft>           # advisory; flags insight-shaped lines
 ```
 
-- `external_slop_gate.py` exit 1 is a HARD hit (dash, unambiguous AI tell, a retracted claim from `knowledge/retracted-claims.json`). Fix and re-run. WARN lines never block.
+- `external_slop_gate.py` exit 1 is a HARD hit (dash, unambiguous AI tell, a retracted claim from `knowledge/retracted-claims.json`, a phrase from `knowledge/rejected-phrases.json`, or a line-numbered structural or copy-edit block such as a slogan "X, not Y" headline). Fix and re-run. WARN lines never block. Pass `--tweet` for a single short post, where short-sentence runs and section kickers only warn.
 - `paraphrase_test.py` is advisory. Apply the two tests above to each flagged line.
 - Never inject typos, noise or awkwardness to pass a gate. A hit means a real tell; cut it and say the thing plainly.
 - Which surfaces run which gate (lexical for everything, voice only for owner-voiced pieces): `docs/content-gates.md`.

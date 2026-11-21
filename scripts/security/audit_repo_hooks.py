@@ -16,6 +16,7 @@ Usage:
     python3 audit_repo_hooks.py /path/to/repo     # scan one repo
     python3 audit_repo_hooks.py --quiet           # silent unless findings
     python3 audit_repo_hooks.py --tg              # send an alert on findings
+    python3 audit_repo_hooks.py --selftest        # offline check of the alert sender
 
 Exit codes:
     0 = no findings (all clean; findings are still printed/logged when present)
@@ -29,8 +30,10 @@ import hashlib
 import json
 import os
 import stat
-import subprocess
 import sys
+import urllib.error
+import urllib.parse
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -145,8 +148,27 @@ def audit_hooks_dir(hooks_dir: Path, allowlist: dict[str, str]) -> tuple[list[di
     return findings, allowlisted_clean, drift
 
 
-def send_tg_alert(findings_by_repo: dict[str, list[dict]]) -> None:
-    """Best-effort Telegram alert. Fails silently if unconfigured."""
+def _alert_failed(reason: str) -> None:
+    """Log and print an undelivered alert. Never raises: the audit's own exit code must
+    not depend on the chat ping. The reason never holds the token."""
+    print(f"audit-repo-hooks: alert undelivered: {reason}", file=sys.stderr)
+    log_event("warn", "tg_alert_failed", reason=reason)
+
+
+def _read_token() -> str:
+    token_path = Path(AGENT_ENV_FILE)
+    if not token_path.exists():
+        return ""
+    for line in token_path.read_text().splitlines():
+        if line.startswith("TG_BOT_TOKEN="):
+            return line.split("=", 1)[1].strip().strip('"').strip("'")
+    return ""
+
+
+def send_tg_alert(findings_by_repo: dict[str, list[dict]]) -> bool:
+    """Best-effort Telegram alert. True only when Telegram answers ok:true. Unconfigured
+    (no OPERATOR_CHAT_ID or no TG_BOT_TOKEN) returns False quietly; a send that was tried
+    and failed is logged. The token goes in the POST URL path, never argv or logs."""
     try:
         total = sum(len(v) for v in findings_by_repo.values())
         lines = [f"🚨 audit-repo-hooks: {total} executable hooks found across {len(findings_by_repo)} repos"]
@@ -155,23 +177,91 @@ def send_tg_alert(findings_by_repo: dict[str, list[dict]]) -> None:
             for item in items[:5]:
                 lines.append(f"  - {Path(item['path']).name} ({item['mode']}, {item['size']}b)")
         text = "\n".join(lines)[:3500]
-        # Read the bot token from AGENT_ENV_FILE (TG_BOT_TOKEN=...). Log-only if absent.
-        token_path = Path(AGENT_ENV_FILE)
-        if token_path.exists() and TG_CHAT_ID:
-            token = ""
-            for line in token_path.read_text().splitlines():
-                if line.startswith("TG_BOT_TOKEN="):
-                    token = line.split("=", 1)[1].strip().strip('"').strip("'")
-                    break
-            if token:
-                subprocess.run([
-                    "curl", "-s", "-X", "POST",
-                    f"https://api.telegram.org/bot{token}/sendMessage",
-                    "-d", f"chat_id={TG_CHAT_ID}",
-                    "--data-urlencode", f"text={text}",
-                ], capture_output=True, timeout=10)
-    except Exception:
-        pass
+        if not TG_CHAT_ID:
+            return False
+        token = _read_token()
+        if not token:
+            return False
+    except Exception as e:
+        _alert_failed(f"could not build alert: {type(e).__name__}")
+        return False
+    try:
+        data = urllib.parse.urlencode({"chat_id": TG_CHAT_ID, "text": text}).encode()
+        with urllib.request.urlopen(f"https://api.telegram.org/bot{token}/sendMessage", data=data, timeout=10) as r:
+            body = json.loads(r.read().decode("utf-8") or "{}")
+    except urllib.error.HTTPError as e:
+        desc = ""
+        try:
+            desc = json.loads(e.read().decode("utf-8") or "{}").get("description", "")
+        except Exception:
+            pass
+        _alert_failed(f"HTTP {e.code} {desc}".strip())
+        return False
+    except Exception as e:
+        _alert_failed(type(e).__name__)
+        return False
+    if not body.get("ok"):
+        _alert_failed(f"Telegram rejected: {body.get('description', 'no description')}")
+        return False
+    return True
+
+
+def _selftest() -> int:
+    """send_tg_alert() against a fake urlopen: True only on ok:true, each failure logged,
+    none raised, the token never logged. Nothing goes over the network."""
+    import io
+    import tempfile
+    global LOG_PATH, TG_CHAT_ID, AGENT_ENV_FILE
+    canary = "123456:CANARY-do-not-log"
+
+    class _Resp(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def fake(answer):
+        def _open(url, data=None, timeout=None):
+            if isinstance(answer, Exception):
+                raise answer
+            return _Resp(answer)
+        return _open
+
+    findings = {"/tmp/repo": [{"path": "/tmp/repo/.git/hooks/post-checkout", "mode": "0o755", "size": 10}]}
+    saved = (urllib.request.urlopen, LOG_PATH, TG_CHAT_ID, AGENT_ENV_FILE)
+    checks = []
+    with tempfile.TemporaryDirectory() as td:
+        LOG_PATH = Path(td) / "session.jsonl"
+        env = Path(td) / ".env"
+        env.write_text(f"TG_BOT_TOKEN={canary}\n")
+        AGENT_ENV_FILE, TG_CHAT_ID = str(env), "1"
+        try:
+            cases = [
+                ("ok_true", b'{"ok":true,"result":{}}', True),
+                ("ok_false", b'{"ok":false,"description":"Bad Request: chat not found"}', False),
+                ("http_error", urllib.error.HTTPError("u", 403, "Forbidden", {}, io.BytesIO(b'{"ok":false,"description":"Forbidden"}')), False),
+                ("transport_error", urllib.error.URLError("down"), False),
+            ]
+            for name, answer, want in cases:
+                urllib.request.urlopen = fake(answer)
+                try:
+                    got = send_tg_alert(findings)
+                except Exception:
+                    got = "raised"
+                checks.append((name, got == want))
+            TG_CHAT_ID = ""
+            checks.append(("unconfigured_returns_false", send_tg_alert(findings) is False))
+            logged = LOG_PATH.read_text() if LOG_PATH.exists() else ""
+            checks.append(("three_failures_logged", logged.count('"tg_alert_failed"') == 3))
+            checks.append(("token_never_logged", canary not in logged))
+        finally:
+            urllib.request.urlopen, LOG_PATH, TG_CHAT_ID, AGENT_ENV_FILE = saved
+    for n, v in checks:
+        print(f" {'PASS' if v else 'FAIL'}  {n}")
+    ok = all(v for _, v in checks)
+    print(f"== SELFTEST {'PASS' if ok else 'FAIL'} ({sum(v for _, v in checks)}/{len(checks)}) ==")
+    return 0 if ok else 1
 
 
 def main() -> int:
@@ -179,7 +269,10 @@ def main() -> int:
     ap.add_argument("path", nargs="?", help="Specific repo or dir to scan (defaults to scan roots)")
     ap.add_argument("--quiet", action="store_true", help="Suppress stdout unless findings")
     ap.add_argument("--tg", action="store_true", help="Send an alert on findings")
+    ap.add_argument("--selftest", action="store_true", help="Offline check of the alert sender")
     args = ap.parse_args()
+    if args.selftest:
+        return _selftest()
 
     if args.path:
         scan_paths = [Path(args.path)]

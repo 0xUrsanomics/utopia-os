@@ -24,6 +24,12 @@ A usage-cap kill can land after the cycle has already written its files (state f
 
 In a normal cycle, append the `dream_cycle_complete` log row in the same Bash call that writes the state file, so one API turn cannot separate them.
 
+**Torn state after a restart.** If `memory/.dreams/dream-<today, local date>.json` exists but is 0 bytes or not valid JSON (the machine restarted mid-write):
+1. Do NOT re-run Phases 1 to 3. Rebuild the state file from that run's own outputs on disk (the reflection in `outputs/raw/agent/<date>-dream.md`, the decay report in `memory/.dreams/`, and any auto-skill draft under `outputs/raw/agent/`). Label each field as recomputed now, inherited from the run's script outputs, or taken only from its reflection.
+2. Run the closing checks a normal cycle runs and record their exit codes in the rebuilt state file.
+3. Leave a torn `logs/session.jsonl` row in place (never rewrite the log); write a fresh `dream_cycle_complete` row and note the torn line number in the reflection addendum.
+4. Report what the rebuild does not prove: numbers inherited from the torn run were not recomputed, and files written just before the restart may also be damaged.
+
 ## Phase 1. LIGHT (Ingest + Deduplicate)
 
 Read all inputs:

@@ -1,0 +1,8 @@
+{
+  "_doc": "Phrases the owner has rejected in their written voice. Copy to knowledge/rejected-phrases.json (or point $AGENT_REJECTED_PHRASES at it) and replace these example rows with your own. scripts/pipeline/external_slop_gate.py HARD-blocks every occurrence (no quota), except on '>' lines and in sentences found in '>' lines of verbatim-approved.md beside the scanned file. Match is case-insensitive, whole words, any whitespace between words, straight or curly apostrophe. Add a row when the owner rejects a phrase and record where they said it in 'source'. No file = the check is off; a file with no usable row blocks every scan.",
+  "phrases": [
+    {"phrase": "to be fair", "source": "example row", "added": "YYYY-MM-DD"},
+    {"phrase": "at its core", "source": "example row", "added": "YYYY-MM-DD"},
+    {"phrase": "the short answer", "source": "example row", "added": "YYYY-MM-DD"}
+  ]
+}

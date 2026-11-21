@@ -143,6 +143,15 @@ Content quality before send is a separate gate layer: the lexical slop gate, ret
 the imported-claim flag and the cross-document check. Which script runs on which surface:
 `content-gates.md`.
 
+**A send that never reads the answer fails silently.** `curl -s` exits 0 on an HTTP 4xx, and HTTP client
+libraries do not raise on one, so a Telegram rejection (bad chat id, message too long, revoked token) turns
+into a "sent" log line. `scripts/scheduler/cron_tg_notify.sh` exits 1 unless Telegram answered
+`"ok":true`, and `scripts/security/tg_sender_lint.py` finds direct Bot API send sites in `scripts/` that
+never read that answer (PASS reads `ok`; UNSURE checks only the HTTP status; FAIL discards the response or
+swallows the error). It never prints source lines, so a hard-coded token cannot leak through it. Zero sites
+scanned exits 1. `--staged` blocks only a commit that adds a new FAIL, so it can run as a pre-commit hook on
+a tree that still has old ones.
+
 ## Security-first install rule
 
 Underneath the registry sits a standing rule for anything downloaded or integrated: check it before running
